@@ -31,7 +31,7 @@ Patch Zephyr:
 
 ```
     cd zephyr
-    git am ../001-esb-nrf-fix.patch
+    git am ../0001-esb-nrf-fix.patch
 ```
 
 Build firmware:
