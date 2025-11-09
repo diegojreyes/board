@@ -376,6 +376,7 @@ static int zmk_endpoints_init(const struct device *_arg) {
     }
     
     current_instance.transport =ZMK_TRANSPORT_NONE;//ZMK_TRANSPORT_USB;
+    preferred_transport = ZMK_TRANSPORT_24G;
 
     return 0;
 }
@@ -452,16 +453,6 @@ static int endpoint_listener(const zmk_event_t *eh) {
                     keyboad_led_set_onoff(0);
                 }
             }
-            if(get_hardware_select_transport()==0 && get_mode_status()==3)
-            {
-                preferred_transport = ZMK_TRANSPORT_USB;
-                update_current_endpoint();
-            }
-        }
-        else if(ev->conn_state == ZMK_USB_CONN_NONE)
-        {
-            preferred_transport =get_hardware_select_transport();
-            update_current_endpoint();
         }
 
     }
