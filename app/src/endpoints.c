@@ -375,6 +375,20 @@ static int zmk_endpoints_init(const struct device *_arg) {
         nrf_power_resetreas_clear(NRF_POWER, POWER_RESETREAS_RESETPIN_Msk);
     }
     
+    uint8_t type = nrf_power_gpregret_get(NRF_POWER);
+    switch (type) {
+        case REBOOT_ENDPOINT_BLE:
+            preferred_transport = ZMK_TRANSPORT_BLE;
+            break;
+        case REBOOT_ENDPOINT_24G:
+            preferred_transport = ZMK_TRANSPORT_24G;
+            break;
+        default:
+            preferred_transport = ZMK_TRANSPORT_USB; // safe default
+            break;
+    }
+
+    update_current_endpoint();
     current_instance.transport =ZMK_TRANSPORT_NONE;//ZMK_TRANSPORT_USB;
 
     return 0;
