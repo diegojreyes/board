@@ -57,25 +57,7 @@ static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
             LOG_ERR("out ble");
             reset_led_power_on();
             hardware_select_transport = ZMK_TRANSPORT_BLE;
-            // nrf_power_gpregret_set(NRF_POWER,REBOOT_ENDPOINT_BLE);
-            // if(zmk_usb_is_powered()) return 0;
-            uint8_t type = nrf_power_gpregret_get(NRF_POWER);
-            LOG_DBG("reboot type:%02x", type);
-            if (type == REBOOT_ENDPOINT_BLE)
-            {
-                // bt_24g_switch_pulldown(0);
-                zmk_endpoints_select_transport(ZMK_TRANSPORT_BLE);
-                
-            }
-            else 
-            {
-                nrf_power_gpregret_set(NRF_POWER,REBOOT_ENDPOINT_BLE);
-                LOG_ERR("set:%x",REBOOT_ENDPOINT_BLE);
-                LOG_DBG("REBOOT");
-
-                k_msleep(200);
-                sys_reboot(REBOOT_ENDPOINT_BLE);
-            }
+            zmk_endpoints_select_transport(ZMK_TRANSPORT_BLE);
             return 0;
         }
     case OUT_24G:
@@ -83,25 +65,7 @@ static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
             LOG_ERR("out 24g");
             reset_led_power_on();
             hardware_select_transport = ZMK_TRANSPORT_24G;
-            // nrf_power_gpregret_set(NRF_POWER,REBOOT_ENDPOINT_24G);
-            // if(zmk_usb_is_powered()) return 0;
-            uint8_t type = nrf_power_gpregret_get(NRF_POWER);
-            
-            LOG_DBG("reboot type:%02x", type);
-            if (type == REBOOT_ENDPOINT_24G)
-            {
-                // bt_24g_switch_pulldown(1);
-                zmk_endpoints_select_transport(ZMK_TRANSPORT_24G);
-                
-            }
-            else 
-            {
-                nrf_power_gpregret_set(NRF_POWER,REBOOT_ENDPOINT_24G);
-                LOG_ERR("set:%x",REBOOT_ENDPOINT_24G);
-                LOG_DBG("REBOOT");
-                k_msleep(200);
-                sys_reboot(REBOOT_ENDPOINT_24G);
-            }
+            zmk_endpoints_select_transport(ZMK_TRANSPORT_24G);
             return 0;
         }
     case OUT_CHG:
@@ -151,39 +115,8 @@ static int on_keymap_binding_released(struct zmk_behavior_binding *binding,
     case OUT_USB: 
            break;
     case OUT_BLE:   
-        LOG_ERR("switch off:%d",binding->param1);
-        zmk_ble_endpoint_disconnect();
-        if(zmk_usb_is_powered()&&get_mode_status()==0x03)
-        {
-            hardware_select_transport=ZMK_TRANSPORT_USB;
-            reset_led_power_on();
-            zmk_endpoints_select_transport(ZMK_TRANSPORT_USB);
-        }
-        else
-        {
-            LOG_ERR("select transport none");
-            zmk_endpoints_select_transport(ZMK_TRANSPORT_NONE);
-        }
         return 0;    
     case OUT_24G:
-        LOG_ERR("switch off:%d",binding->param1);
-        // if(skip_switch_change()) 
-        // {
-        //     LOG_ERR("skip");
-        //     return 0;
-        // }
-        zmk_24g_endpoint_disconnect();
-        if(zmk_usb_is_powered()&&get_mode_status()==0x03)
-        {
-            hardware_select_transport=ZMK_TRANSPORT_USB;
-            reset_led_power_on();
-            zmk_endpoints_select_transport(ZMK_TRANSPORT_USB);
-        }
-        else
-        {
-            LOG_ERR("select transport none");
-            zmk_endpoints_select_transport(ZMK_TRANSPORT_NONE);
-        }
         return 0;
         // hardware_select_transport=ZMK_TRANSPORT_USB;
         // return zmk_endpoints_select_transport(ZMK_TRANSPORT_USB);
