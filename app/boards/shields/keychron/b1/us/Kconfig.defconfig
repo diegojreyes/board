@@ -1,0 +1,12 @@
+if SHIELD_KEYCHRON_B1_US
+
+config USB_DEVICE_VID
+    default 0x03F0
+
+config USB_DEVICE_PID
+    default 0x564A
+
+config ZMK_KEYBOARD_NAME
+    default "HP Keyboard"
+
+endif
