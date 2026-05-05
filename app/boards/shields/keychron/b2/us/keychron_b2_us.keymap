@@ -15,6 +15,27 @@
     ZMK_MACRO(change, bindings = <&out OUT_FN>;)
     ZMK_MACRO(fn_win, bindings = <&out OUT_FN_WIN>;)
 
+    ZMK_MACRO(hyper, bindings = <&kp LCMD &kp LOPT &kp LCTRL>;)
+    ZMK_MACRO(meh, bindings = <&kp LSHFT &kp LCMD &kp LOPT>;)
+
+    ht_np0: ht_np0 {
+        compatible = "zmk,behavior-hold-tap";
+        label = "HT_NP0";
+        #binding-cells = <2>;
+        tapping-term-ms = <200>;
+        flavor = "tap-preferred";
+        bindings = <&kp KP_N0>, <&kp LSHFT &kp LOPT>;
+    };
+
+    ht_npplus: ht_npplus {
+        compatible = "zmk,behavior-hold-tap";
+        label = "HT_NPPLUS";
+        #binding-cells = <2>;
+        tapping-term-ms = <200>;
+        flavor = "tap-preferred";
+        bindings = <&kp KP_PLUS>, <&kp LSHFT &kp LCTRL>;
+    };
+
     ZMK_MACRO(en_bootloader, bindings = <&bootloader>;)
     ZMK_MACRO1(MA,bindings=<&kp 0x770000>;)
 
@@ -198,10 +219,10 @@
           //ESC         //f1                    //f2                //f3                                    //f4                //f5                //f6            //f7            //f8                //f9        //f10       //f11               //f12               //f13            //del            //home          //pgup             //pgdn                                  
         &kp ESC     &kp C_BRIGHTNESS_DEC    &kp C_BRIGHTNESS_INC    &kp C_AC_DESKTOP_SHOW_ALL_WINDOWS   &kp  C_AC_MAC_LAUNCH    &kp C_AC_SEARCH     &kp C_AL_LOCK   &kp C_PREVIOUS  &kp C_PLAY_PAUSE    &kp C_NEXT  &kp C_MUTE  &kp C_VOLUME_DOWN   &kp C_VOLUME_UP     &uc LG(COMMA)    &kp DEL         &kp HOME        &kp PG_UP          &kp PG_DN
         &kp GRAVE   &kp N1                  &kp N2                  &kp N3                              &kp N4                  &kp N5              &kp N6          &kp N7          &kp N8              &kp N9      &kp N0      &kp MINUS           &kp EQUAL           &kp BSPC         &kp KP_NLCK     &kp KP_SLASH    &kp KP_ASTERISK    &kp KP_MINUS
-        &kp TAB     &kp Q                   &kp W                   &kp E                               &kp R                   &kp T               &kp Y           &kp U           &kp I               &kp O       &kp P       &kp LBKT            &kp RBKT            &kp BSLH         &kp KP_N7       &kp KP_N8       &kp KP_N9          &kp KP_PLUS
-        &kp CLCK    &kp A                   &kp S                   &kp D                               &kp F                   &kp G               &kp H           &kp J           &kp K               &kp L       &kp SEMI    &kp SQT                         &kp RET                  &kp KP_N4       &kp KP_N5       &kp KP_N6                       
+        &kp TAB     &kp Q                   &kp W                   &kp E                               &kp R                   &kp T               &kp Y           &kp U           &kp I               &kp O       &kp P       &kp LBKT            &kp RBKT            &kp BSLH         &kp KP_N7       &kp KP_N8       &kp KP_N9          &ht_npplus 0 0
+        &hyper      &kp A                   &kp S                   &kp D                               &kp F                   &kp G               &kp H           &kp J           &kp K               &kp L       &kp SEMI    &kp SQT                         &kp RET                  &kp KP_N4       &kp KP_N5       &kp KP_N6                       
         &kp LSHFT   &kp Z                   &kp X                   &kp C                               &kp V                   &kp B               &kp N           &kp M           &kp COMMA           &kp DOT     &kp FSLH                                    &kp RSHFT                &kp KP_N1       &kp KP_N2       &kp KP_N3
-        &kp LCTRL   &uc LALT                &uc LCMD                       &kp SPACE                                                                                                &uc RCMD            &mo 1       &kp LEFT    &kp UP              &kp DOWN            &kp RIGHT        &kp KP_N0                       &kp KP_DOT         &kp KP_ENTER
+        &kp LCTRL   &uc LALT                &uc LCMD                       &kp SPACE                                                                                                &meh                &mo 1       &kp LEFT    &kp UP              &kp DOWN            &kp RIGHT        &ht_np0 0 0                     &kp KP_DOT         &kp KP_ENTER
         &mo 2       &out OUT_BLE            &out OUT_24G            &out OUT_CHG                        &out OUT_CHGD 
             >;
         };
