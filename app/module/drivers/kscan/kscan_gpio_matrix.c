@@ -402,12 +402,11 @@ static void kscan_matrix_irq_callback_handler(const struct device *port, struct 
 #endif
 
 static void kscan_matrix_read_continue(const struct device *dev) {
-    
-    const struct kscan_matrix_config *config = dev->config;
     struct kscan_matrix_data *data = dev->data;
-#if CONFIG_LAUNCHER_USER_SET_DEBOUNCE
+    #if CONFIG_LAUNCHER_USER_SET_DEBOUNCE
     data->scan_time += user_debounce.debounce_scan_period_ms;
-#else
+    #else
+    const struct kscan_matrix_config *config = dev->config;
     data->scan_time += config->debounce_scan_period_ms;
 #endif     
     // LOG_DBG("read continue,period:%d",config->debounce_scan_period_ms);

@@ -120,7 +120,7 @@ static int kscan_direct_interrupt_configure(const struct device *dev, const gpio
 #endif
 
 #if USE_INTERRUPTS
-static int kscan_direct_interrupt_enable(const struct device *dev) {
+int kscan_direct_interrupt_enable(const struct device *dev) {
     return kscan_direct_interrupt_configure(dev, GPIO_INT_LEVEL_ACTIVE);
 }
 #endif
@@ -184,6 +184,7 @@ static void kscan_direct_read_continue(const struct device *dev) {
     k_work_reschedule(&data->work, K_TIMEOUT_ABS_MS(data->scan_time));
 }
 
+#if 0
 static void kscan_direct_read_end(const struct device *dev) {
 #if USE_INTERRUPTS
     // Return to waiting for an interrupt.
@@ -198,6 +199,7 @@ static void kscan_direct_read_end(const struct device *dev) {
     k_work_reschedule(&data->work, K_TIMEOUT_ABS_MS(data->scan_time));
 #endif
 }
+#endif
 
 static int kscan_direct_read(const struct device *dev) {
     struct kscan_direct_data *data = dev->data;

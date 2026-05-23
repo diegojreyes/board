@@ -545,11 +545,9 @@ void keyboard_ppt_init(void)
 {
     sync_acc_t acc;
 #if !(defined(CONFIG_SHIELD_KEYCHRON_RS45_ANSI) || defined(CONFIG_SHIELD_KEYCHRON_RS87_ANSI))
-    #warning "ppt use keychron"
     acc.addr = 0x8EBEC9D6;  
 #else
-    #warning "ppt use skn"
-    acc.addr = 0x8ebe89ba;//skn
+    acc.addr = 0x8ebe89ba;
 #endif 
 	
 	sync_acc_set_br(acc);
