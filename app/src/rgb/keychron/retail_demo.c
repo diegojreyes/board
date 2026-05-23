@@ -25,102 +25,96 @@
 #include <dt-bindings/zmk/rgb.h>
 #include "../rgb_matrix.h"
 
-LOG_MODULE_REGISTER(demo,4);
+LOG_MODULE_REGISTER(demo, 4);
 
 #define RGB_MATRIX_ENABLE
 #ifndef RETAIL_DEMO_KEY_1
-#    ifdef RGB_MATRIX_ENABLE
-#        define RETAIL_DEMO_KEY_1 RGB_HUI_CMD
-#    else
-#        define RETAIL_DEMO_KEY_1 KC_D
-#    endif
+#ifdef RGB_MATRIX_ENABLE
+#define RETAIL_DEMO_KEY_1 RGB_HUI_CMD
+#else
+#define RETAIL_DEMO_KEY_1 KC_D
+#endif
 #endif
 
 #ifndef RETAIL_DEMO_KEY_2
-#    ifdef RGB_MATRIX_ENABLE
-#        define RETAIL_DEMO_KEY_2 RGB_HUD_CMD
-#    else
-#        define RETAIL_DEMO_KEY_2 KC_E
-#    endif
+#ifdef RGB_MATRIX_ENABLE
+#define RETAIL_DEMO_KEY_2 RGB_HUD_CMD
+#else
+#define RETAIL_DEMO_KEY_2 KC_E
+#endif
 #endif
 
 #ifndef EFFECT_DURATION
-#    define EFFECT_DURATION 10000
+#define EFFECT_DURATION 10000
 #endif
 
 enum {
-    KEY_PRESS_FN          = 0x01 << 0,
-    KEY_PRESS_D           = 0x01 << 1,
-    KEY_PRESS_E           = 0x01 << 2,
+    KEY_PRESS_FN = 0x01 << 0,
+    KEY_PRESS_D = 0x01 << 1,
+    KEY_PRESS_E = 0x01 << 2,
     KEY_PRESS_RETAIL_DEMO = KEY_PRESS_FN | KEY_PRESS_D | KEY_PRESS_E,
 };
 void cancel_save_rgb_work(void);
 
-extern uint8_t  retail_demo_enable ;
-static uint8_t  retail_demo_combo  = 0;
+extern uint8_t retail_demo_enable;
+static uint8_t retail_demo_combo = 0;
 // static uint32_t retail_demo_timer  = 0;
 
 extern void rgb_save_retail_demo(void);
 
-void check_timer_cb(struct k_work *work)
-{
+void check_timer_cb(struct k_work *work) {
     if (retail_demo_combo == KEY_PRESS_RETAIL_DEMO) {
-        retail_demo_combo  = 0;
+        retail_demo_combo = 0;
         retail_demo_enable = !retail_demo_enable;
-        LOG_ERR("retail_demo_enable:%d",retail_demo_enable);
+        LOG_ERR("retail_demo_enable:%d", retail_demo_enable);
         if (retail_demo_enable) {
-            if (zmk_rgb_matrix_get_mode() != RGB_EFFECT_MIXED_RGB) retail_demo_start();
+            if (zmk_rgb_matrix_get_mode() != RGB_EFFECT_MIXED_RGB)
+                retail_demo_start();
         } else {
             settings_load_subtree("rgb");
-            LOG_ERR("reset rgb mode:%d",zmk_rgb_matrix_get_mode());
+            LOG_ERR("reset rgb mode:%d", zmk_rgb_matrix_get_mode());
         }
         rgb_save_retail_demo();
     }
 }
-K_WORK_DELAYABLE_DEFINE(check_timer_work,check_timer_cb);
+K_WORK_DELAYABLE_DEFINE(check_timer_work, check_timer_cb);
 
-bool process_record_retail_demo(struct zmk_behavior_binding *binding, bool pressed)
-{
-    if(memcmp(binding->behavior_dev,"momentary_layer",15)==0)
-    {
-        LOG_ERR("mo:%d",binding->param1);
+bool process_record_retail_demo(struct zmk_behavior_binding *binding, bool pressed) {
+    if (memcmp(binding->behavior_dev, "momentary_layer", 15) == 0) {
+        LOG_ERR("mo:%d", binding->param1);
         if (pressed)
             retail_demo_combo |= KEY_PRESS_FN;
         else
             retail_demo_combo &= ~KEY_PRESS_FN;
     }
 #ifdef RGB_MATRIX_ENABLE
-    else if(memcmp(binding->behavior_dev,"rgb_ug",6)==0)
-#else    
-    else if(memcmp(binding->behavior_dev,"key_press",9)==0)
-#endif         
+    else if (memcmp(binding->behavior_dev, "rgb_ug", 6) == 0)
+#else
+    else if (memcmp(binding->behavior_dev, "key_press", 9) == 0)
+#endif
     {
-        LOG_ERR("binding:%s,code:%d",binding->behavior_dev,binding->param1);
-        if(binding->param1 ==RETAIL_DEMO_KEY_1 )
-        {
+        LOG_ERR("binding:%s,code:%d", binding->behavior_dev, binding->param1);
+        if (binding->param1 == RETAIL_DEMO_KEY_1) {
 
             if (pressed) {
                 retail_demo_combo |= KEY_PRESS_D;
-                if (retail_demo_combo == KEY_PRESS_RETAIL_DEMO) 
-                {
-                    
+                if (retail_demo_combo == KEY_PRESS_RETAIL_DEMO) {
+
                     cancel_save_rgb_work();
-                    k_work_reschedule(&check_timer_work,K_MSEC(5000));
+                    k_work_reschedule(&check_timer_work, K_MSEC(5000));
                     return false;
                 }
             } else {
                 retail_demo_combo &= ~KEY_PRESS_D;
                 k_work_cancel_delayable(&check_timer_work);
             }
-        }
-        else if(binding->param1 ==RETAIL_DEMO_KEY_2 )
-        {
+        } else if (binding->param1 == RETAIL_DEMO_KEY_2) {
 
             if (pressed) {
                 retail_demo_combo |= KEY_PRESS_E;
                 if (retail_demo_combo == KEY_PRESS_RETAIL_DEMO) {
                     cancel_save_rgb_work();
-                    k_work_reschedule(&check_timer_work,K_MSEC(5000));
+                    k_work_reschedule(&check_timer_work, K_MSEC(5000));
                     return false;
                 }
             } else {
@@ -128,12 +122,10 @@ bool process_record_retail_demo(struct zmk_behavior_binding *binding, bool press
                 k_work_cancel_delayable(&check_timer_work);
             }
         }
-        if (retail_demo_enable && binding->param1 >= RGB_TOG_CMD && binding->param1 <= RGB_SPD_CMD) return false;
-
-    
+        if (retail_demo_enable && binding->param1 >= RGB_TOG_CMD && binding->param1 <= RGB_SPD_CMD)
+            return false;
     }
     return true;
-
 }
 // bool process_record_retail_demo(struct zmk_behavior_binding *binding, bool pressed)
 // {
@@ -145,20 +137,21 @@ bool process_record_retail_demo(struct zmk_behavior_binding *binding, bool press
 //     }
 // #ifdef RGB_MATRIX_ENABLE
 //     else if(memcmp(binding->behavior_dev,"rgb_ug",6)==0)
-// #else    
+// #else
 //     else if(memcmp(binding->behavior_dev,"key_press",9)==0)
-// #endif         
+// #endif
 //     {
 //         LOG_ERR("binding:%s,code:%d",binding->behavior_dev,binding->param1);
 //         if(binding->param1 ==RETAIL_DEMO_KEY_1 )
 //         {
-//             key = KEY_PRESS_D;            
+//             key = KEY_PRESS_D;
 //         }
 //         else if(binding->param1 ==RETAIL_DEMO_KEY_2 )
 //         {
-//             key = KEY_PRESS_E;            
-//         }    
-//         if (retail_demo_enable && binding->param1 >= RGB_TOG_CMD && binding->param1 <= RGB_SPD_CMD) return false;
+//             key = KEY_PRESS_E;
+//         }
+//         if (retail_demo_enable && binding->param1 >= RGB_TOG_CMD && binding->param1 <=
+//         RGB_SPD_CMD) return false;
 //     }
 //     if(key == 0) return true;
 //     if(pressed)
@@ -169,7 +162,7 @@ bool process_record_retail_demo(struct zmk_behavior_binding *binding, bool press
 //             retail_demo_combo |= KEY_PRESS_D;
 //         else if(key == KEY_PRESS_E)
 //             retail_demo_combo |= KEY_PRESS_E;
-//         if (retail_demo_combo == KEY_PRESS_RETAIL_DEMO) 
+//         if (retail_demo_combo == KEY_PRESS_RETAIL_DEMO)
 //         {
 //             cancel_save_rgb_work();
 //             k_work_reschedule(&check_timer_work,K_MSEC(5000));
@@ -192,9 +185,9 @@ void retail_demo_start(void) {
     extern bool mixed_rgb_set_regions(uint8_t * data);
     extern bool mixed_rgb_set_effect_list(uint8_t * data);
 
-    uint8_t index      = 0;
+    uint8_t index = 0;
     uint8_t this_count = 28;
-    uint8_t data[31]   = {0};
+    uint8_t data[31] = {0};
 
     // Set all LED to region 0
     while (index < RGB_MATRIX_LED_COUNT - 1) {

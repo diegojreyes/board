@@ -5,7 +5,7 @@
 #
 
 description: |
-    Allows defining the collection of mode monitor pins in ZMK.
+  Allows defining the collection of mode monitor pins in ZMK.
 
 compatible: "zmk,mode-monitor-pin"
 
@@ -19,8 +19,8 @@ properties:
     required: true
 
   detect-usb-gpios:
-      type: phandle-array
-      required: true
+    type: phandle-array
+    required: true
 
   win2mac-gpios:
     type: phandle-array

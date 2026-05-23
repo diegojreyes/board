@@ -87,12 +87,12 @@
     ZMK_MACRO(bt_recon_1, bindings = <&kc BT_SEL 1>;)
     ZMK_MACRO(bt_recon_2, bindings = <&kc BT_SEL 2>;)
     ZMK_MACRO(ppt_recon, bindings = <&kc PPT_SEL 0>;)
-    
+
 
 
     bt_pair_0: bt_pair_0 {
         compatible = "zmk,behavior-hold-tap";
-  
+
         #binding-cells = <2>;
         flavor = "tap-preferred";
         tapping-term-ms = <3000>;  // delay amount in ms
@@ -100,7 +100,7 @@
     };
     bt_pair_1: bt_pair_1 {
         compatible = "zmk,behavior-hold-tap";
- 
+
         #binding-cells = <2>;
         flavor = "tap-preferred";
         tapping-term-ms = <3000>;  // delay amount in ms
@@ -148,51 +148,51 @@
         // };
          combo_t0 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&to 3 >;
         };
         combo_t1 {
             timeout-ms = <10 >;
             layers =<4>;
-          
-            key-positions = <120>;  
+
+            key-positions = <120>;
             bindings = <&tog 3 >;
         };
         combo_t2 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&sl 3 >;
         };
         combo_t3 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&lt 3 SPACE>;
         };
         combo_t4 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&sk LSHIFT>;
         };
         combo_t5 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&mt LSHIFT SPACE>;
         };
         combo_t6 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&gresc>;
         };
         //  combo_t7 {
         //     timeout-ms = <10 >;
-        //     layers =<4>;          
-        //     key-positions = <120>;  
+        //     layers =<4>;
+        //     key-positions = <120>;
         //     bindings = <&mkp 0>;
         // };
     };
@@ -204,40 +204,40 @@
         &kp ESC     &kp N1                 &kp N2                   &kp N3                              &kp N4                  &kp N5              &kp N6          &kp N7          &kp N8              &kp N9       &kp N0     &kp MINUS            &kp EQUAL           &kp BSPC                        &kp C_MUTE
         &kp TAB     &kp Q                  &kp W                    &kp E                               &kp R                   &kp T               &kp Y           &kp U           &kp I               &kp O        &kp P      &kp LBKT             &kp RBKT            &kp BSLH                        &kp DEL
         &kp CLCK    &kp A                  &kp S                    &kp D                               &kp F                   &kp G               &kp H           &kp J           &kp K               &kp L        &kp SEMI   &kp SQT              &kp RET                                             &kp HOME
-        &kp LSHFT                          &kp Z                    &kp X                               &kp C                   &kp V               &kp B           &kp N           &kp M               &kp COMMA    &kp DOT    &kp FSLH             &kp RSHFT                            &kp UP   
-        &kp LCTRL   &kp LGUI               &kp LALT                                                                             &kp SPACE                                                                            &kp RALT   &mo 1                &mo 2               &kp LEFT         &kp DOWN       &kp RIGHT   
+        &kp LSHFT                          &kp Z                    &kp X                               &kp C                   &kp V               &kp B           &kp N           &kp M               &kp COMMA    &kp DOT    &kp FSLH             &kp RSHFT                            &kp UP
+        &kp LCTRL   &kp LGUI               &kp LALT                                                                             &kp SPACE                                                                            &kp RALT   &mo 1                &mo 2               &kp LEFT         &kp DOWN       &kp RIGHT
         //keychron control
-        &mo 3       &kc SEL_USB            &kc SEL_BLE             &kc SEL_PPT        &kc BATCHG                              
+        &mo 3       &kc SEL_USB            &kc SEL_BLE             &kc SEL_PPT        &kc BATCHG
             >;
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
         //mac fn1 layer
         layer_one {
-        bindings = < 
-        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10           //f11                         //f12                     
-        &kp GRAVE                       &kp C_BRIGHTNESS_DEC        &kp C_BRIGHTNESS_INC        &kp C_AC_DESKTOP_SHOW_ALL_WINDOWS   &kp  C_AC_MAC_LAUNCH    &rgb_ug RGB_BRD     &rgb_ug RGB_BRI     &kp C_PREVIOUS  &kp C_PLAY_PAUSE    &kp C_NEXT  &kp C_MUTE  &kp C_VOLUME_DOWN           &kp C_VOLUME_UP      &trans                          &rgb_ug RGB_TOG                   
+        bindings = <
+        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10           //f11                         //f12
+        &kp GRAVE                       &kp C_BRIGHTNESS_DEC        &kp C_BRIGHTNESS_INC        &kp C_AC_DESKTOP_SHOW_ALL_WINDOWS   &kp  C_AC_MAC_LAUNCH    &rgb_ug RGB_BRD     &rgb_ug RGB_BRI     &kp C_PREVIOUS  &kp C_PLAY_PAUSE    &kp C_NEXT  &kp C_MUTE  &kp C_VOLUME_DOWN           &kp C_VOLUME_UP      &trans                          &rgb_ug RGB_TOG
         &trans                          &bt_pair_0 0 0              &bt_pair_1 0 0              &bt_pair_2 0 0                      &ppt_pair_0 0 0         &trans              &trans              &trans          &trans              &trans      &trans      &trans                      &trans               &trans                          &trans
         &rgb_ug RGB_TOG                 &rgb_ug RGB_EFF             &rgb_ug RGB_BRI             &rgb_ug RGB_HUI                     &rgb_ug RGB_SAI         &rgb_ug RGB_SPI     &trans              &trans          &trans              &trans      &trans      &trans                      &trans                                               &kp END
-        &trans                                                      &rgb_ug RGB_EFR             &rgb_ug RGB_BRD                     &rgb_ug RGB_HUD         &rgb_ug RGB_SAD     &rgb_ug RGB_SPD     &trans          &trans              &trans      &trans      &trans                      &trans                                  &trans                              
+        &trans                                                      &rgb_ug RGB_EFR             &rgb_ug RGB_BRD                     &rgb_ug RGB_HUD         &rgb_ug RGB_SAD     &rgb_ug RGB_SPD     &trans          &trans              &trans      &trans      &trans                      &trans                                  &trans
         &trans                          &trans                      &trans                                                                                  &trans                                                                                  &trans      &trans                      &trans               &trans             &trans       &trans
         //
-        &none                           &trans                      &trans                      &trans                             &trans                  
+        &none                           &trans                      &trans                      &trans                             &trans
         >;
         sensor-bindings = <&rgb_encoder>;
         };
 
         //mac fn2 layer
         layer_two {
-        bindings = < 
-        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10       //f11                         //f12                     
-        &uc LS(GRAVE)                   &kp F1                      &kp F2                      &kp F3                              &kp F4                  &kp F5              &kp F6              &kp F7          &kp F8              &kp F9      &kp F10     &kp F11                     &kp F12              &trans                          &trans                   
+        bindings = <
+        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10       //f11                         //f12
+        &uc LS(GRAVE)                   &kp F1                      &kp F2                      &kp F3                              &kp F4                  &kp F5              &kp F6              &kp F7          &kp F8              &kp F9      &kp F10     &kp F11                     &kp F12              &trans                          &trans
         &trans                          &trans                      &trans                      &trans                              &trans                  &trans              &trans              &trans          &trans              &trans      &trans      &trans                      &trans               &trans                          &trans
         &trans                          &trans                      &trans                      &trans                              &trans                  &trans              &trans              &trans          &trans              &trans      &trans      &trans                      &trans                                               &trans
-        &trans                                                      &trans                      &trans                              &trans                  &trans              &kc BATINFO         &kc NKRO        &trans              &trans      &trans      &trans                      &trans                                  &trans                              
+        &trans                                                      &trans                      &trans                              &trans                  &trans              &kc BATINFO         &kc NKRO        &trans              &trans      &trans      &trans                      &trans                                  &trans
         &trans                          &trans                      &trans                                                                                  &trans                                                                                  &trans      &trans                      &trans               &trans             &trans       &trans
         //
-        &none                           &trans                      &trans                      &trans                             &trans                  
+        &none                           &trans                      &trans                      &trans                             &trans
         >;
         sensor-bindings = <&rgb_encoder>;
         };
@@ -248,44 +248,44 @@
         &kp ESC     &kp N1                 &kp N2                   &kp N3                              &kp N4                  &kp N5              &kp N6          &kp N7          &kp N8              &kp N9       &kp N0     &kp MINUS            &kp EQUAL           &kp BSPC                        &kp C_MUTE
         &kp TAB     &kp Q                  &kp W                    &kp E                               &kp R                   &kp T               &kp Y           &kp U           &kp I               &kp O        &kp P      &kp LBKT             &kp RBKT            &kp BSLH                        &kp DEL
         &kp CLCK    &kp A                  &kp S                    &kp D                               &kp F                   &kp G               &kp H           &kp J           &kp K               &kp L        &kp SEMI   &kp SQT              &kp RET                                             &kp HOME
-        &kp LSHFT                          &kp Z                    &kp X                               &kp C                   &kp V               &kp B           &kp N           &kp M               &kp COMMA    &kp DOT    &kp FSLH             &kp RSHFT                            &kp UP   
-        &kp LCTRL   &kp LGUI               &kp LALT                                                                             &kp SPACE                                                                            &kp RALT   &mo 4                &mo 5               &kp LEFT         &kp DOWN       &kp RIGHT   
+        &kp LSHFT                          &kp Z                    &kp X                               &kp C                   &kp V               &kp B           &kp N           &kp M               &kp COMMA    &kp DOT    &kp FSLH             &kp RSHFT                            &kp UP
+        &kp LCTRL   &kp LGUI               &kp LALT                                                                             &kp SPACE                                                                            &kp RALT   &mo 4                &mo 5               &kp LEFT         &kp DOWN       &kp RIGHT
         //keychron control
-        &none       &kc SEL_USB            &kc SEL_BLE              &kc SEL_PPT         &kc BATCHG                           
+        &none       &kc SEL_USB            &kc SEL_BLE              &kc SEL_PPT         &kc BATCHG
         >;
         sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
         //win fn1 layer
         layer_four {
-        bindings = < 
-        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10           //f11                         //f12                     
-        &kp GRAVE                       &kp C_BRIGHTNESS_DEC        &kp C_BRIGHTNESS_INC        &uc LG(TAB)                         &uc LG(E)               &rgb_ug RGB_BRD     &rgb_ug RGB_BRI     &kp C_PREVIOUS  &kp C_PLAY_PAUSE    &kp C_NEXT  &kp C_MUTE  &kp C_VOLUME_DOWN           &kp C_VOLUME_UP      &trans                          &rgb_ug RGB_TOG                   
+        bindings = <
+        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10           //f11                         //f12
+        &kp GRAVE                       &kp C_BRIGHTNESS_DEC        &kp C_BRIGHTNESS_INC        &uc LG(TAB)                         &uc LG(E)               &rgb_ug RGB_BRD     &rgb_ug RGB_BRI     &kp C_PREVIOUS  &kp C_PLAY_PAUSE    &kp C_NEXT  &kp C_MUTE  &kp C_VOLUME_DOWN           &kp C_VOLUME_UP      &trans                          &rgb_ug RGB_TOG
         &trans                          &bt_pair_0 0 0              &bt_pair_1 0 0              &bt_pair_2 0 0                      &ppt_pair_0 0 0         &trans              &trans              &trans          &trans              &trans      &trans      &trans                      &trans               &trans                          &trans
         &rgb_ug RGB_TOG                 &rgb_ug RGB_EFF             &rgb_ug RGB_BRI             &rgb_ug RGB_HUI                     &rgb_ug RGB_SAI         &rgb_ug RGB_SPI     &trans              &trans          &trans              &trans      &trans      &trans                      &trans                                               &kp END
-        &trans                                                      &rgb_ug RGB_EFR             &rgb_ug RGB_BRD                     &rgb_ug RGB_HUD         &rgb_ug RGB_SAD     &rgb_ug RGB_SPD     &trans          &trans              &trans      &trans      &trans                      &trans                                  &trans                              
+        &trans                                                      &rgb_ug RGB_EFR             &rgb_ug RGB_BRD                     &rgb_ug RGB_HUD         &rgb_ug RGB_SAD     &rgb_ug RGB_SPD     &trans          &trans              &trans      &trans      &trans                      &trans                                  &trans
         &trans                          &trans                      &trans                                                                                  &trans                                                                                  &trans      &trans                      &trans               &trans             &trans       &trans
         //
-        &none                           &trans                      &trans                      &trans                             &trans                  
+        &none                           &trans                      &trans                      &trans                             &trans
         >;
         sensor-bindings = <&rgb_encoder>;
         };
 
         //win fn2 layer
         layer_five {
-        bindings = < 
-        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10       //f11                         //f12                     
-        &uc LS(GRAVE)                   &kp F1                      &kp F2                      &kp F3                              &kp F4                  &kp F5              &kp F6              &kp F7          &kp F8              &kp F9      &kp F10     &kp F11                     &kp F12              &trans                          &trans                   
+        bindings = <
+        // `                            //f1                        //f2                        //f3                                //f4                        //f5            //f6                //f7            //f8                //f9        //f10       //f11                         //f12
+        &uc LS(GRAVE)                   &kp F1                      &kp F2                      &kp F3                              &kp F4                  &kp F5              &kp F6              &kp F7          &kp F8              &kp F9      &kp F10     &kp F11                     &kp F12              &trans                          &trans
         &trans                          &trans                      &trans                      &trans                              &trans                  &trans              &trans              &trans          &trans              &trans      &trans      &trans                      &trans               &trans                          &trans
         &trans                          &trans                      &trans                      &trans                              &trans                  &trans              &trans              &trans          &trans              &trans      &trans      &trans                      &trans                                               &trans
-        &trans                                                      &trans                      &trans                              &trans                  &trans              &kc BATINFO         &kc NKRO        &trans              &trans      &trans      &trans                      &trans                                  &trans                              
+        &trans                                                      &trans                      &trans                              &trans                  &trans              &kc BATINFO         &kc NKRO        &trans              &trans      &trans      &trans                      &trans                                  &trans
         &trans                          &trans                      &trans                                                                                  &trans                                                                                  &trans      &trans                      &trans               &trans             &trans       &trans
         //
-        &none                           &trans                      &trans                      &trans                             &trans                  
+        &none                           &trans                      &trans                      &trans                             &trans
         >;
         sensor-bindings = <&rgb_encoder>;
-        }; 
-        
+        };
+
     };
 };
 &mt {

@@ -5,7 +5,7 @@
 #
 
 description: |
-    Allows defining the collection of gpio leds in ZMK.
+  Allows defining the collection of gpio leds in ZMK.
 
 compatible: "zmk,gpio-leds-all"
 

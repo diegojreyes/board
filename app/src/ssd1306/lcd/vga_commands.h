@@ -32,10 +32,8 @@
 extern "C" {
 #endif
 
-
 /** VGA driver commands */
-enum EVgaCommands
-{
+enum EVgaCommands {
     /**
      * VGA_SET_BLOCK command sets rectangle in VGA ram to send pixels to.
      * The command needs 4 byte-arguments:
@@ -44,7 +42,7 @@ enum EVgaCommands
      *    top boundary in pixels,
      *    bottom boundary in pixels, (last arg in not implemented yet)
      */
-    VGA_SET_BLOCK       = 0x01,
+    VGA_SET_BLOCK = 0x01,
 
     /**
      * VGA_SET_MODE command sets memory addressing mode: there are 2 modes
@@ -56,11 +54,11 @@ enum EVgaCommands
      * down by 1 pixel until 8 vertical pixels are printed, then y position changes
      * to top of block, and x position shifts right by 1 pixel.
      */
-    VGA_SET_MODE        = 0x02,
+    VGA_SET_MODE = 0x02,
 
-    VGA_SET_RESOLUTION  = 0x03,
+    VGA_SET_RESOLUTION = 0x03,
 
-    VGA_DISPLAY_ON      = 0x04,
+    VGA_DISPLAY_ON = 0x04,
 };
 
 #ifdef __cplusplus

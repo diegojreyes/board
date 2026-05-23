@@ -60,7 +60,7 @@
 
 &corewdt {
     // status = "disabled";
-	status = "okay";
+    status = "okay";
     initial-timeout-ms = <5000>;
 };
 &aonwdt {
@@ -69,11 +69,11 @@
     initial-timeout-ms = <5000>;
 };
 / {
-	aliases {
+    aliases {
         // watchdog = &aonwdt;
-		watchdog = &corewdt;
-	};
-    
+        watchdog = &corewdt;
+    };
+
 };
 
 &adc {
@@ -91,7 +91,7 @@
         zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
         zephyr,resolution = <12>;
     };
-};	
+};
 / {
     chosen {
         // zmk,kscan = &kscan;
@@ -126,28 +126,28 @@
         debounce-scan-period-ms =<1>;
         debounce-press-ms =<0>;
         debounce-release-ms=<50>;
- 
+
         row-gpios
-            = 
+            =
               <&gpioa 15 (GPIO_ACTIVE_HIGH |GPIO_PULL_UP)>    //r0 P1_7   v
             , <&gpioa  4 (GPIO_ACTIVE_HIGH |GPIO_PULL_UP)>    //r1 P0_4    v
             , <&gpioa  0 (GPIO_ACTIVE_HIGH |GPIO_PULL_UP)>    //r2 P0_0   v
             , <&gpioa  2 (GPIO_ACTIVE_HIGH |GPIO_PULL_UP)>    //r3 P0_2   v
             , <&gpioa  1 (GPIO_ACTIVE_HIGH |GPIO_PULL_UP)>    //r4 P0_1   v
-            
-            
+
+
             ;
         col-gpios
-            = 
+            =
               <&gpiob 29  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c0 P10_0 v
             , <&gpiob 28  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c1 P9_7  v
-            , <&gpiob 27  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c2 P9_6 v 
-            , <&gpiob 26  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c3 P9_5 v 
-            , <&gpiob 25  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c4 P9_4 v 
-            , <&gpiob 24  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c5 P9_3 v  
-            , <&gpiob  6  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c6 P4_1  v    
-            , <&gpiob 20  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c7 P6_1  v  
-            , <&gpiob 21  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c8 P6_2  v 
+            , <&gpiob 27  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c2 P9_6 v
+            , <&gpiob 26  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c3 P9_5 v
+            , <&gpiob 25  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c4 P9_4 v
+            , <&gpiob 24  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c5 P9_3 v
+            , <&gpiob  6  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c6 P4_1  v
+            , <&gpiob 20  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c7 P6_1  v
+            , <&gpiob 21  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c8 P6_2  v
             , <&gpiob 22  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c9 P6_3  v
             , <&gpiob 23  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c10 P6_4  v
             , <&gpiob  4  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c11 P3_7  v
@@ -156,7 +156,7 @@
             , <&gpiob  1  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c14 P3_4  v
             , <&gpiob  0  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c15 P3_3  v
             , <&gpioa 31  (GPIO_ACTIVE_HIGH|GPIO_PULL_DOWN)>  //c16 P3_2  v
-            
+
             ;
         pinctrl-0 = <&gpio_default>;
         pinctrl-1 = <&gpio_sleep>;
@@ -167,7 +167,7 @@
     kscan1:kscan_direct {
         compatible = "zmk,kscan-gpio-direct";
         input-gpios
-        = 
+        =
         //   <&gpioa 31  (GPIO_ACTIVE_HIGH )>  //mac/win   //P3_2
         // , <&gpioa  9  (GPIO_ACTIVE_LOW )>  //bt        //p1_1
         // , <&gpioa  8  (GPIO_ACTIVE_LOW )>  //24g       //p1_0
@@ -216,7 +216,7 @@
         pwr-gpios {
             gpios= <&gpioa 10 GPIO_ACTIVE_HIGH>;  //chgled p1_2
         };
-        
+
     };
 
     gpio_ctrls {
@@ -228,31 +228,31 @@
         //     gpios= <&gpioa 28 GPIO_ACTIVE_LOW>;  //p2_7
         // };
     };
-    
-	ppt: ppt {
-		compatible = "zmk,ppt-node";
-		enh-timers = <&timer8 &timer9>;
-		status = "okay";
-	};
+
+    ppt: ppt {
+        compatible = "zmk,ppt-node";
+        enh-timers = <&timer8 &timer9>;
+        status = "okay";
+    };
 
     default_transform: matrix_transform {
         compatible = "zmk,matrix-transform";
         rows = <6>;
         columns = <17>;
         map = <
-            //esc        //f1        //f2       //f3          //f4       //f5       //f6        //f7        //f8        //f9        //f10       //f11       //f12       //back                        
+            //esc        //f1        //f2       //f3          //f4       //f5       //f6        //f7        //f8        //f9        //f10       //f11       //f12       //back
             RC(0,0)     RC(0,1)     RC(0,2)     RC(0,3)    RC(0,4)     RC(0,5)     RC(0,6)     RC(0,7)     RC(0,8)     RC(0,9)    RC(0,10)      RC(0,11)    RC(0,12)    RC(0,13)          RC(0,14)    RC(0,15)  RC(0,16)
-          
-            //tab        //q         //w        //e         //r         // t         //y        //u         //i         //o         //p          //[          //]        //'\'            
+
+            //tab        //q         //w        //e         //r         // t         //y        //u         //i         //o         //p          //[          //]        //'\'
             RC(1,0)     RC(1,1)     RC(1,2)     RC(1,3)    RC(1,4)     RC(1,5)     RC(1,6)     RC(1,7)     RC(1,8)     RC(1,9)     RC(1,10)     RC(1,11)     RC(1,12)   RC(1,13)          RC(1,14)  RC(1,15)    RC(1,16)
-            //cap        //a         //s         //d        //f         //g         //h          //j        //k         //l         // ;         //' "                   //enter          
+            //cap        //a         //s         //d        //f         //g         //h          //j        //k         //l         // ;         //' "                   //enter
             RC(2,0)     RC(2,1)     RC(2,2)     RC(2,3)    RC(2,4)     RC(2,5)     RC(2,6)     RC(2,7)     RC(2,8)     RC(2,9)     RC(2,10)     RC(2,11)                 RC(2,13)         RC(2,14)  RC(2,15)    RC(2,16)
-             //lshit                 //z         //x         //c        //v         //b        //n         //m          //,<         //.>        //?/                     //rshit                     
+             //lshit                 //z         //x         //c        //v         //b        //n         //m          //,<         //.>        //?/                     //rshit
             RC(3,0)                 RC(3,2)     RC(3,3)    RC(3,4)     RC(3,5)     RC(3,6)     RC(3,7)     RC(3,8)     RC(3,9)     RC(3,10)     RC(3,11)                 RC(3,13)         RC(3,14)  RC(3,15)    RC(3,16)
-            //lctrl     //win l      //alt l                                        //space                                                     //alt r       //fn        /ctrl                  
-            RC(4,0)     RC(4,1)     RC(4,2)                                        RC(4,6)                                                      RC(4,11)      RC(4,12)    RC(4,13)        RC(4,14)  RC(4,15)    RC(4,16)  
-            //usb       //ch          
-            RC(5,0)     RC(5,1)        
+            //lctrl     //win l      //alt l                                        //space                                                     //alt r       //fn        /ctrl
+            RC(4,0)     RC(4,1)     RC(4,2)                                        RC(4,6)                                                      RC(4,11)      RC(4,12)    RC(4,13)        RC(4,14)  RC(4,15)    RC(4,16)
+            //usb       //ch
+            RC(5,0)     RC(5,1)
         >;
     };
 
@@ -294,38 +294,38 @@
     };
     kscan_default: kscan_default {
         group1 {
-            psels = 
+            psels =
             <RTL87X2G_PSEL(KEY_COL_0, P9_3, DIR_OUT, DRV_LOW, PULL_NONE)>,
             <RTL87X2G_PSEL(KEY_COL_1, P9_4, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_2, P9_5, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_3, P9_6, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_4, P9_7, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_5, P10_0, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_6, P3_7, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_7, P3_6, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_8, P3_5, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_9, P3_4, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_10, P3_3, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_11, P4_1, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_12, P6_4, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_13, P6_3, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_14, P6_2, DIR_OUT, DRV_LOW, PULL_NONE)>,
-			<RTL87X2G_PSEL(KEY_COL_15, P6_1, DIR_OUT, DRV_LOW, PULL_NONE)>;
+            <RTL87X2G_PSEL(KEY_COL_2, P9_5, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_3, P9_6, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_4, P9_7, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_5, P10_0, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_6, P3_7, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_7, P3_6, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_8, P3_5, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_9, P3_4, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_10, P3_3, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_11, P4_1, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_12, P6_4, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_13, P6_3, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_14, P6_2, DIR_OUT, DRV_LOW, PULL_NONE)>,
+            <RTL87X2G_PSEL(KEY_COL_15, P6_1, DIR_OUT, DRV_LOW, PULL_NONE)>;
 
         };
         group2 {
-            psels =							
+            psels =
             <RTL87X2G_PSEL(KEY_ROW_0, P1_5, DIR_IN, DRV_LOW, PULL_UP)>,
             <RTL87X2G_PSEL(KEY_ROW_1, P1_7, DIR_IN, DRV_LOW, PULL_UP)>,
             <RTL87X2G_PSEL(KEY_ROW_2, P0_0, DIR_IN, DRV_LOW, PULL_UP)>,
-            <RTL87X2G_PSEL(KEY_ROW_3, P0_1, DIR_IN, DRV_LOW, PULL_UP)>,			
+            <RTL87X2G_PSEL(KEY_ROW_3, P0_1, DIR_IN, DRV_LOW, PULL_UP)>,
             <RTL87X2G_PSEL(KEY_ROW_4, P0_2, DIR_IN, DRV_LOW, PULL_UP)>,
             <RTL87X2G_PSEL(KEY_ROW_5, P0_4, DIR_IN, DRV_LOW, PULL_UP)>;
- 
+
             bias-pull-strong;
         };
 
-	};
+    };
     kscan_sleep: kscan_sleep {
         group1 {
             psels =
@@ -345,7 +345,7 @@
             <RTL87X2G_PSEL(SW_MODE, P6_3, DIR_OUT, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(SW_MODE, P6_2, DIR_OUT, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(SW_MODE, P6_1, DIR_OUT, DRV_LOW, PULL_DOWN)>;
-  
+
         };
         group2 {
             psels =
@@ -355,7 +355,7 @@
             <RTL87X2G_PSEL(SW_MODE, P0_1, DIR_IN, DRV_HIGH, PULL_UP)>,
             <RTL87X2G_PSEL(SW_MODE, P0_2, DIR_IN, DRV_HIGH, PULL_UP)>,
             <RTL87X2G_PSEL(SW_MODE, P0_4, DIR_IN, DRV_HIGH, PULL_UP)>;
-        
+
             bias-pull-strong;
             wakeup-low;
         };
@@ -394,7 +394,7 @@
     };
     gpio_default: gpio_default {
         group1 {
-            psels = 
+            psels =
              <RTL87X2G_PSEL(DWGPIO, P1_7, DIR_OUT, DRV_HIGH, PULL_UP)>,
              <RTL87X2G_PSEL(DWGPIO, P0_4, DIR_OUT, DRV_HIGH, PULL_UP)>,
              <RTL87X2G_PSEL(DWGPIO, P0_0, DIR_OUT, DRV_HIGH, PULL_UP)>,
@@ -404,7 +404,7 @@
              bias-pull-strong;
         };
         group2 {
-            psels = 
+            psels =
             <RTL87X2G_PSEL(DWGPIO, P10_0, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P9_7, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P9_6, DIR_IN, DRV_LOW, PULL_DOWN)>,
@@ -413,26 +413,26 @@
             <RTL87X2G_PSEL(DWGPIO, P9_3, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P4_1, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P6_1, DIR_IN, DRV_LOW, PULL_DOWN)>,
-            <RTL87X2G_PSEL(DWGPIO, P6_2, DIR_IN, DRV_LOW, PULL_DOWN)>, 
+            <RTL87X2G_PSEL(DWGPIO, P6_2, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P6_3, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P6_4, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P3_7, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P3_6, DIR_IN, DRV_LOW, PULL_DOWN)>,
-            <RTL87X2G_PSEL(DWGPIO, P3_5, DIR_IN, DRV_LOW, PULL_DOWN)>, 
+            <RTL87X2G_PSEL(DWGPIO, P3_5, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P3_4, DIR_IN, DRV_LOW, PULL_DOWN)>,
-            <RTL87X2G_PSEL(DWGPIO, P3_3, DIR_IN, DRV_LOW, PULL_DOWN)>, 
+            <RTL87X2G_PSEL(DWGPIO, P3_3, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(DWGPIO, P3_2, DIR_IN, DRV_LOW, PULL_DOWN)>;
-            
-             
-             
-            
+
+
+
+
              bias-pull-strong;
         };
     };
     gpio_sleep: gpio_sleep {
         group1 {
-            psels = 
-             
+            psels =
+
              <RTL87X2G_PSEL(SW_MODE, P1_7, DIR_OUT, DRV_HIGH, PULL_UP)>,
              <RTL87X2G_PSEL(SW_MODE, P0_4, DIR_OUT, DRV_HIGH, PULL_UP)>,
              <RTL87X2G_PSEL(SW_MODE, P0_0, DIR_OUT, DRV_HIGH, PULL_UP)>,
@@ -440,7 +440,7 @@
              <RTL87X2G_PSEL(SW_MODE, P0_1, DIR_OUT, DRV_HIGH, PULL_UP)>;
         };
         group2 {
-            psels = 
+            psels =
             <RTL87X2G_PSEL(SW_MODE, P10_0, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(SW_MODE, P9_7, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(SW_MODE, P9_6, DIR_IN, DRV_LOW, PULL_DOWN)>,
@@ -451,17 +451,17 @@
             <RTL87X2G_PSEL(SW_MODE, P6_1, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(SW_MODE, P6_2, DIR_IN, DRV_LOW, PULL_DOWN)>,
             <RTL87X2G_PSEL(SW_MODE, P6_3, DIR_IN, DRV_LOW, PULL_DOWN)>,
-            <RTL87X2G_PSEL(SW_MODE, P6_4, DIR_IN, DRV_LOW, PULL_DOWN)>, 
+            <RTL87X2G_PSEL(SW_MODE, P6_4, DIR_IN, DRV_LOW, PULL_DOWN)>,
              <RTL87X2G_PSEL(SW_MODE, P3_7, DIR_IN, DRV_LOW, PULL_DOWN)>,
              <RTL87X2G_PSEL(SW_MODE, P3_6, DIR_IN, DRV_LOW, PULL_DOWN)>,
-             <RTL87X2G_PSEL(SW_MODE, P3_5, DIR_IN, DRV_LOW, PULL_DOWN)>, 
+             <RTL87X2G_PSEL(SW_MODE, P3_5, DIR_IN, DRV_LOW, PULL_DOWN)>,
              <RTL87X2G_PSEL(SW_MODE, P3_4, DIR_IN, DRV_LOW, PULL_DOWN)>,
-             <RTL87X2G_PSEL(SW_MODE, P3_3, DIR_IN, DRV_LOW, PULL_DOWN)>, 
+             <RTL87X2G_PSEL(SW_MODE, P3_3, DIR_IN, DRV_LOW, PULL_DOWN)>,
              <RTL87X2G_PSEL(SW_MODE, P3_2, DIR_IN, DRV_LOW, PULL_DOWN)>;
-             
-             
-             
-             
+
+
+
+
              wakeup-high;
         };
     };
@@ -481,14 +481,14 @@
     };
     gpio_direct_default:gpio_direct_default{
         group1 {
-            psels = 
+            psels =
              <RTL87X2G_PSEL(DWGPIO, P2_3, DIR_IN, DRV_HIGH, PULL_NONE)>,
              <RTL87X2G_PSEL(DWGPIO, XO32K, DIR_IN, DRV_HIGH, PULL_UP)>;//charge pin leak current ,has to pull up！
         };
     };
     gpio_direct_sleep:gpio_direct_sleep{
         group1 {
-            psels = 
+            psels =
              <RTL87X2G_PSEL(SW_MODE, P2_3, DIR_IN, DRV_HIGH, PULL_NONE)>,
              <RTL87X2G_PSEL(SW_MODE, XO32K, DIR_IN, DRV_HIGH, PULL_UP)>;//charge pin leak current ,has to pull up！
             //  bias-pull-strong;
@@ -506,5 +506,5 @@
 };
 
 // &uart2 {
-// 	status = "disabled";
+//  status = "disabled";
 // };

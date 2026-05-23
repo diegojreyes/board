@@ -23,7 +23,7 @@ static int behavior_rgb_underglow_init(const struct device *dev) { return 0; }
 static int
 on_keymap_binding_convert_central_state_dependent_params(struct zmk_behavior_binding *binding,
                                                          struct zmk_behavior_binding_event event) {
-#if 0    
+#if 0
     switch (binding->param1) {
     case RGB_TOG_CMD: {
         bool state;
@@ -99,12 +99,11 @@ on_keymap_binding_convert_central_state_dependent_params(struct zmk_behavior_bin
 
 static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
                                      struct zmk_behavior_binding_event event) {
-    uint8_t get_key_press_num(void);    
-    if(get_key_press_num()>3)
-    {
+    uint8_t get_key_press_num(void);
+    if (get_key_press_num() > 3) {
         LOG_ERR("skip rgb ?");
         return 0;
-    }                                    
+    }
     switch (binding->param1) {
     case RGB_TOG_CMD:
         return zmk_rgb_underglow_toggle();

@@ -25,7 +25,6 @@
  * @file nano_engine.h Small graphics engine, based on SSD1331 functions
  */
 
-
 #ifndef _NANO_ENGINE_H_
 #define _NANO_ENGINE_H_
 
@@ -62,10 +61,10 @@
  *
  * @warning Works only in SSD1306 compatible mode
  */
-#define NanoEngine1   NanoEngine<TILE_16x16_MONO>
+#define NanoEngine1 NanoEngine<TILE_16x16_MONO>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#define NanoEngineArduboy   NanoEngine<TILE_8x8_MONO>
+#define NanoEngineArduboy NanoEngine<TILE_8x8_MONO>
 #endif
 
 /**
@@ -82,7 +81,7 @@
  * In your application you can choose, if you want to refresh whole screen (refresh()), or you
  * need to refresh only part of oled display.
  */
-#define NanoEngine8   NanoEngine<TILE_16x16_RGB8>
+#define NanoEngine8 NanoEngine<TILE_16x16_RGB8>
 
 /**
  * NanoEngine1 is simple graphics engine, that implements double buffering work
@@ -100,13 +99,12 @@
  *
  * @warning Works only in RGB 8-bit color mode
  */
-class NanoEngine1_8: public NanoEngine<TILE_8x8_MONO_8>
-{
-public:
+class NanoEngine1_8 : public NanoEngine<TILE_8x8_MONO_8> {
+  public:
     /**
      * Creates new Graphics Engine object.
      */
-    NanoEngine1_8(): NanoEngine() {};
+    NanoEngine1_8() : NanoEngine() {};
 };
 
 /**
@@ -124,11 +122,10 @@ public:
  * In your application you can choose, if you want to refresh whole screen (refresh()), or you
  * need to refresh only part of oled display.
  */
-#define NanoEngine16  NanoEngine<TILE_8x8_RGB16>
+#define NanoEngine16 NanoEngine<TILE_8x8_RGB16>
 
 /**
  * @}
  */
 
 #endif
-

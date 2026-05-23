@@ -25,12 +25,10 @@
  * @file oled_ssd1306.h support for OLED ssd1306-based displays
  */
 
-
 #ifndef _OLED_SSD1306_H_
 #define _OLED_SSD1306_H_
 
 #include "../ssd1306_hal/io.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +47,7 @@ extern "C" {
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         ssd1306_128x64_init(void);
+void ssd1306_128x64_init(void);
 
 /**
  * @brief Inits 128x64 OLED display over i2c (based on SSD1306 controller).
@@ -59,7 +57,7 @@ void         ssd1306_128x64_init(void);
  * If you use non-standard pins in your project, please perform call ssd1306_i2cInitEx() and
  * ssd1306_128x64_init(), or you can use ssd1306_128x64_i2c_initEx().
  */
-void         ssd1306_128x64_i2c_init(void);
+void ssd1306_128x64_i2c_init(void);
 
 /**
  * @brief Inits 128x64 OLED display over i2c (based on SSD1306 controller).
@@ -76,7 +74,7 @@ void         ssd1306_128x64_i2c_init(void);
  *
  * @note scl and sda for Linux systems should be the same, and should contain i2c bus id.
  */
-void         ssd1306_128x64_i2c_initEx(int8_t scl, int8_t sda, int8_t sa);
+void ssd1306_128x64_i2c_initEx(int8_t scl, int8_t sda, int8_t sa);
 
 /**
  * @brief Inits 128x64 OLED display over spi (based on SSD1306 controller).
@@ -86,7 +84,7 @@ void         ssd1306_128x64_i2c_initEx(int8_t scl, int8_t sda, int8_t sa);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         ssd1306_128x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void ssd1306_128x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @brief Inits 128x32 OLED display over spi (based on SSD1306 controller).
@@ -96,13 +94,13 @@ void         ssd1306_128x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin)
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         ssd1306_128x32_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void ssd1306_128x32_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @copydoc ssd1306_128x64_i2c_init
  * @deprecated Use ssd1306_128x64_i2c_init() instead.
  */
-void         ssd1306_init(void) __attribute__((deprecated));
+void ssd1306_init(void) __attribute__((deprecated));
 
 /**
  * @brief Inits 128x32 OLED display over i2c (based on SSD1306 controller).
@@ -112,7 +110,7 @@ void         ssd1306_init(void) __attribute__((deprecated));
  * If you use non-standard pins in your project, please perform call ssd1306_i2cInitEx() and
  * ssd1306_128x32_init().
  */
-void         ssd1306_128x32_i2c_init(void);
+void ssd1306_128x32_i2c_init(void);
 
 /**
  * @brief Inits 128x32 OLED display (based on ssd1306 controller).
@@ -122,36 +120,36 @@ void         ssd1306_128x32_i2c_init(void);
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         ssd1306_128x32_init(void);
+void ssd1306_128x32_init(void);
 
 /**
  * Turns off display
  */
-void         ssd1306_displayOff(void);
+void ssd1306_displayOff(void);
 
 /**
  * Turns on display
  */
-void         ssd1306_displayOn(void);
+void ssd1306_displayOn(void);
 
 /**
  * Set display contrast, ie light intensity
  * @param contrast - contrast value to see, refer to ssd1306 datasheet
  */
-void         ssd1306_setContrast(uint8_t contrast);
+void ssd1306_setContrast(uint8_t contrast);
 
 /**
  * Switches display to inverse mode.
  * LCD will display 0-pixels as white, and 1-pixels as black.
  * @note Not supported for SSD1331
  */
-void         ssd1306_invertMode(void);
+void ssd1306_invertMode(void);
 
 /**
  * Switches display to normal mode.
  * @note Not supported for SSD1331
  */
-void         ssd1306_normalMode(void);
+void ssd1306_normalMode(void);
 
 /**
  * @brief performs horizontal flip
@@ -162,7 +160,7 @@ void         ssd1306_normalMode(void);
  * @param mode - 0 to disable horizontal flip
  *               1 to enable horizontal flip
  */
-void         ssd1306_flipHorizontal(uint8_t mode);
+void ssd1306_flipHorizontal(uint8_t mode);
 
 /**
  * @brief performs vertical flip
@@ -173,7 +171,7 @@ void         ssd1306_flipHorizontal(uint8_t mode);
  * @param mode - 0 to disable vertical flip
  *               1 to enable vertical flip
  */
-void         ssd1306_flipVertical(uint8_t mode);
+void ssd1306_flipVertical(uint8_t mode);
 
 /**
  * Sets start line in gdram to start display content with

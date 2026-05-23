@@ -10,7 +10,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/logging/log.h>
-LOG_MODULE_DECLARE(mp_test, 4);//CONFIG_ZMK_LOG_LEVEL);
+LOG_MODULE_DECLARE(mp_test, 4); // CONFIG_ZMK_LOG_LEVEL);
 
 #include <zmk/mode_monitor.h>
 #include <zmk/board.h>
@@ -35,7 +35,7 @@ extern void WDG_SystemReset(int wdt_mode, int reset_reason);
 #define EXIT_SINGLE_TONE_TEST_WHEN_TIMEOUT 1
 
 #if EXIT_SINGLE_TONE_TEST_WHEN_TIMEOUT
-#define EXIT_SINGLE_TONE_TIME (30*1000)//(2*60*1000)    /* 2min */
+#define EXIT_SINGLE_TONE_TIME (30 * 1000) //(2*60*1000)    /* 2min */
 #endif
 #endif
 typedef void *TimerHandle_t;
@@ -51,7 +51,7 @@ static bool single_tone_is_sent_restart_cmd = false;
 static void *single_tone_task_handle;
 #if 0
 static void *rf_test_task_handle;
-#endif 
+#endif
 #endif
 /*============================================================================*
  *                              Functions Declaration
@@ -63,15 +63,15 @@ static bool single_tone_handle_hci_cb(T_SINGLE_TONE_EVT evt, bool status, uint8_
                                       uint32_t len);
 static void single_tone_task(void *p_param);
 #if EXIT_SINGLE_TONE_TEST_WHEN_TIMEOUT
-static void single_tone_exit_timeout_cb(TimerHandle_t p_timer) ;
+static void single_tone_exit_timeout_cb(TimerHandle_t p_timer);
 #endif
 #endif
 
 typedef enum {
-	HCI_IF_EVT_OPENED = 0,     /* hci I/F open completed */
-	HCI_IF_EVT_DATA_IND = 2,   /* hci I/F rx data indicated */
-	HCI_IF_EVT_DATA_XMIT = 3,  /* hci I/F tx data transmitted */
-	HCI_IF_EVT_ERROR = 4,      /* hci I/F error occurred */
+    HCI_IF_EVT_OPENED = 0,    /* hci I/F open completed */
+    HCI_IF_EVT_DATA_IND = 2,  /* hci I/F rx data indicated */
+    HCI_IF_EVT_DATA_XMIT = 3, /* hci I/F tx data transmitted */
+    HCI_IF_EVT_ERROR = 4,     /* hci I/F error occurred */
 } T_HCI_IF_EVT;
 
 typedef bool (*P_HCI_IF_CALLBACK)(T_HCI_IF_EVT evt, bool status, uint8_t *p_buf, uint32_t len);
@@ -79,11 +79,11 @@ extern bool (*vhci_open)(P_HCI_IF_CALLBACK p_callback);
 extern bool (*vhci_send)(void *p_buf, uint32_t len);
 extern bool (*vhci_ack)(void *p_buf);
 extern void *(*os_mem_alloc_intern)(RAM_TYPE ram_type, size_t size, const char *p_func,
-									uint32_t file_line);
+                                    uint32_t file_line);
 extern void (*os_mem_free)(void *p_block);
 extern bool (*os_task_create)(void **pp_handle, const char *p_name, void (*p_routine)(void *),
                               void *p_param, uint16_t stack_size, uint16_t priority);
-uint8_t channel_num = 20; /* 20-2.422G ,0-2.402G, 78-2.480G*/                              
+uint8_t channel_num = 20; /* 20-2.422G ,0-2.402G, 78-2.480G*/
 
 #if (MP_TEST_SINGLE_TONE_MODE == HCI_LAYER_SINGLE_TONE_INTERFACE)
 /******************************************************************
@@ -94,7 +94,7 @@ uint8_t channel_num = 20; /* 20-2.422G ,0-2.402G, 78-2.480G*/
  */
 void single_tone_reset(uint8_t channel_num) {
     T_SINGLE_TONE_VEND_CMD_PARAMS *p_vend_cmd_params = os_mem_alloc_intern(
-		RAM_TYPE_DATA_ON, sizeof(T_SINGLE_TONE_VEND_CMD_PARAMS), __func__, __LINE__);
+        RAM_TYPE_DATA_ON, sizeof(T_SINGLE_TONE_VEND_CMD_PARAMS), __func__, __LINE__);
 
     if (p_vend_cmd_params) {
         LOG_INF("Single Tone Reset Command!");
@@ -121,10 +121,9 @@ void single_tone_reset(uint8_t channel_num) {
  * @retval  void
  */
 void single_tone_start(uint8_t channel_num) {
-    T_SINGLE_TONE_VEND_CMD_PARAMS *p_vend_cmd_params = os_mem_alloc_intern(RAM_TYPE_DATA_ON,
-                                        sizeof(T_SINGLE_TONE_VEND_CMD_PARAMS),__func__,__LINE__);
-    if (p_vend_cmd_params)
-    {
+    T_SINGLE_TONE_VEND_CMD_PARAMS *p_vend_cmd_params = os_mem_alloc_intern(
+        RAM_TYPE_DATA_ON, sizeof(T_SINGLE_TONE_VEND_CMD_PARAMS), __func__, __LINE__);
+    if (p_vend_cmd_params) {
         LOG_INF("Single Tone Start!");
         p_vend_cmd_params->pkt_type = 1;
         p_vend_cmd_params->opcode = 0xfceb;
@@ -134,12 +133,12 @@ void single_tone_start(uint8_t channel_num) {
         p_vend_cmd_params->start = 1;
         p_vend_cmd_params->channle = channel_num;
         p_vend_cmd_params->power_type = 1;
-        p_vend_cmd_params->tx_power = 0x60;//0;
+        p_vend_cmd_params->tx_power = 0x60; // 0;
         /** note:
-		 * tx_power config:
-		 * 0x00/(-20dBm), 0x60/0dBm, 0x90/3dBm,
-		 * 0xA0/4dBm, 0xD0/7.5dBm(only for rtl876x)
-		 */
+         * tx_power config:
+         * 0x00/(-20dBm), 0x60/0dBm, 0x90/3dBm,
+         * 0xA0/4dBm, 0xD0/7.5dBm(only for rtl876x)
+         */
 
         vhci_send((uint8_t *)p_vend_cmd_params, sizeof(T_SINGLE_TONE_VEND_CMD_PARAMS));
 
@@ -158,7 +157,6 @@ void single_tone_start(uint8_t channel_num) {
  */
 bool single_tone_handle_hci_cb(T_SINGLE_TONE_EVT evt, bool status, uint8_t *p_buf, uint32_t len) {
     bool result = true;
-
 
     LOG_INF("[single_tone_handle_hci_cb] evt is %d", evt);
 
@@ -217,11 +215,11 @@ bool rf_test_handle_hci_cb(T_SINGLE_TONE_EVT evt, bool status, uint8_t *p_buf, u
     case SINGLE_TONE_EVT_DATA_IND:
         vhci_ack(p_buf);
         const struct device *dev;
-	    dev = DEVICE_DT_GET_ONE(zephyr_cdc_acm_uart);
-	    if (!device_is_ready(dev)) {
+        dev = DEVICE_DT_GET_ONE(zephyr_cdc_acm_uart);
+        if (!device_is_ready(dev)) {
             LOG_ERR("CDC ACM device not ready");
             return 0;
-	    }
+        }
         if (uart_irq_tx_ready(dev)) {
             int send_len = uart_fifo_fill(dev, p_buf, len);
             if (send_len < len) {
@@ -243,7 +241,7 @@ bool rf_test_handle_hci_cb(T_SINGLE_TONE_EVT evt, bool status, uint8_t *p_buf, u
     }
     return (result);
 }
-#endif 
+#endif
 /******************************************************************
  * @brief   single tone task
  * @param   p_param
@@ -266,7 +264,7 @@ void rf_test_task(void *p_param) {
         k_sleep(K_MSEC(1000));
     }
 }
-#endif 
+#endif
 
 #if EXIT_SINGLE_TONE_TEST_WHEN_TIMEOUT
 /******************************************************************
@@ -275,9 +273,7 @@ void rf_test_task(void *p_param) {
  * @return  none
  * @retval  void
  */
-void single_tone_exit_timeout_cb(TimerHandle_t p_timer) {
-    WDG_SystemReset(0, 0xff);
-}
+void single_tone_exit_timeout_cb(TimerHandle_t p_timer) { WDG_SystemReset(0, 0xff); }
 #endif
 #endif
 
@@ -300,13 +296,11 @@ void single_tone_init(void) {
     bool ret = os_task_create(&single_tone_task_handle, "single_tone", single_tone_task, 0, 512, 1);
     LOG_INF("create single tone,ret = %d", ret);
     uint32_t reg_value = AON_REG_READ(AON_NS_REG15X_APP);
-    LOG_INF("aon reg:%x",reg_value);
-    if((reg_value &0xff00) ==0xaa00)
-    {
-        channel_num = reg_value &0xff;
-        LOG_INF("set ch:%x",channel_num);
+    LOG_INF("aon reg:%x", reg_value);
+    if ((reg_value & 0xff00) == 0xaa00) {
+        channel_num = reg_value & 0xff;
+        LOG_INF("set ch:%x", channel_num);
     }
-    
 }
 #endif
 
@@ -318,23 +312,21 @@ int mp_test_command_handler(uint8_t *data, int len) {
 void vhci_init(void) {
     bool ret = os_task_create(&rf_test_task_handle, "rf_test", rf_test_task, 0, 512, 1);
 }
-#endif 
+#endif
 
-void single_tone_test_start(uint8_t ch)
-{
+void single_tone_test_start(uint8_t ch) {
     uint32_t reg_value = AON_REG_READ(AON_NS_REG15X_APP);
-    LOG_INF("read aon value:%x",reg_value);
+    LOG_INF("read aon value:%x", reg_value);
 
     // uint8_t *get_ic_euid(void);
     // uint8_t *p=get_ic_euid();
     // if(p!=NULL)
     // LOG_HEXDUMP_WRN(p,14,"uid");
-    if(ch>=2)
-    {
-        ch -=2;
+    if (ch >= 2) {
+        ch -= 2;
     }
 
-    AON_REG_WRITE(AON_NS_REG15X_APP,ch+0xaa00);
+    AON_REG_WRITE(AON_NS_REG15X_APP, ch + 0xaa00);
     k_msleep(100);
     WDG_SystemReset(0, SWITCH_TO_TEST_MODE);
 }

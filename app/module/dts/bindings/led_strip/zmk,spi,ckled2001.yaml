@@ -5,7 +5,7 @@ description: CKLED2001 LED strip controller
 
 compatible: "zmk,spi,ckled2001"
 
-include: [spi-device.yaml,pinctrl-device.yaml]
+include: [spi-device.yaml, pinctrl-device.yaml]
 
 properties:
   label:
@@ -36,7 +36,7 @@ properties:
   map:
     type: array
     required: true
-    
+
   current_tune:
     type: array
     #required: true
@@ -51,5 +51,3 @@ properties:
 
   pinctrl-names:
     required: true
-
-

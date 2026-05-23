@@ -1,6 +1,6 @@
 name: Build ZMK
 run-name: ${{ github.event_name }} by ${{ github.actor }}
-on: 
+on:
   push:
   pull_request:
   schedule:
@@ -11,7 +11,7 @@ jobs:
 
     container:
       image: ghcr.io/zephyrproject-rtos/ci:v0.26.11
-      options: '--entrypoint /bin/bash'
+      options: "--entrypoint /bin/bash"
 
     steps:
       - name: set_env
@@ -40,26 +40,26 @@ jobs:
           echo "zephyr sdk -> zephyr-sdk-${ZSDK_VERSION}"
           ls /opt/toolchains/zephyr-sdk-${ZSDK_VERSION}
           /opt/toolchains/zephyr-sdk-${ZSDK_VERSION}/setup.sh -c
-    
+
       - name: checkout manifest
         uses: actions/checkout@v4
         with:
-            repository: ${{ env.ZMK_REPOSITORY }}
-            path: "zmk"
-            ref: ${{ env.ZMK_REF }}
-            fetch-depth: 0
-            persist-credentials: false
-    
+          repository: ${{ env.ZMK_REPOSITORY }}
+          path: "zmk"
+          ref: ${{ env.ZMK_REF }}
+          fetch-depth: 0
+          persist-credentials: false
+
       - name: west update
         shell: bash
         run: |
-            cd zmk
-            west init -l app
-            west update
-    
+          cd zmk
+          west init -l app
+          west update
+
       - name: do build
         shell: bash
         run: |
-            cd zmk
-            cd app
-            west build -p -b rtl8762gn_evb -- -DSHIELD=rtk_keyboard
+          cd zmk
+          cd app
+          west build -p -b rtl8762gn_evb -- -DSHIELD=rtk_keyboard

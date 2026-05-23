@@ -44,10 +44,10 @@ extern "C" {
  *
  * @brief LCD direct draw functions only for color display.
  *
- * @details LCD direct draw functions are applicable for color display types. These functions will NOT work
- *        in ssd1306 compatible mode. Use ssd1306_setMode() function to change display mode to NORMAL.
- *        You can combine combine NanoEngine capabilities with these functions.
- *        Direct draw functions draw directly in GDRAM and do not use any double-buffering.
+ * @details LCD direct draw functions are applicable for color display types. These functions will
+ * NOT work in ssd1306 compatible mode. Use ssd1306_setMode() function to change display mode to
+ * NORMAL. You can combine combine NanoEngine capabilities with these functions. Direct draw
+ * functions draw directly in GDRAM and do not use any double-buffering.
  */
 
 /**
@@ -95,7 +95,8 @@ void ssd1306_setRgbColor8(uint8_t r, uint8_t g, uint8_t b);
  * @param h height of bitmap in pixels
  * @param bitmap pointer to data, located in SRAM.
  */
-void ssd1306_drawMonoBuffer8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap);
+void ssd1306_drawMonoBuffer8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                             const uint8_t *bitmap);
 
 /**
  * Draws 8-bit bitmap, located in SRAM, on the display
@@ -121,7 +122,8 @@ void ssd1306_drawBufferFast8(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, c
  * @param pitch length of bitmap buffer line in bytes
  * @param data - pointer to data, located in SRAM.
  */
-void ssd1306_drawBufferEx8(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, lcduint_t pitch, const uint8_t *data);
+void ssd1306_drawBufferEx8(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, lcduint_t pitch,
+                           const uint8_t *data);
 
 /**
  * Fills screen with pattern byte
@@ -230,7 +232,8 @@ void ssd1306_fillRect8(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2);
  *
  * @note set color with ssd1306_setColor() function.
  */
-void ssd1306_drawMonoBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap);
+void ssd1306_drawMonoBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                             const uint8_t *bitmap);
 
 /**
  * Draw 8-bit color bitmap, located in Flash, directly to OLED display GDRAM.
@@ -242,7 +245,8 @@ void ssd1306_drawMonoBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_
  * @param h bitmap height in pixels
  * @param bitmap pointer to Flash data, containing 8-bit color bitmap.
  */
-void ssd1306_drawBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap);
+void ssd1306_drawBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                         const uint8_t *bitmap);
 
 /**
  * Clears block, filling it with black pixels, directly in OLED display GDRAM.
@@ -307,109 +311,77 @@ size_t ssd1306_print8(const char ch[]);
  */
 uint8_t ssd1306_printFixed8(lcdint_t x, lcdint_t y, const char *ch, EFontStyle style);
 
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /////////////////////////////////////////////////////////////////////////////////
 // FUNCTIONS BELOW ARE ONLY FOR COMPATIBILITY WITH PREVIOUSE VERSIONS OF LIBRARY
 
-static inline void ssd1331_setColor(uint16_t color)
-{
-    ssd1306_setColor(color);
-}
+static inline void ssd1331_setColor(uint16_t color) { ssd1306_setColor(color); }
 
-static inline void ssd1331_setRgbColor(uint8_t r, uint8_t g, uint8_t b)
-{
+static inline void ssd1331_setRgbColor(uint8_t r, uint8_t g, uint8_t b) {
     ssd1306_setRgbColor(r, g, b);
 }
 
-static inline void ssd1331_drawMonoBuffer8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap)
-{
+static inline void ssd1331_drawMonoBuffer8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                                           const uint8_t *bitmap) {
     ssd1306_drawMonoBuffer8(xpos, ypos, w, h, bitmap);
 }
 
-static inline void ssd1331_drawBufferFast8(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, const uint8_t *data)
-{
+static inline void ssd1331_drawBufferFast8(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h,
+                                           const uint8_t *data) {
     ssd1306_drawBufferFast8(x, y, w, h, data);
 }
 
-static inline void ssd1331_fillScreen8(uint8_t fill_Data)
-{
-    ssd1306_fillScreen8(fill_Data);
-}
+static inline void ssd1331_fillScreen8(uint8_t fill_Data) { ssd1306_fillScreen8(fill_Data); }
 
-static inline void ssd1331_clearScreen8(void)
-{
-    ssd1306_clearScreen8();
-}
+static inline void ssd1331_clearScreen8(void) { ssd1306_clearScreen8(); }
 
-static inline void ssd1331_putPixel8(lcdint_t x, lcdint_t y)
-{
-    ssd1306_putPixel8(x, y);
-}
+static inline void ssd1331_putPixel8(lcdint_t x, lcdint_t y) { ssd1306_putPixel8(x, y); }
 
-static inline void ssd1331_drawVLine8(lcdint_t x1, lcdint_t y1, lcdint_t y2)
-{
+static inline void ssd1331_drawVLine8(lcdint_t x1, lcdint_t y1, lcdint_t y2) {
     ssd1306_drawVLine8(x1, y1, y2);
 }
 
-static inline void ssd1331_drawHLine8(lcdint_t x1, lcdint_t y1, lcdint_t x2)
-{
+static inline void ssd1331_drawHLine8(lcdint_t x1, lcdint_t y1, lcdint_t x2) {
     ssd1306_drawHLine8(x1, y1, x2);
 }
 
-static inline void ssd1331_drawLine8(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2)
-{
+static inline void ssd1331_drawLine8(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2) {
     ssd1306_drawLine8(x1, y1, x2, y2);
 }
 
-static inline void ssd1331_drawRect8(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2)
-{
+static inline void ssd1331_drawRect8(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2) {
     ssd1306_drawRect8(x1, y1, x2, y2);
 }
 
-static inline void ssd1331_fillRect8(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2)
-{
+static inline void ssd1331_fillRect8(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2) {
     ssd1306_fillRect8(x1, y1, x2, y2);
 }
 
-static inline void ssd1331_drawMonoBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap)
-{
+static inline void ssd1331_drawMonoBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                                           const uint8_t *bitmap) {
     ssd1306_drawMonoBitmap8(xpos, ypos, w, h, bitmap);
 }
 
-static inline void ssd1331_drawBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap)
-{
+static inline void ssd1331_drawBitmap8(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                                       const uint8_t *bitmap) {
     ssd1306_drawBitmap8(xpos, ypos, w, h, bitmap);
 }
 
-static inline void ssd1331_clearBlock8(uint8_t x, uint8_t y, uint8_t w, uint8_t h)
-{
+static inline void ssd1331_clearBlock8(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
     ssd1306_clearBlock8(x, y, w, h);
 }
 
-static inline void ssd1331_setCursor8(lcduint_t x, lcduint_t y)
-{
-    ssd1306_setCursor8(x, y);
-}
+static inline void ssd1331_setCursor8(lcduint_t x, lcduint_t y) { ssd1306_setCursor8(x, y); }
 
-static inline void ssd1331_printChar8(uint8_t c)
-{
-    ssd1306_printChar8(c);
-}
+static inline void ssd1331_printChar8(uint8_t c) { ssd1306_printChar8(c); }
 
-static inline size_t ssd1331_write8(uint8_t ch)
-{
-    return ssd1306_write8(ch);
-}
+static inline size_t ssd1331_write8(uint8_t ch) { return ssd1306_write8(ch); }
 
-static inline size_t ssd1331_print8(const char ch[])
-{
-    return ssd1306_print8(ch);
-}
+static inline size_t ssd1331_print8(const char ch[]) { return ssd1306_print8(ch); }
 
-static inline uint8_t ssd1331_printFixed8(lcdint_t x, lcdint_t y, const char *ch, EFontStyle style)
-{
+static inline uint8_t ssd1331_printFixed8(lcdint_t x, lcdint_t y, const char *ch,
+                                          EFontStyle style) {
     return ssd1306_printFixed8(x, y, ch, style);
 }
 

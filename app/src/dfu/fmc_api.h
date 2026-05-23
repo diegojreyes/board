@@ -16,41 +16,38 @@
 #include <stdint.h>
 
 /** @defgroup FMC  Flexible Memory Controller
-  * @brief
-  * @{
-  */
+ * @brief
+ * @{
+ */
 
 /** @defgroup FMC_API_Exported_Constants  FMC API Exported Constants
-  * @brief
-  * @{
-  */
-#define FMC_SEC_SECTION_LEN     0x1000
+ * @brief
+ * @{
+ */
+#define FMC_SEC_SECTION_LEN 0x1000
 
 /** End of FMC_API_Exported_Constants
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup FMC_API_Exported_Types  FMC API Exported Types
-  * @brief
-  * @{
-  */
-typedef enum
-{
+ * @brief
+ * @{
+ */
+typedef enum {
     FMC_FLASH_NOR_IDX0,
     FMC_FLASH_NOR_IDX1,
     FMC_FLASH_NOR_IDX2,
     FMC_FLASH_NOR_IDX3
 } FMC_FLASH_NOR_IDX_TYPE;
 
-typedef enum
-{
-    FMC_FLASH_NOR_ERASE_CHIP   = 1,
+typedef enum {
+    FMC_FLASH_NOR_ERASE_CHIP = 1,
     FMC_FLASH_NOR_ERASE_SECTOR = 2,
-    FMC_FLASH_NOR_ERASE_BLOCK  = 4,
+    FMC_FLASH_NOR_ERASE_BLOCK = 4,
 } FMC_FLASH_NOR_ERASE_MODE;
 
-typedef enum
-{
+typedef enum {
     PARTITION_FLASH_OCCD,
     PARTITION_FLASH_BOOT_PATCH0,
     PARTITION_FLASH_BOOT_PATCH1,
@@ -73,54 +70,49 @@ typedef enum
 
 } T_FLASH_PARTITION_NAME;
 
-typedef enum _FLASH_IMG_ID
-{
-    FLASH_IMG_OTA                  = 0, /* OTA header */
-    FLASH_IMG_MCUPATCH             = 1,
-    FLASH_IMG_MCUAPP               = 2,
-    FLASH_IMG_MCUCONFIG            = 3,
-    FLASH_IMG_MCUAPPDATA1          = 4,
-    FLASH_IMG_MCUAPPDATA2          = 5,
-    FLASH_IMG_MCUAPPDATA3          = 6,
-    FLASH_IMG_MCUAPPDATA4          = 7,
-    FLASH_IMG_MCUAPPDATA5          = 8,
-    FLASH_IMG_MCUAPPDATA6          = 9,
-    FLASH_IMG_UPPERSTACK           = 10,
+typedef enum _FLASH_IMG_ID {
+    FLASH_IMG_OTA = 0, /* OTA header */
+    FLASH_IMG_MCUPATCH = 1,
+    FLASH_IMG_MCUAPP = 2,
+    FLASH_IMG_MCUCONFIG = 3,
+    FLASH_IMG_MCUAPPDATA1 = 4,
+    FLASH_IMG_MCUAPPDATA2 = 5,
+    FLASH_IMG_MCUAPPDATA3 = 6,
+    FLASH_IMG_MCUAPPDATA4 = 7,
+    FLASH_IMG_MCUAPPDATA5 = 8,
+    FLASH_IMG_MCUAPPDATA6 = 9,
+    FLASH_IMG_UPPERSTACK = 10,
     FLASH_IMG_MAX,
 } FLASH_IMG_ID;
 
-typedef enum
-{
-    FMC_PSRAM_WB_REFRESH_FULL       = 0,
+typedef enum {
+    FMC_PSRAM_WB_REFRESH_FULL = 0,
     FMC_PSRAM_WB_REFRESH_BOTTOM_1_2 = 1,
     FMC_PSRAM_WB_REFRESH_BOTTOM_1_4 = 2,
     FMC_PSRAM_WB_REFRESH_BOTTOM_1_8 = 3,
-    FMC_PSRAM_WB_REFRESH_NONE       = 4,
-    FMC_PSRAM_WB_REFRESH_TOP_1_2    = 5,
-    FMC_PSRAM_WB_REFRESH_TOP_1_4    = 6,
-    FMC_PSRAM_WB_REFRESH_TOP_1_8    = 7,
+    FMC_PSRAM_WB_REFRESH_NONE = 4,
+    FMC_PSRAM_WB_REFRESH_TOP_1_2 = 5,
+    FMC_PSRAM_WB_REFRESH_TOP_1_4 = 6,
+    FMC_PSRAM_WB_REFRESH_TOP_1_8 = 7,
 } FMC_PSRAM_WB_PARTIAL_ARRAY_REFRESH;
 
-typedef enum
-{
+typedef enum {
     PSRAM_WB_PARTIAL_ARRAY_SET,
     PSRAM_WB_ENTER_LMP_MODE,
     PSRAM_WB_EXIT_LMP_MODE,
 } PSRAM_LMP_CTRL_FUNCTION_CALL;
 
-typedef enum
-{
+typedef enum {
     FMC_PSRAM_LPM_STANDBY_MODE,
     FMC_PSRAM_LPM_HALF_SLEEP_MODE,
     FMC_PSRAM_LPM_DEEP_POWER_DOWN_MODE,
 } FMC_PSRAM_LPM_TYPE;
 
-
 /** @defgroup FMC_API_Flash_Callback_Definition  FMC API Flash Callback Definition
-  * @ingroup FMC_API_Exported_Types
-  * @brief
-  * @{
-  */
+ * @ingroup FMC_API_Exported_Types
+ * @brief
+ * @{
+ */
 typedef void (*FMC_FLASH_NOR_ASYNC_CB)(void);
 
 /** End of FMC_API_Flash_Callback_Definition
@@ -130,11 +122,10 @@ typedef void (*FMC_FLASH_NOR_ASYNC_CB)(void);
  * @}
  */
 
-
 /** @defgroup FMC_API_Exported_Functions  FMC API Exported Functions
-  * @brief
-  * @{
-  */
+ * @brief
+ * @{
+ */
 
 /**
  * @brief           task-safe of @ref flash_nor_read
@@ -161,7 +152,6 @@ bool fmc_flash_nor_write(uint32_t addr, void *data, uint32_t len);
  * @return          true if erase successful, otherwise false
  */
 bool fmc_flash_nor_erase(uint32_t addr, FMC_FLASH_NOR_ERASE_MODE mode);
-
 
 /**
  * @brief           task-safe nor flash auto dma read with sequential transaction enabled
@@ -218,8 +208,8 @@ uint32_t flash_cur_bank_img_payload_addr_get(FLASH_IMG_ID id);
  */
 uint32_t flash_cur_bank_img_header_addr_get(FLASH_IMG_ID id);
 
-//bool fmc_flash_nor_clock_switch(FMC_FLASH_NOR_IDX_TYPE idx, uint32_t required_mhz,
-//                                uint32_t *actual_mhz);
+// bool fmc_flash_nor_clock_switch(FMC_FLASH_NOR_IDX_TYPE idx, uint32_t required_mhz,
+//                                 uint32_t *actual_mhz);
 
 /**
  * @brief           get psram power status
@@ -259,15 +249,14 @@ bool fmc_psram_enter_lpm(FMC_FLASH_NOR_IDX_TYPE idx, FMC_PSRAM_LPM_TYPE lpm_mode
  */
 bool fmc_psram_exit_lpm(FMC_FLASH_NOR_IDX_TYPE idx, FMC_PSRAM_LPM_TYPE lpm_mode);
 
-//bool fmc_psram_clock_switch(CLK_FREQ_TYPE clk);
+// bool fmc_psram_clock_switch(CLK_FREQ_TYPE clk);
 
 /** End of FMC_API_Exported_Functions
-  * @}
-  */
+ * @}
+ */
 
 /** End of FMC
  * @}
  */
 
 #endif
-

@@ -87,12 +87,12 @@
     ZMK_MACRO(bt_recon_1, bindings = <&kc BT_SEL 1>;)
     ZMK_MACRO(bt_recon_2, bindings = <&kc BT_SEL 2>;)
     ZMK_MACRO(ppt_recon, bindings = <&kc PPT_SEL 0>;)
-    
+
 
 
     bt_pair_0: bt_pair_0 {
         compatible = "zmk,behavior-hold-tap";
-  
+
         #binding-cells = <2>;
         flavor = "tap-preferred";
         tapping-term-ms = <3000>;  // delay amount in ms
@@ -100,7 +100,7 @@
     };
     bt_pair_1: bt_pair_1 {
         compatible = "zmk,behavior-hold-tap";
- 
+
         #binding-cells = <2>;
         flavor = "tap-preferred";
         tapping-term-ms = <3000>;  // delay amount in ms
@@ -148,73 +148,73 @@
         // };
          combo_t0 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&to 3 >;
         };
         combo_t1 {
             timeout-ms = <10 >;
             layers =<4>;
-          
-            key-positions = <120>;  
+
+            key-positions = <120>;
             bindings = <&tog 3 >;
         };
         combo_t2 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&sl 3 >;
         };
         combo_t3 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&lt 3 SPACE>;
         };
         combo_t4 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&sk LSHIFT>;
         };
         combo_t5 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&mt LSHIFT SPACE>;
         };
         combo_t6 {
             timeout-ms = <10 >;
-            layers =<4>;          
-            key-positions = <120>;  
+            layers =<4>;
+            key-positions = <120>;
             bindings = <&gresc>;
         };
         //  combo_t7 {
         //     timeout-ms = <10 >;
-        //     layers =<4>;          
-        //     key-positions = <120>;  
+        //     layers =<4>;
+        //     key-positions = <120>;
         //     bindings = <&mkp 0>;
         // };
     };
     keymap {
         compatible = "zmk,keymap";
-          
+
         default_layer {
         bindings = <
-        //enc             //ESC             //f1              //f2                //f3            
-        &kp C_MUTE       &kp ESC            &kp DEL           &kp TAB               &kp BSPC      
-        &macro1 1       &kp KP_NUMLOCK     &kp KP_SLASH      &kp KP_MULTIPLY       &kp KP_MINUS 
+        //enc             //ESC             //f1              //f2                //f3
+        &kp C_MUTE       &kp ESC            &kp DEL           &kp TAB               &kp BSPC
+        &macro1 1       &kp KP_NUMLOCK     &kp KP_SLASH      &kp KP_MULTIPLY       &kp KP_MINUS
         &macro1 2       &kp KP_N7          &kp KP_N8         &kp KP_N9             &kp KP_PLUS
-        &macro1 3       &kp KP_N4          &kp KP_N5         &kp KP_N6              
+        &macro1 3       &kp KP_N4          &kp KP_N5         &kp KP_N6
         &macro1 4       &kp KP_N1          &kp KP_N2         &kp KP_N3             &kp KP_ENTER
-        &mo 1                               &kp KP_N0         &kp KP_DOT           
-        &kc SEL_BLE             &kc SEL_PPT        &kc SEL_USB             &kc BATCHG  
+        &mo 1                               &kp KP_N0         &kp KP_DOT
+        &kc SEL_BLE             &kc SEL_PPT        &kc SEL_USB             &kc BATCHG
             >;
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
-       
+
         layer_one  {
-        bindings = < 
+        bindings = <
             //
         &trans              &bt_pair_0 0 0          &bt_pair_1 0 0          &bt_pair_2 0 0          &ppt_pair_0 0 0
         &trans              &rgb_ug RGB_EFF         &rgb_ug RGB_BRI         &rgb_ug RGB_HUI         &trans
@@ -223,7 +223,7 @@
         &trans              &rgb_ug RGB_SAD         &rgb_ug RGB_SPD         &kp C_PLAY_PAUSE        &trans
         &trans                                      &rgb_ug RGB_TOG         &kp C_NEXT
         &trans              &trans                  &trans                  &trans
-                                        
+
         >;
         sensor-bindings = <&rgb_encoder>;
         };

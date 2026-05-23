@@ -9,8 +9,12 @@ interface InterconnectTabsProps {
 }
 
 function mapInterconnect(interconnect: Interconnect) {
-  let content = require(`@site/src/data/interconnects/${interconnect.id}/design_guideline.md`);
-  let imageUrl = require(`@site/docs/assets/interconnects/${interconnect.id}/pinout.png`);
+  let content = require(
+    `@site/src/data/interconnects/${interconnect.id}/design_guideline.md`,
+  );
+  let imageUrl = require(
+    `@site/docs/assets/interconnects/${interconnect.id}/pinout.png`,
+  );
 
   return (
     <TabItem value={interconnect.id} key={interconnect.id}>

@@ -40,9 +40,8 @@
 #include <stdio.h>
 
 /** Implements own Print class for plain AVR and Linux environment */
-class Print
-{
-public:
+class Print {
+  public:
     /** Constructor to create Print class object */
     Print() {}
 
@@ -58,11 +57,9 @@ public:
      * @param str string to print
      * @return returns number of printed symbols
      */
-    size_t print(const char* str)
-    {
+    size_t print(const char *str) {
         size_t n = 0;
-        while (*str)
-        {
+        while (*str) {
             n += write(*str);
             str++;
         }
@@ -74,11 +71,10 @@ public:
      * @param n integer to print
      * @return returns number of printed symbols
      */
-    size_t print(int n)
-    {
+    size_t print(int n) {
         char a[10];
         snprintf(a, sizeof(a), "%i", n);
-        return print( a );
+        return print(a);
     }
 
     /**
@@ -86,8 +82,7 @@ public:
      * @param str string to print
      * @return returns number of printed symbols
      */
-    size_t println(const char* str)
-    {
+    size_t println(const char *str) {
         size_t n = print(str);
         n += write('\n');
         return n;
@@ -98,8 +93,7 @@ public:
      * @param data integer to print
      * @return returns number of printed symbols
      */
-    size_t println(int data)
-    {
+    size_t println(int data) {
         size_t n = print(data);
         n += write('\n');
         return n;

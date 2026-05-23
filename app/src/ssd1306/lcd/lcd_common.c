@@ -32,28 +32,24 @@
 #define CMD_ARG 0xFF
 #define CMD_DELAY 0xFF
 
-ssd1306_lcd_t ssd1306_lcd = { 0 };
+ssd1306_lcd_t ssd1306_lcd = {0};
 
-void ssd1306_sendData(uint8_t data)
-{
+void ssd1306_sendData(uint8_t data) {
     ssd1306_dataStart();
-    ssd1306_lcd.send_pixels1( data );
+    ssd1306_lcd.send_pixels1(data);
     ssd1306_intf.stop();
 }
 
-void ssd1306_configureI2cDisplay(const uint8_t *config, uint8_t configSize)
-{
+void ssd1306_configureI2cDisplay(const uint8_t *config, uint8_t configSize) {
     ssd1306_commandStart();
-    for( uint8_t i=0; i<configSize; i++)
-    {
+    for (uint8_t i = 0; i < configSize; i++) {
         uint8_t data = pgm_read_byte(&config[i]);
         ssd1306_intf.send(data);
     }
     ssd1306_intf.stop();
 }
 
-void ssd1306_configureSpiDisplay(const uint8_t *config, uint8_t configSize)
-{
+void ssd1306_configureSpiDisplay(const uint8_t *config, uint8_t configSize) {
     // ssd1306_intf.start();
     // ssd1306_spiDataMode(0);
     // for( uint8_t i=0; i<configSize; i++)
@@ -74,8 +70,7 @@ void ssd1306_configureSpiDisplay(const uint8_t *config, uint8_t configSize)
     // ssd1306_intf.stop();
 }
 
-void ssd1306_configureSpiDisplay2(const uint8_t *config, uint8_t configSize)
-{
+void ssd1306_configureSpiDisplay2(const uint8_t *config, uint8_t configSize) {
     // uint8_t command = 1;
     // int8_t args = -1;
     // ssd1306_intf.start();
@@ -130,16 +125,13 @@ void ssd1306_configureSpiDisplay2(const uint8_t *config, uint8_t configSize)
     // ssd1306_intf.stop();
 }
 
-void ssd1306_setMode(lcd_mode_t mode)
-{
-    if (ssd1306_lcd.set_mode)
-    {
-        ssd1306_lcd.set_mode( mode );
+void ssd1306_setMode(lcd_mode_t mode) {
+    if (ssd1306_lcd.set_mode) {
+        ssd1306_lcd.set_mode(mode);
     }
 }
 
-void ssd1306_resetController(int8_t rstPin, uint8_t delayMs)
-{
+void ssd1306_resetController(int8_t rstPin, uint8_t delayMs) {
     pinMode(rstPin, OUTPUT);
     digitalWrite(rstPin, HIGH);
     /* Wait at least 10ms after VCC is up for LCD */
@@ -149,4 +141,3 @@ void ssd1306_resetController(int8_t rstPin, uint8_t delayMs)
     delay(delayMs);
     digitalWrite(rstPin, HIGH);
 }
-

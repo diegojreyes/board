@@ -21,8 +21,8 @@ static ppt_sync_app_t ppt_sync_app;
 volatile ENHTIMStoreReg_Typedef ENHTIM_StoreReg;
 
 /*============================================================================*
-*                               Functions Declaration
-*============================================================================*/
+ *                               Functions Declaration
+ *============================================================================*/
 void sync_msg_reg_send_cb(sync_msg_send_cb_t cb);
 void ppt_sync_init(sync_role_t role);
 void ppt_sync_enable(void);
@@ -31,43 +31,37 @@ bool ppt_pair(void);
 bool ppt_reconnect(void);
 void ppt_stop_sync(void);
 bool ppt_clear_bond_info(void);
-sync_err_code_t ppt_app_send_data(sync_msg_type_t type, uint8_t msg_retrans_count,
-                                  uint8_t *data, uint16_t len);
+sync_err_code_t ppt_app_send_data(sync_msg_type_t type, uint8_t msg_retrans_count, uint8_t *data,
+                                  uint16_t len);
 
 /*============================================================================*
-*                               Global Functions
-*============================================================================*/
+ *                               Global Functions
+ *============================================================================*/
 /**
  * @brief  Regist 2.4g message send callback
  * @param  cb - send callback, will be called after 2.4g data sending finish
  * @return None
  */
-void sync_msg_reg_send_cb(sync_msg_send_cb_t cb)
-{
-    ppt_sync_app.msg_send_cb = cb;
-}
+void sync_msg_reg_send_cb(sync_msg_send_cb_t cb) { ppt_sync_app.msg_send_cb = cb; }
 
 #ifdef CONFIG_PM_DEVICE
 
 extern void ENHTIM_DLPSEnter(void *PeriReg, void *StoreBuf);
 extern void ENHTIM_DLPSExit(void *PeriReg, void *StoreBuf);
 
-static int sync_entim_enter_dlps_cb()
-{
+static int sync_entim_enter_dlps_cb() {
     ENHTIM_DLPSEnter(ENH_TIM0, (void *)&ENHTIM_StoreReg);
     return 0;
 }
-static int sync_entim_exit_dlps_cb()
-{
+static int sync_entim_exit_dlps_cb() {
     ENHTIM_DLPSExit(ENH_TIM0, (void *)&ENHTIM_StoreReg);
     return 0;
 }
 
-static void sync_entim_dlps_init()
-{
+static void sync_entim_dlps_init() {
     /* 2.4g need ensure the entimer restore early than 2.4g restore, and 2.4g restore is in platform
-    pend stage, so we register entimer restore to platform restore stage which has higher priority than
-    pend stage */
+    pend stage, so we register entimer restore to platform restore stage which has higher priority
+    than pend stage */
     platform_pm_register_callback_func((void *)sync_entim_enter_dlps_cb, PLATFORM_PM_STORE);
     platform_pm_register_callback_func((void *)sync_entim_exit_dlps_cb, PLATFORM_PM_RESTORE);
 }
@@ -77,8 +71,7 @@ static void sync_entim_dlps_init()
  * @param  role - 2.4g role, master or slave
  * @return None
  */
-void ppt_sync_init(sync_role_t role)
-{
+void ppt_sync_init(sync_role_t role) {
     DBG_DIRECT("ppt_sync_init");
     memset(&ppt_sync_app, 0, sizeof(ppt_sync_app));
     sync_init(role);
@@ -94,8 +87,7 @@ void ppt_sync_init(sync_role_t role)
  * @param  None
  * @return None
  */
-void ppt_sync_enable(void)
-{
+void ppt_sync_enable(void) {
     DBG_DIRECT("ppt_sync_enable");
     sync_enable();
 }
@@ -105,12 +97,9 @@ void ppt_sync_enable(void)
  * @param  None
  * @return Result - true: success, false: fail
  */
-bool ppt_check_is_bonded(void)
-{
-    if (SYNC_ERR_CODE_SUCCESS == sync_nvm_get_bond_info(&ppt_sync_app.bond_info))
-    {
-        if (ppt_sync_app.bond_info.acc.addr != 0)
-        {
+bool ppt_check_is_bonded(void) {
+    if (SYNC_ERR_CODE_SUCCESS == sync_nvm_get_bond_info(&ppt_sync_app.bond_info)) {
+        if (ppt_sync_app.bond_info.acc.addr != 0) {
             return true;
         }
     }
@@ -122,13 +111,11 @@ bool ppt_check_is_bonded(void)
  * @param  None
  * @return Result - true: success, false: fail
  */
-bool ppt_pair(void)
-{
+bool ppt_pair(void) {
     DBG_DIRECT("ppt_pair");
     sync_err_code_t ret = sync_pair();
 
-    if (ret != SYNC_ERR_CODE_SUCCESS)
-    {
+    if (ret != SYNC_ERR_CODE_SUCCESS) {
         DBG_DIRECT("ppt_pair: fail, error code %d", ret);
         return false;
     }
@@ -140,8 +127,7 @@ bool ppt_pair(void)
  * @param  None
  * @return Result - true: success, false: fail
  */
-bool ppt_reconnect(void)
-{
+bool ppt_reconnect(void) {
     DBG_DIRECT("ppt_reconnect");
     // block os waiting one' second!!!
     // sync_err_code_t ret = sync_nvm_get_bond_info(&ppt_sync_app.bond_info);
@@ -151,11 +137,11 @@ bool ppt_reconnect(void)
     //     DBG_DIRECT("ppt_reconnect: get bond info fail, error code %d", ret);
     //     return false;
     // }
-    int ret=0;
-    if (ppt_sync_app.bond_info.acc.addr == 0) return false;
+    int ret = 0;
+    if (ppt_sync_app.bond_info.acc.addr == 0)
+        return false;
     ret = sync_connect(&ppt_sync_app.bond_info);
-    if (ret != SYNC_ERR_CODE_SUCCESS)
-    {
+    if (ret != SYNC_ERR_CODE_SUCCESS) {
         DBG_DIRECT("ppt_reconnect: fail, error code %d", ret);
         return false;
     }
@@ -167,8 +153,7 @@ bool ppt_reconnect(void)
  * @param  None
  * @return None
  */
-void ppt_stop_sync(void)
-{
+void ppt_stop_sync(void) {
     DBG_DIRECT("ppt_stop_sync");
     sync_stop();
 }
@@ -178,16 +163,12 @@ void ppt_stop_sync(void)
  * @param  None
  * @return Result - true: success, false: fail
  */
-bool ppt_clear_bond_info(void)
-{
+bool ppt_clear_bond_info(void) {
     sync_err_code_t ret = sync_nvm_clear_bond_info();
-    if (ret == SYNC_ERR_CODE_SUCCESS)
-    {
+    if (ret == SYNC_ERR_CODE_SUCCESS) {
         memset(&ppt_sync_app.bond_info, 0, sizeof(ppt_sync_app.bond_info));
         DBG_DIRECT("ppt_clear_bond_info: success");
-    }
-    else
-    {
+    } else {
         DBG_DIRECT("ppt_clear_bond_info: fail, error code %d", ret);
         return false;
     }
@@ -202,22 +183,15 @@ bool ppt_clear_bond_info(void)
  * @param  len - data length
  * @return Send result - 0: success, others: fail reason
  */
-sync_err_code_t ppt_app_send_data(sync_msg_type_t type, uint8_t msg_retrans_count,
-                                  uint8_t *data, uint16_t len)
-{
+sync_err_code_t ppt_app_send_data(sync_msg_type_t type, uint8_t msg_retrans_count, uint8_t *data,
+                                  uint16_t len) {
     DBG_DIRECT("ppt app send data");
-    if (type == SYNC_MSG_TYPE_DYNAMIC_RETRANS)
-    {
+    if (type == SYNC_MSG_TYPE_DYNAMIC_RETRANS) {
         return sync_msg_send(SYNC_MSG_TYPE_DYNAMIC_RETRANS, data, len, ppt_sync_app.msg_send_cb);
-    }
-    else if (type == SYNC_MSG_TYPE_INFINITE_RETRANS)
-    {
+    } else if (type == SYNC_MSG_TYPE_INFINITE_RETRANS) {
         return sync_msg_send(SYNC_MSG_TYPE_INFINITE_RETRANS, data, len, ppt_sync_app.msg_send_cb);
-    }
-    else if (type == SYNC_MSG_TYPE_FINITE_RETRANS)
-    {
-        if (ppt_sync_app.msg_retrans_count != msg_retrans_count)
-        {
+    } else if (type == SYNC_MSG_TYPE_FINITE_RETRANS) {
+        if (ppt_sync_app.msg_retrans_count != msg_retrans_count) {
             sync_msg_set_finite_retrans(msg_retrans_count);
             ppt_sync_app.msg_retrans_count = msg_retrans_count;
         }
@@ -225,4 +199,3 @@ sync_err_code_t ppt_app_send_data(sync_msg_type_t type, uint8_t msg_retrans_coun
     }
     return SYNC_ERR_CODE_UNKNOWN;
 }
-

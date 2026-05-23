@@ -63,8 +63,5 @@ int32_t zmk_matrix_transform_row_column_to_position(uint32_t row, uint32_t colum
     return matrix_index;
 #endif /* ZMK_KEYMAP_TRANSFORM_NODE */
 };
-#define KC_LEN 1//DT_PROP_LEN(DT_NODELABEL(kscan1),input_gpios) 
-uint8_t max_keyboard_pos(void)
-{
-    return transform[ ARRAY_SIZE(transform)-1]-KC_LEN;
-}
+#define KC_LEN 1 // DT_PROP_LEN(DT_NODELABEL(kscan1),input_gpios)
+uint8_t max_keyboard_pos(void) { return transform[ARRAY_SIZE(transform) - 1] - KC_LEN; }

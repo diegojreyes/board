@@ -44,10 +44,10 @@ extern "C" {
  *
  * @brief LCD direct draw functions only for color display.
  *
- * @details LCD direct draw functions are applicable for color display types. These functions will NOT work
- *        in ssd1306 compatible mode. Use ssd1306_setMode() function to change display mode to NORMAL.
- *        You can combine combine NanoEngine capabilities with these functions.
- *        Direct draw functions draw directly in GDRAM and do not use any double-buffering.
+ * @details LCD direct draw functions are applicable for color display types. These functions will
+ * NOT work in ssd1306 compatible mode. Use ssd1306_setMode() function to change display mode to
+ * NORMAL. You can combine combine NanoEngine capabilities with these functions. Direct draw
+ * functions draw directly in GDRAM and do not use any double-buffering.
  */
 
 /**
@@ -73,11 +73,12 @@ void ssd1306_setRgbColor16(uint8_t r, uint8_t g, uint8_t b);
  * @param h - height of bitmap in pixels
  * @param data - pointer to data, located in SRAM.
  */
-void ssd1306_drawBufferFast16(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, const uint8_t *data);
+void ssd1306_drawBufferFast16(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h,
+                              const uint8_t *data);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-static inline void ssd1331_drawBufferFast16(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, const uint8_t *data)
-{
+static inline void ssd1331_drawBufferFast16(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h,
+                                            const uint8_t *data) {
     ssd1306_drawBufferFast16(x, y, w, h, data);
 }
 #endif
@@ -94,7 +95,8 @@ static inline void ssd1331_drawBufferFast16(lcdint_t x, lcdint_t y, lcduint_t w,
  * @param pitch length of bitmap buffer line in bytes
  * @param data - pointer to data, located in SRAM.
  */
-void ssd1306_drawBufferEx16(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, lcduint_t pitch, const uint8_t *data);
+void ssd1306_drawBufferEx16(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, lcduint_t pitch,
+                            const uint8_t *data);
 
 /**
  * Draws 1-bit bitmap, located in SRAM, on the display
@@ -106,7 +108,8 @@ void ssd1306_drawBufferEx16(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, lc
  * @param h height of bitmap in pixels
  * @param bitmap pointer to data, located in SRAM.
  */
-void ssd1306_drawMonoBuffer16(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap);
+void ssd1306_drawMonoBuffer16(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                              const uint8_t *bitmap);
 
 /**
  * Fills screen with pattern byte
@@ -215,7 +218,8 @@ void ssd1306_fillRect16(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2);
  *
  * @note set color with ssd1306_setColor() function.
  */
-void ssd1306_drawMonoBitmap16(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap);
+void ssd1306_drawMonoBitmap16(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                              const uint8_t *bitmap);
 
 /**
  * Draw 16-bit color bitmap, located in Flash, directly to OLED display GDRAM.
@@ -227,7 +231,8 @@ void ssd1306_drawMonoBitmap16(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint
  * @param h bitmap height in pixels
  * @param bitmap pointer to Flash data, containing 16-bit color bitmap.
  */
-void ssd1306_drawBitmap16(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h, const uint8_t *bitmap);
+void ssd1306_drawBitmap16(lcdint_t xpos, lcdint_t ypos, lcduint_t w, lcduint_t h,
+                          const uint8_t *bitmap);
 
 /**
  * Clears block, filling it with black pixels, directly in OLED display GDRAM.

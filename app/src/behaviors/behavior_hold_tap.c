@@ -584,8 +584,7 @@ static int on_hold_tap_binding_pressed(struct zmk_behavior_binding *binding,
                                        struct zmk_behavior_binding_event event) {
     const struct device *dev = zmk_behavior_get_binding(binding->behavior_dev);
     const struct behavior_hold_tap_config *cfg = dev->config;
-    if(get_key_press_num()>4)
-    {
+    if (get_key_press_num() > 4) {
         LOG_ERR("skip hold tap?");
         return ZMK_BEHAVIOR_OPAQUE;
     }

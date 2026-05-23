@@ -12,4 +12,3 @@
 #define OUT_CHD 5
 #define OUT_BAT 6
 #define OUT_RCV 7
-

@@ -241,4 +241,4 @@
 #define CS18_SW12 (0x46 + SN3734_PWM_PAGE_REGISTER_COUNT)
 
 #define SN_HELPER(ch, idx) CS##ch##_SW##idx
-#define SN(ch,idx) SN_HELPER(ch,idx)
+#define SN(ch, idx) SN_HELPER(ch, idx)

@@ -4,11 +4,11 @@
 DT_COMPAT_ZMK_LED_STRIP_COMPOSITE := zmk,led-strip-composite
 
 config LED_STRIP_COMPOSITE
-	bool
-	default $(dt_compat_enabled,$(DT_COMPAT_ZMK_LED_STRIP_COMPOSITE))
-	depends on LED_STRIP
-	
+    bool
+    default $(dt_compat_enabled,$(DT_COMPAT_ZMK_LED_STRIP_COMPOSITE))
+    depends on LED_STRIP
+
 config LED_STRIP_COMPOSITE_INIT_PRIORITY
-	int "device init priority"
-	default 91
+    int "device init priority"
+    default 91
 

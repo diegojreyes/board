@@ -25,7 +25,6 @@
  * @file oled_template.h support for TEMPLATE OLED WxH display
  */
 
-
 #ifndef _OLED_TEMPLATE_H_
 #define _OLED_TEMPLATE_H_
 
@@ -65,7 +64,7 @@ extern "C" {
  * @param mode 0 or 1
  * @deprecated Use ssd1306_setMode() instead.
  */
-void        template_setMode(lcd_mode_t mode);
+void template_setMode(lcd_mode_t mode);
 
 /**
  * @brief Inits WxH TEMPLATE OLED display (based on TEMPLATE controller).
@@ -75,7 +74,7 @@ void        template_setMode(lcd_mode_t mode);
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         template_WxH_init(void);
+void template_WxH_init(void);
 
 /**
  * @brief Inits WxH TEMPLATE OLED display over spi (based on TEMPLATE controller).
@@ -85,7 +84,7 @@ void         template_WxH_init(void);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         template_WxH_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void template_WxH_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @}

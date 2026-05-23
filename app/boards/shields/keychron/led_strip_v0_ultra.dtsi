@@ -2,7 +2,7 @@
 
 / {
     chosen {
-        
+
         zmk,underglow = &led_strip;
     };
     led_strip: led-strip-composite {
@@ -16,14 +16,14 @@
         // };
     };
 
-    
+
 
 };
 // dma is optional
 &dma0 {
     status = "okay";
 };
- 
+
 &spi0 {
     status = "okay";
     pinctrl-0 = <&spi0_default>;
@@ -32,10 +32,10 @@
     cs-gpios=
         // <&gpioa  5 GPIO_ACTIVE_LOW>,  //cs0 p0_5
         <&gpiob  8 GPIO_ACTIVE_LOW>;  //cs1 p4_3
-        
+
     // dma is optional
-	dmas = <&dma0 6 17 0xa>, <&dma0 5 16 0x10021>;
-	dma-names = "rx", "tx";
+    dmas = <&dma0 6 17 0xa>, <&dma0 5 16 0x10021>;
+    dma-names = "rx", "tx";
 
         led_strip_0: ckled2001@0 {
             compatible = "zmk,spi,ckled2001";
@@ -83,7 +83,7 @@
             CK(0, 3) CK( 2, 3) CK( 1, 3)
 
 
-           
+
             >;
             current_tune =
             // <0x60 0xC4 0xC4 0x60 0xC4 0xC4 0x60 0xC4 0xC4 0x60 0xC4 0xC4>;
@@ -186,14 +186,14 @@
         group1 {
             psels =
             <RTL87X2G_PSEL(DWGPIO, MICBIAS, DIR_OUT, DRV_HIGH, PULL_UP)>;
-            
+
         };
     };
     ckled_sleep:ckled_sleep {
         group1 {
             psels =
             <RTL87X2G_PSEL(SW_MODE, MICBIAS, DIR_IN, DRV_LOW, PULL_DOWN)>;
-            
+
         };
     };
 };

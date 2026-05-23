@@ -25,14 +25,12 @@
  * @file ssd1306_i2c.h SSD1306 i2c communication functions
  */
 
-
 #ifndef _SSD1306_I2C_H_
 #define _SSD1306_I2C_H_
 
 #include "ssd1306_i2c_conf.h"
 // #include "ssd1306_i2c_embedded.h"
 // #include "ssd1306_i2c_twi.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,7 +50,7 @@ extern "C" {
  *
  * @note: after call to this function you need to initialize lcd display.
  */
-void         ssd1306_i2cInit(void);
+void ssd1306_i2cInit(void);
 
 /**
  * @ingroup LCD_HW_INTERFACE_API

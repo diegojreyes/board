@@ -2,7 +2,7 @@
 
 / {
     chosen {
-        
+
         zmk,underglow = &led_strip;
     };
     led_strip: led-strip-composite {
@@ -11,17 +11,17 @@
         strip0 {
             led-strip = <&led_strip_0>;
         };
-        
+
     };
 
-    
+
 
 };
 // dma is optional
 &dma0 {
     status = "okay";
 };
- 
+
 &spi0 {
     status = "okay";
     pinctrl-0 = <&spi0_default>;
@@ -30,10 +30,10 @@
     cs-gpios=
         <&gpioa  5 GPIO_ACTIVE_LOW>;  //cs0 p0_5
         // <&gpiob  8 GPIO_ACTIVE_LOW>;  //cs1 p4_3
-        
+
     // dma is optional
-	dmas = <&dma0 6 17 0xa>, <&dma0 5 16 0x10021>;
-	dma-names = "rx", "tx";
+    dmas = <&dma0 6 17 0xa>, <&dma0 5 16 0x10021>;
+    dma-names = "rx", "tx";
 
         led_strip_0: ckled2001@0 {
             compatible = "zmk,sn3734";
@@ -59,7 +59,7 @@
             SN(18,1) SN(16,1) SN(17,1)
             SN(18,2) SN(16,2) SN(17,2)
             SN(18,3) SN(16,3) SN(17,3)
-            
+
             /* ROW 1 */
             /*   R        G        B */
             SN(6,1) SN(4,1) SN(5,1)
@@ -78,7 +78,7 @@
             SN(18,4) SN(16,4) SN(17,4)
             SN(18,5) SN(16,5) SN(17,5)
             SN(18,6) SN(16,6) SN(17,6)
- 
+
             /* ROW 2 */
             /*   R        G        B */
             SN(3,1) SN(1,1) SN(2,1)
@@ -96,7 +96,7 @@
 
             SN(18,7) SN(16,7) SN(17,7)
             SN(18,8) SN(16,8) SN(17,8)
-       
+
             /* ROW 3 */
             /*   R        G        B */
             SN(15,1) SN(13,1) SN(14,1)
@@ -114,7 +114,7 @@
 
             SN(18,9) SN(16,9) SN(17,9)
             SN(18,10) SN(16,10) SN(17,10)
-            
+
             /* ROW 3 */
             /*   R        G        B */
             SN(12,1) SN(10,1) SN(11,1)
@@ -143,7 +143,7 @@
             pinctrl-1 = <&ckled_sleep>;
             pinctrl-names = "default","sleep";
     };
-    
+
 };
 
 &pinctrl {
@@ -169,14 +169,14 @@
         group1 {
             psels =
             <RTL87X2G_PSEL(DWGPIO, P0_6, DIR_OUT, DRV_HIGH, PULL_UP)>;
-            
+
         };
     };
     ckled_sleep:ckled_sleep {
         group1 {
             psels =
             <RTL87X2G_PSEL(SW_MODE, P0_6, DIR_IN, DRV_LOW, PULL_DOWN)>;
-            
+
         };
     };
 };

@@ -24,12 +24,18 @@ static inline void setup_int(const struct device *dev, bool enable) {
 
     LOG_DBG("enabled %s", (enable ? "true" : "false"));
 
-    if (gpio_pin_interrupt_configure_dt(&cfg->a, enable ? GPIO_INT_EDGE_FALLING:GPIO_INT_MODE_DISABLE_ONLY))//GPIO_INT_EDGE_BOTH : GPIO_INT_DISABLE)) 
+    if (gpio_pin_interrupt_configure_dt(
+            &cfg->a, enable
+                         ? GPIO_INT_EDGE_FALLING
+                         : GPIO_INT_MODE_DISABLE_ONLY)) // GPIO_INT_EDGE_BOTH : GPIO_INT_DISABLE))
     {
         LOG_WRN("Unable to set A pin GPIO interrupt");
     }
 
-    if (gpio_pin_interrupt_configure_dt(&cfg->b, enable ?  GPIO_INT_EDGE_FALLING:GPIO_INT_MODE_DISABLE_ONLY))//GPIO_INT_EDGE_BOTH : GPIO_INT_DISABLE)) 
+    if (gpio_pin_interrupt_configure_dt(
+            &cfg->b, enable
+                         ? GPIO_INT_EDGE_FALLING
+                         : GPIO_INT_MODE_DISABLE_ONLY)) // GPIO_INT_EDGE_BOTH : GPIO_INT_DISABLE))
     {
         LOG_WRN("Unable to set A pin GPIO interrupt");
     }

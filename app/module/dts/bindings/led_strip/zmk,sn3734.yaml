@@ -5,7 +5,7 @@ description: SN3734 LED strip controller
 
 compatible: "zmk,sn3734"
 
-include: [spi-device.yaml,pinctrl-device.yaml]
+include: [spi-device.yaml, pinctrl-device.yaml]
 
 properties:
   label:
@@ -16,11 +16,10 @@ properties:
     type: int
     required: true
 
-
   map:
     type: array
     required: true
-    
+
   current_tune:
     type: array
     #required: true
@@ -35,4 +34,3 @@ properties:
 
   pinctrl-names:
     required: true
-

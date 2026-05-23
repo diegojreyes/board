@@ -25,15 +25,13 @@ struct led_strip_composite_config {
     uint32_t pixels_cnt;
 };
 
-#define LED_STRIP_CHILD_0(inst)   false,
-static bool update_required[] = {
-    DT_INST_FOREACH_CHILD(0, LED_STRIP_CHILD_0)
-};
+#define LED_STRIP_CHILD_0(inst) false,
+static bool update_required[] = {DT_INST_FOREACH_CHILD(0, LED_STRIP_CHILD_0)};
 
 static int led_strip_composite_update_rgb(const struct device *dev, struct led_rgb *pixels,
                                           size_t num_pixels) {
     const struct led_strip_composite_config *config = dev->config;
-    //use num_pixels as index!!!
+    // use num_pixels as index!!!
     if (num_pixels > config->pixels_cnt) {
         num_pixels = config->pixels_cnt;
     }
@@ -41,56 +39,54 @@ static int led_strip_composite_update_rgb(const struct device *dev, struct led_r
     int ret = 0;
     uint32_t offset = 0, length = 0;
     for (int i = 0; i < config->strips_cnt && offset <= num_pixels; i++) {
-        length = config->strips[i].length+1;
+        length = config->strips[i].length + 1;
         if (length > num_pixels - offset) {
             length = num_pixels - offset;
 
             // LOG_DBG("Updating led_strip %d, offset: %d, length: %d", i, offset, length);
-            update_required[i]=true;
-            ret = led_strip_update_rgb(config->strips[i].device, pixels, (i==0)?(length-1):length);
+            update_required[i] = true;
+            ret = led_strip_update_rgb(config->strips[i].device, pixels,
+                                       (i == 0) ? (length - 1) : length);
             if (ret != 0) {
-                LOG_ERR("Failed updating child led_strip device %s", config->strips[i].device->name);
+                LOG_ERR("Failed updating child led_strip device %s",
+                        config->strips[i].device->name);
                 return ret;
             }
             break;
         }
-        
+
         offset += length;
     }
     return 0;
-/*
-    int ret = 0;
-    uint32_t offset = 0, length = 0;
-    for (int i = 0; i < config->strips_cnt && offset < num_pixels; i++) {
-        length = config->strips[i].length;
-        if (length > num_pixels - offset) {
-            length = num_pixels - offset;
+    /*
+        int ret = 0;
+        uint32_t offset = 0, length = 0;
+        for (int i = 0; i < config->strips_cnt && offset < num_pixels; i++) {
+            length = config->strips[i].length;
+            if (length > num_pixels - offset) {
+                length = num_pixels - offset;
+            }
+
+            LOG_DBG("Updating led_strip %d, offset: %d, length: %d", i, offset, length);
+
+            ret = led_strip_update_rgb(config->strips[i].device, &pixels[offset], length);
+            if (ret != 0) {
+                LOG_ERR("Failed updating child led_strip device %s",
+       config->strips[i].device->name); return ret;
+            }
+
+            offset += length;
         }
-
-        LOG_DBG("Updating led_strip %d, offset: %d, length: %d", i, offset, length);
-
-        ret = led_strip_update_rgb(config->strips[i].device, &pixels[offset], length);
-        if (ret != 0) {
-            LOG_ERR("Failed updating child led_strip device %s", config->strips[i].device->name);
-            return ret;
-        }
-
-        offset += length;
-    }
-*/
-
+    */
 }
 
 static int led_strip_composite_update_channels(const struct device *dev, uint8_t *channels,
                                                size_t num_channels) {
     const struct led_strip_composite_config *config = dev->config;
-    if(num_channels>0)
-    {
-        for(int i=0;i<config->strips_cnt;i++)
-        {
-            if(update_required[i]||(num_channels>=0xf0))
-            {
-                led_strip_update_channels(config->strips[i].device,NULL,num_channels);
+    if (num_channels > 0) {
+        for (int i = 0; i < config->strips_cnt; i++) {
+            if (update_required[i] || (num_channels >= 0xf0)) {
+                led_strip_update_channels(config->strips[i].device, NULL, num_channels);
             }
         }
     }
@@ -103,13 +99,12 @@ static int led_strip_composite_init(const struct device *dev) {
     for (int i = 0; i < config->strips_cnt; i++) {
         LOG_INF("Bond led_strip %d: %s, length: %d", i, config->strips[i].device->name,
                 config->strips[i].length);
-        hardware_sleep[i]=0;
+        hardware_sleep[i] = 0;
     }
 
-    //strips_cnt max is 2 .
-    if(config->strips_cnt<2)
-    {
-        hardware_sleep[1]=1;
+    // strips_cnt max is 2 .
+    if (config->strips_cnt < 2) {
+        hardware_sleep[1] = 1;
     }
 
     return 0;
@@ -129,8 +124,7 @@ static const struct led_strip_driver_api led_strip_composite_api = {
     },
 
 static const struct led_strip_child led_strip_children[] = {
-    DT_INST_FOREACH_CHILD(0, LED_STRIP_CHILD)
-};
+    DT_INST_FOREACH_CHILD(0, LED_STRIP_CHILD)};
 
 static const struct led_strip_composite_config led_strip_composite_config = {
     .strips = led_strip_children,
@@ -139,4 +133,5 @@ static const struct led_strip_composite_config led_strip_composite_config = {
 };
 
 DEVICE_DT_INST_DEFINE(0, &led_strip_composite_init, NULL, NULL, &led_strip_composite_config,
-                      POST_KERNEL, CONFIG_LED_STRIP_COMPOSITE_INIT_PRIORITY, &led_strip_composite_api);
+                      POST_KERNEL, CONFIG_LED_STRIP_COMPOSITE_INIT_PRIORITY,
+                      &led_strip_composite_api);

@@ -2,51 +2,51 @@
 # SPDX-License-Identifier: MIT
 
 config SHIELD_KEYCHRON_V1MAX
-    bool  
+    bool
 
 config ENABLE_WIN_LOCK
-    bool 
+    bool
 config ENABLE_WIN_LOCK_INDICATOR
     bool
     depends on ENABLE_WIN_LOCK
 
 config ENABLE_GPIO_LED
-    bool 
+    bool
 
 config ENABLE_NKRO_LED_FLASH
-    bool 
+    bool
 
 config KEYCHRON_RGB_ENABLE
-    bool 
+    bool
 
 config SNAP_CLICK_ENABLE
-    bool 
+    bool
 
 config RETAIL_DEMO_ENABLE
-    bool 
+    bool
 
 config SOFTWARE_SWITCH_LAYER
     bool
 
 config MAC_VIA_FUNC
-    bool 
+    bool
 
 config CHANGE_REPORT_RATE
-    bool 
+    bool
 
 config ADAPATIVE_NKRO
-   bool 
+   bool
 
 config FAST_KSCAN
-    bool 
+    bool
 
 config ADD_PPT_REPORT_RATE
     bool
 
 config COL_595_OUTPUT
-    bool 
+    bool
 config COL_595_AND_GPIOS_OUTPUT
-    bool 
+    bool
 
 config ENABLE_FLASH_PROTECT
     bool
@@ -57,30 +57,30 @@ config SHIELD_KEYCHRON_V1MAX_ANSI
 
 config SHIELD_KEYCHRON_V0_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_v0_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
     # select FAST_KSCAN
     select ADD_PPT_REPORT_RATE
-    select ENABLE_GPIO_LED  
+    select ENABLE_GPIO_LED
     select ADAPATIVE_NKRO
 
 config SHIELD_KEYCHRON_V1_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_v1_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
     # select FAST_KSCAN
     select ADD_PPT_REPORT_RATE
-    select ENABLE_GPIO_LED  
+    select ENABLE_GPIO_LED
     select ENABLE_FLASH_PROTECT
     select ADAPATIVE_NKRO
-    
+
 config SHIELD_KEYCHRON_V1_ULTRA_ISO
     def_bool $(shields_list_contains,keychron_v1_ultra_iso)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
@@ -89,7 +89,7 @@ config SHIELD_KEYCHRON_V1_ULTRA_ISO
 
 config SHIELD_KEYCHRON_V1_ULTRA_JP
     def_bool $(shields_list_contains,keychron_v1_ultra_jp)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
@@ -99,25 +99,25 @@ config SHIELD_KEYCHRON_V1_ULTRA_JP
 
 config SHIELD_KEYCHRON_V2_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_v2_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
 
 config SHIELD_KEYCHRON_V3_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_v3_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
     # select FAST_KSCAN
-    select ADD_PPT_REPORT_RATE 
-    select ENABLE_GPIO_LED   
+    select ADD_PPT_REPORT_RATE
+    select ENABLE_GPIO_LED
     select ADAPATIVE_NKRO
 
 config SHIELD_KEYCHRON_V5_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_v5_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
@@ -128,28 +128,28 @@ config SHIELD_KEYCHRON_V5_ULTRA_ANSI
 
 config SHIELD_KEYCHRON_V6_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_v6_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
     # select FAST_KSCAN
-    select ADD_PPT_REPORT_RATE    
+    select ADD_PPT_REPORT_RATE
     select ENABLE_GPIO_LED
     select ADAPATIVE_NKRO
 
 config SHIELD_KEYCHRON_V10_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_v10_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
     # select FAST_KSCAN
-    select ADD_PPT_REPORT_RATE    
+    select ADD_PPT_REPORT_RATE
     select ENABLE_GPIO_LED
 
 config SHIELD_KEYCHRON_RS45_ANSI
     def_bool $(shields_list_contains,keychron_rs45_ansi)
-    select SHIELD_KEYCHRON_V1MAX    
+    select SHIELD_KEYCHRON_V1MAX
     select ENABLE_WIN_LOCK
     select ENABLE_WIN_LOCK_INDICATOR
     select ENABLE_NKRO_LED_FLASH
@@ -159,7 +159,7 @@ config SHIELD_KEYCHRON_RS45_ANSI
 
 config SHIELD_KEYCHRON_RS87_ANSI
     def_bool $(shields_list_contains,keychron_rs87_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select ENABLE_GPIO_LED
     select ENABLE_WIN_LOCK
     select ENABLE_WIN_LOCK_INDICATOR
@@ -180,7 +180,7 @@ config SHIELD_KEYCHRON_RS87U_ANSI
 
 config SHIELD_KEYCHRON_QN104_ANSI
     def_bool $(shields_list_contains,keychron_qn104_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select ENABLE_GPIO_LED
     select ENABLE_WIN_LOCK
     select ENABLE_WIN_LOCK_INDICATOR
@@ -193,7 +193,7 @@ config SHIELD_KEYCHRON_QN104_ANSI
 
 config SHIELD_KEYCHRON_Q1_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_q1_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
@@ -205,7 +205,7 @@ config SHIELD_KEYCHRON_Q1_ULTRA_ANSI
 
 config SHIELD_KEYCHRON_Q3_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_q3_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
@@ -217,7 +217,7 @@ config SHIELD_KEYCHRON_Q3_ULTRA_ANSI
 
 config SHIELD_KEYCHRON_Q6_ULTRA_ANSI
     def_bool $(shields_list_contains,keychron_q6_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
@@ -229,7 +229,7 @@ config SHIELD_KEYCHRON_Q6_ULTRA_ANSI
 
 config SHIELD_KEYCHRON_K3SE2_ANSI
     def_bool $(shields_list_contains,keychron_k3se2_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select ENABLE_GPIO_LED
     select MAC_VIA_FUNC
     select ADD_PPT_REPORT_RATE
@@ -237,19 +237,19 @@ config SHIELD_KEYCHRON_K3SE2_ANSI
 
 config SHIELD_KEYCHRON_K5SE2_ANSI
     def_bool $(shields_list_contains,keychron_k5se2_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select ENABLE_GPIO_LED
     select MAC_VIA_FUNC
-    select ADD_PPT_REPORT_RATE    
+    select ADD_PPT_REPORT_RATE
     select COL_595_OUTPUT
     select COL_595_AND_GPIOS_OUTPUT
 
 config SHIELD_KEYCHRON_Z270_ANSI
     def_bool $(shields_list_contains,keychron_z270_ultra_ansi)
-    select SHIELD_KEYCHRON_V1MAX  
+    select SHIELD_KEYCHRON_V1MAX
     select KEYCHRON_RGB_ENABLE
     select SNAP_CLICK_ENABLE
     select RETAIL_DEMO_ENABLE
     select ADD_PPT_REPORT_RATE
-    select ENABLE_GPIO_LED  
+    select ENABLE_GPIO_LED
     select ENABLE_FLASH_PROTECT

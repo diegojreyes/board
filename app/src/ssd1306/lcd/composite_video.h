@@ -60,4 +60,3 @@ void composite_video_128x64_mono_init(void);
 #endif
 
 #endif
-

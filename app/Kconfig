@@ -243,7 +243,7 @@ config BT_PERIPHERAL_PREF_LATENCY
 
 config BT_PERIPHERAL_PREF_TIMEOUT
     default 400
-    
+
 config BT_SUPPORT_STATIC_RANDOM_ADDRESS
     bool "generate static random address when pairing"
     default n
@@ -672,9 +672,9 @@ if ZMK_LAUNCHER
 config LAUNCHER_USER_SET_DEBOUNCE
     bool "enable user set bebouce"
     default n
-endif     
+endif
 
-config ZMK_SSD1306  
+config ZMK_SSD1306
     bool "enable ssd1306 display"
     default n
 

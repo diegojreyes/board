@@ -25,7 +25,6 @@
  * @file lcd_il9163.h support for RGB TFT 128x128 display
  */
 
-
 #ifndef _TFT_IL9163_H_
 #define _TFT_IL9163_H_
 
@@ -54,7 +53,7 @@ extern "C" {
  * @param mode 0 or 1
  * @deprecated Use ssd1306_setMode() instead.
  */
-void        il9163_setMode(lcd_mode_t mode);
+void il9163_setMode(lcd_mode_t mode);
 
 /**
  * @brief Inits 128x128 RGB OLED display (based on il9163 controller).
@@ -64,7 +63,7 @@ void        il9163_setMode(lcd_mode_t mode);
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         il9163_128x128_init(void);
+void il9163_128x128_init(void);
 
 /**
  * @brief Sets screen offset (refer to datasheet of your display)
@@ -73,7 +72,7 @@ void         il9163_128x128_init(void);
  * @param x offset in pixels
  * @param y offset in pixels
  */
-void         il9163_setOffset(lcdint_t x, lcdint_t y);
+void il9163_setOffset(lcdint_t x, lcdint_t y);
 
 /**
  * @brief Inits 128x160 RGB OLED display (based on st7735 controller).
@@ -83,7 +82,7 @@ void         il9163_setOffset(lcdint_t x, lcdint_t y);
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         st7735_128x160_init(void);
+void st7735_128x160_init(void);
 
 /**
  * @brief Inits 128x128 RGB TFT display over spi (based on il9163 controller).
@@ -93,7 +92,7 @@ void         st7735_128x160_init(void);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         il9163_128x128_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void il9163_128x128_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @brief Inits 128x160 RGB TFT display over spi (based on st7735 controller).
@@ -103,7 +102,7 @@ void         il9163_128x128_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin)
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         st7735_128x160_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void st7735_128x160_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @}

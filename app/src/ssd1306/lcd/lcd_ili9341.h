@@ -25,7 +25,6 @@
  * @file lcd_ili9341.h support for RGB TFT 320x240 display
  */
 
-
 #ifndef _TFT_ILI9341_H_
 #define _TFT_ILI9341_H_
 
@@ -54,7 +53,7 @@ extern "C" {
  * @param mode 0 or 1
  * @deprecated Use ssd1306_setMode() instead.
  */
-void        ili9341_setMode(lcd_mode_t mode);
+void ili9341_setMode(lcd_mode_t mode);
 
 /**
  * @brief Inits 240x320 RGB OLED display (based on ili9341 controller).
@@ -64,7 +63,7 @@ void        ili9341_setMode(lcd_mode_t mode);
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         ili9341_240x320_init(void);
+void ili9341_240x320_init(void);
 
 /**
  * @brief Inits 240x320 RGB TFT display over spi (based on ili9341 controller).
@@ -74,7 +73,7 @@ void         ili9341_240x320_init(void);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         ili9341_240x320_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void ili9341_240x320_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @}

@@ -29,13 +29,14 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 void winlock_led_onoff(uint8_t onoff);
 void winlock_led_set(void);
 
-// #define USB_DEC_TO_BCD(dec)	((((dec) / 10) << 4) | ((dec) % 10))
+// #define USB_DEC_TO_BCD(dec)  ((((dec) / 10) << 4) | ((dec) % 10))
 
 /** USB Device release number (bcdDevice Descriptor field) */
-#define USB_BCD_VER		(USB_DEC_TO_BCD(APP_VERSION_MAJOR) << 8 | \
-				 USB_DEC_TO_BCD((APP_VERSION_MINOR*10)+APP_PATCHLEVEL))
+#define USB_BCD_VER                                                                                \
+    (USB_DEC_TO_BCD(APP_VERSION_MAJOR) << 8 |                                                      \
+     USB_DEC_TO_BCD((APP_VERSION_MINOR * 10) + APP_PATCHLEVEL))
 
-static struct gpio_dt_spec detect_usb =GPIO_DT_SPEC_GET(DT_NODELABEL(usb_det),gpios);
+static struct gpio_dt_spec detect_usb = GPIO_DT_SPEC_GET(DT_NODELABEL(usb_det), gpios);
 // {
 //     .port = DEVICE_DT_GET(DT_NODELABEL(gpioa)),
 //     .pin = 24,
@@ -56,12 +57,12 @@ static void raise_usb_status_changed_event(struct k_work *_work) {
 //         LOG_ERR("Unable to disable usb ,err = %d",rc);
 //     }
 // }
-K_WORK_DELAYABLE_DEFINE(usb_status_check_work,raise_usb_status_changed_event);
+K_WORK_DELAYABLE_DEFINE(usb_status_check_work, raise_usb_status_changed_event);
 K_WORK_DEFINE(usb_status_notifier_work, raise_usb_status_changed_event);
 // K_WORK_DELAYABLE_DEFINE(usb_disable_check,usb_disable_worker);
 
 // static uint8_t usb_check;
-uint8_t usb_configured=0;
+uint8_t usb_configured = 0;
 
 enum usb_dc_status_code zmk_usb_get_status(void) { return usb_status; }
 
@@ -89,8 +90,8 @@ void usb_status_cb(enum usb_dc_status_code status, const uint8_t *params) {
     // not used within ZMK
     // LOG_DBG("usb status cb: usb status is %d",status);
     // DBG_DIRECT("usb status cb: usb status is %d",status);
-    static uint8_t led_backup_state=0;
-    
+    static uint8_t led_backup_state = 0;
+
     // if(usb_check)
     // {
     //     if(status != USB_DC_SUSPEND)
@@ -103,7 +104,7 @@ void usb_status_cb(enum usb_dc_status_code status, const uint8_t *params) {
     if (status == USB_DC_SOF) {
         return;
     }
-    LOG_ERR("usb status:%d",status);
+    LOG_ERR("usb status:%d", status);
 #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
     if (status == USB_DC_RESET) {
         zmk_usb_hid_set_protocol(HID_PROTOCOL_REPORT);
@@ -111,38 +112,30 @@ void usb_status_cb(enum usb_dc_status_code status, const uint8_t *params) {
 #endif
     usb_status = status;
 
-    switch(status)
-    {
-        case USB_DC_SUSPEND:
-        {
-            if(usb_configured && zmk_endpoints_selected().transport==ZMK_TRANSPORT_USB)
-            {
-                led_backup_state= keyboard_get_led_state().raw;               
-                keyboad_led_set_onoff(0);
-#ifdef CONFIG_ENABLE_WIN_LOCK_INDICATOR                
-                winlock_led_onoff(0);
-#endif                 
-            }
+    switch (status) {
+    case USB_DC_SUSPEND: {
+        if (usb_configured && zmk_endpoints_selected().transport == ZMK_TRANSPORT_USB) {
+            led_backup_state = keyboard_get_led_state().raw;
+            keyboad_led_set_onoff(0);
+#ifdef CONFIG_ENABLE_WIN_LOCK_INDICATOR
+            winlock_led_onoff(0);
+#endif
         }
-        break;
+    } break;
 
-        case USB_DC_RESUME:
-        {
-            #ifdef CONFIG_ENABLE_WIN_LOCK_INDICATOR  
-            winlock_led_set();
-            #endif 
-        }
-        break;
+    case USB_DC_RESUME: {
+#ifdef CONFIG_ENABLE_WIN_LOCK_INDICATOR
+        winlock_led_set();
+#endif
+    } break;
 
-        case USB_DC_CONFIGURED:
-        {
-            usb_configured =1;
-        }
-        break;
-        case USB_DC_RESET:
-        case USB_DC_DISCONNECTED:
-            usb_configured=0;
-        default:
+    case USB_DC_CONFIGURED: {
+        usb_configured = 1;
+    } break;
+    case USB_DC_RESET:
+    case USB_DC_DISCONNECTED:
+        usb_configured = 0;
+    default:
         break;
     }
     // if(status == USB_DC_CONFIGURED)
@@ -156,41 +149,36 @@ extern struct usb_desc_header __usb_descriptor_start[];
 int zmk_usb_init(void) {
     int usb_enable_ret;
     int usb_disable_ret;
-    struct usb_device_descriptor *device_descriptor=(struct usb_device_descriptor *)__usb_descriptor_start;
-    if(device_descriptor)
-    {
+    struct usb_device_descriptor *device_descriptor =
+        (struct usb_device_descriptor *)__usb_descriptor_start;
+    if (device_descriptor) {
         device_descriptor->bcdDevice = sys_cpu_to_le16(USB_BCD_VER);
-        LOG_ERR("new usb bcd ver:%x,ver:%s",device_descriptor->bcdDevice,APP_VERSION_STRING);
+        LOG_ERR("new usb bcd ver:%x,ver:%s", device_descriptor->bcdDevice, APP_VERSION_STRING);
     }
     usb_enable_ret = usb_enable(usb_status_cb);
     gpio_pin_configure_dt(&detect_usb, GPIO_INPUT);
-    if(!gpio_pin_get(detect_usb.port, detect_usb.pin))
-    {
+    if (!gpio_pin_get(detect_usb.port, detect_usb.pin)) {
         LOG_ERR("usb is not insert");
         usb_disable_ret = usb_disable();
-        if(usb_disable_ret != 0)
-        {
-            LOG_ERR("Unable to disable usb ,err = %d",usb_disable_ret);
+        if (usb_disable_ret != 0) {
+            LOG_ERR("Unable to disable usb ,err = %d", usb_disable_ret);
             return -EINVAL;
         }
-    }
-    else
-    {
+    } else {
         // usb_check =1;
         // k_work_reschedule(&usb_disable_check,K_MSEC(1000));
-        k_work_reschedule(&usb_status_check_work,K_MSEC(3000));
+        k_work_reschedule(&usb_status_check_work, K_MSEC(3000));
     }
 
     if (usb_enable_ret != 0) {
-        LOG_ERR("Unable to enable USB ,err = %d",usb_enable_ret);
+        LOG_ERR("Unable to enable USB ,err = %d", usb_enable_ret);
         // app_mode.is_in_usb_mode = false;
         return -EINVAL;
     }
-    
+
     return 0;
 }
-int zmk_usb_deinit(void)
-{
+int zmk_usb_deinit(void) {
     int usb_enable_ret;
 
     usb_enable_ret = usb_disable();

@@ -40,7 +40,7 @@ static uint8_t _zmk_keymap_layer_default = 0;
 #endif
 
 #define TRANSFORMED_LAYER(node)                                                                    \
-    { LISTIFY(DT_PROP_LEN(node, bindings), ZMK_KEYMAP_EXTRACT_BINDING, (, ), node) }
+    {LISTIFY(DT_PROP_LEN(node, bindings), ZMK_KEYMAP_EXTRACT_BINDING, (, ), node)}
 
 #if ZMK_KEYMAP_HAS_SENSORS
 #define _TRANSFORM_SENSOR_ENTRY(idx, layer)                                                        \
@@ -168,13 +168,16 @@ const char *zmk_keymap_layer_name(uint8_t layer) {
 int invoke_locally(struct zmk_behavior_binding *binding, struct zmk_behavior_binding_event event,
                    bool pressed) {
 #ifdef CONFIG_RETAIL_DEMO_ENABLE
-    bool process_record_retail_demo(struct zmk_behavior_binding *binding, bool pressed);
-    if(!process_record_retail_demo(binding,pressed)) return 0;               
-#endif 
+    bool process_record_retail_demo(struct zmk_behavior_binding * binding, bool pressed);
+    if (!process_record_retail_demo(binding, pressed))
+        return 0;
+#endif
 #ifdef CONFIG_CHANGE_REPORT_RATE
-    bool user_action_check(struct zmk_behavior_binding *binding, struct zmk_behavior_binding_event event,bool pressed);
-    if(!user_action_check(binding,event,pressed)) return 0;          
-#endif 
+    bool user_action_check(struct zmk_behavior_binding * binding,
+                           struct zmk_behavior_binding_event event, bool pressed);
+    if (!user_action_check(binding, event, pressed))
+        return 0;
+#endif
     if (pressed) {
         return behavior_keymap_binding_pressed(binding, event);
     } else {
@@ -339,7 +342,6 @@ int keymap_listener(const zmk_event_t *eh) {
     return -ENOTSUP;
 }
 
-
 ZMK_LISTENER(keymap, keymap_listener);
 #if ZMK_KEYMAP_HAS_SENSORS
 ZMK_SUBSCRIPTION(keymap, zmk_sensor_event);
@@ -347,226 +349,201 @@ ZMK_SUBSCRIPTION(keymap, zmk_sensor_event);
 
 ZMK_SUBSCRIPTION(keymap, zmk_position_state_changed);
 
-
-
 #if CONFIG_ZMK_LAUNCHER
-void update_zmk_keymap(uint8_t layer,uint8_t pos,struct zmk_behavior_binding* binding)
-{
-    zmk_keymap[layer][pos].behavior_dev =binding->behavior_dev;
-    zmk_keymap[layer][pos].param1 =binding->param1;
-    zmk_keymap[layer][pos].param2 =binding->param2;
+void update_zmk_keymap(uint8_t layer, uint8_t pos, struct zmk_behavior_binding *binding) {
+    zmk_keymap[layer][pos].behavior_dev = binding->behavior_dev;
+    zmk_keymap[layer][pos].param1 = binding->param1;
+    zmk_keymap[layer][pos].param2 = binding->param2;
 }
-struct zmk_behavior_binding * get_zmk_keymap(uint8_t layer ,uint8_t pos)
-{
+struct zmk_behavior_binding *get_zmk_keymap(uint8_t layer, uint8_t pos) {
     return &zmk_keymap[layer][pos];
 }
 #if ZMK_KEYMAP_HAS_SENSORS
 
 static struct zmk_behavior_binding sensor_layer_binding[ZMK_KEYMAP_LAYERS_LEN][2];
-int sensor_layer_init(void)
-{
-    for(int i=0;i<ZMK_KEYMAP_LAYERS_LEN;i++)
-    {
-        struct zmk_behavior_binding * binding = &zmk_sensor_keymap[i][0];
-        if(!binding) continue;
-        if(memcmp(binding->behavior_dev,"enc_key_press",13)==0)
-        {
+int sensor_layer_init(void) {
+    for (int i = 0; i < ZMK_KEYMAP_LAYERS_LEN; i++) {
+        struct zmk_behavior_binding *binding = &zmk_sensor_keymap[i][0];
+        if (!binding)
+            continue;
+        if (memcmp(binding->behavior_dev, "enc_key_press", 13) == 0) {
             sensor_layer_binding[i][0].behavior_dev = "key_press";
-            sensor_layer_binding[i][0].param1 =binding->param1;
+            sensor_layer_binding[i][0].param1 = binding->param1;
             sensor_layer_binding[i][1].behavior_dev = "key_press";
-            sensor_layer_binding[i][1].param1 =binding->param2;
-        }
-        else
-        {
+            sensor_layer_binding[i][1].param1 = binding->param2;
+        } else {
             const struct device *dev = zmk_behavior_get_binding(binding->behavior_dev);
             const struct behavior_sensor_rotate_config *cfg = dev->config;
             sensor_layer_binding[i][0].behavior_dev = cfg->cw_binding.behavior_dev;
-            sensor_layer_binding[i][0].param1 =cfg->cw_binding.param1;
+            sensor_layer_binding[i][0].param1 = cfg->cw_binding.param1;
             sensor_layer_binding[i][1].behavior_dev = cfg->ccw_binding.behavior_dev;
             sensor_layer_binding[i][1].param1 = cfg->ccw_binding.param1;
         }
-        
-        LOG_DBG("cc:%s,p:%x,%x,ccw:%s,p:%x,%x",sensor_layer_binding[i][0].behavior_dev,sensor_layer_binding[i][0].param1,sensor_layer_binding[i][0].param2,sensor_layer_binding[i][1].behavior_dev,sensor_layer_binding[i][1].param1,sensor_layer_binding[i][1].param2);
+
+        LOG_DBG("cc:%s,p:%x,%x,ccw:%s,p:%x,%x", sensor_layer_binding[i][0].behavior_dev,
+                sensor_layer_binding[i][0].param1, sensor_layer_binding[i][0].param2,
+                sensor_layer_binding[i][1].behavior_dev, sensor_layer_binding[i][1].param1,
+                sensor_layer_binding[i][1].param2);
     }
     return 0;
 }
-struct zmk_behavior_binding * get_zmk_encode_map(uint8_t layer )
-{
+struct zmk_behavior_binding *get_zmk_encode_map(uint8_t layer) {
 
     return &sensor_layer_binding[layer][0];
-
 }
-void update_zmk_encoder_map(uint8_t layer,bool cw,struct zmk_behavior_binding* binding,char* target_binding)
-{
-    zmk_sensor_keymap[layer]->behavior_dev =binding->behavior_dev;
-    struct zmk_behavior_binding * local_binding = cw?&sensor_layer_binding[layer][0]:&sensor_layer_binding[layer][1];
-    if(memcmp(binding->behavior_dev,"enc_key_press",13)==0 )
-        local_binding->behavior_dev="key_press";
-    else if(memcmp(binding->behavior_dev,"rgb_encoder",11)==0)
-        local_binding->behavior_dev="rgb_ug";
-    else if(memcmp(binding->behavior_dev,"mouse_encoder",13)==0)
-    {
-        local_binding->behavior_dev="mouse_key_press";
-    }
-    else if(memcmp(binding->behavior_dev,"encoder_any",11)==0)
-    {
-        local_binding->behavior_dev =target_binding;
+void update_zmk_encoder_map(uint8_t layer, bool cw, struct zmk_behavior_binding *binding,
+                            char *target_binding) {
+    zmk_sensor_keymap[layer]->behavior_dev = binding->behavior_dev;
+    struct zmk_behavior_binding *local_binding =
+        cw ? &sensor_layer_binding[layer][0] : &sensor_layer_binding[layer][1];
+    if (memcmp(binding->behavior_dev, "enc_key_press", 13) == 0)
+        local_binding->behavior_dev = "key_press";
+    else if (memcmp(binding->behavior_dev, "rgb_encoder", 11) == 0)
+        local_binding->behavior_dev = "rgb_ug";
+    else if (memcmp(binding->behavior_dev, "mouse_encoder", 13) == 0) {
+        local_binding->behavior_dev = "mouse_key_press";
+    } else if (memcmp(binding->behavior_dev, "encoder_any", 11) == 0) {
+        local_binding->behavior_dev = target_binding;
     }
     local_binding->param1 = binding->param1;
     local_binding->param2 = binding->param2;
 }
-SYS_INIT(sensor_layer_init, APPLICATION,CONFIG_APPLICATION_INIT_PRIORITY);
-#endif 
+SYS_INIT(sensor_layer_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+#endif
 #endif
 
 #ifdef CONFIG_CHANGE_REPORT_RATE
 #include "rgb/rgb_matrix.h"
-#define ACTION_KEY1  0x001d  //z
-#define ACTION_KEY2  0x001b  //x
-#define ACTION_KEY3  0x0006  //c
-#define ACTION_KEY4  0x000e  //k
-#define ACTION_FN1   55//fn1
+#define ACTION_KEY1 0x001d // z
+#define ACTION_KEY2 0x001b // x
+#define ACTION_KEY3 0x0006 // c
+#define ACTION_KEY4 0x000e // k
+#define ACTION_FN1 55      // fn1
 void set_report_rate_div(uint8_t div);
-void set_report_rate(uint8_t div );
+void set_report_rate(uint8_t div);
 void launcher_save_debounce(void);
-void led_all_on(uint8_t r,uint8_t g, uint8_t b);
+void led_all_on(uint8_t r, uint8_t g, uint8_t b);
 
 typedef struct {
-    uint8_t key3_press:1;
-    uint8_t action:7;
+    uint8_t key3_press : 1;
+    uint8_t action : 7;
 } key_action_t;
 key_action_t key_action;
 // static uint32_t key_press_time;
 
-bool user_action_check(struct zmk_behavior_binding *binding, struct zmk_behavior_binding_event event,bool pressed)
-{
-    static uint8_t key_state =0;
-    uint32_t pos=0;
-    
-    if(memcmp(binding->behavior_dev,"momentary_layer",15)==0)
-    {
-        LOG_ERR("binding %s,key:%x",binding->behavior_dev,binding->param1);
-        if(binding->param1==1 || binding->param1 ==3)
-        {
+bool user_action_check(struct zmk_behavior_binding *binding,
+                       struct zmk_behavior_binding_event event, bool pressed) {
+    static uint8_t key_state = 0;
+    uint32_t pos = 0;
+
+    if (memcmp(binding->behavior_dev, "momentary_layer", 15) == 0) {
+        LOG_ERR("binding %s,key:%x", binding->behavior_dev, binding->param1);
+        if (binding->param1 == 1 || binding->param1 == 3) {
             pos = ACTION_FN1;
         }
-    }
-    else if(memcmp(binding->behavior_dev,"key_press",9)==0)
-    {
-        LOG_ERR("binding key:%x",binding->param1);
+    } else if (memcmp(binding->behavior_dev, "key_press", 9) == 0) {
+        LOG_ERR("binding key:%x", binding->param1);
         uint32_t key = binding->param1 & 0xffff;
 
-        switch(key)
-        {
-            case ACTION_KEY1:
-                pos = ACTION_KEY1;
+        switch (key) {
+        case ACTION_KEY1:
+            pos = ACTION_KEY1;
             break;
-            case ACTION_KEY2:
-                pos = ACTION_KEY2;
+        case ACTION_KEY2:
+            pos = ACTION_KEY2;
             break;
-            case ACTION_KEY3:
-                pos = ACTION_KEY3;
+        case ACTION_KEY3:
+            pos = ACTION_KEY3;
             break;
-            case ACTION_KEY4:
-                pos = ACTION_KEY4;
+        case ACTION_KEY4:
+            pos = ACTION_KEY4;
             break;
         }
-       
     }
-    if(pos==0) return true;
-    if(pressed)
-    {
-        switch(pos)
-        {
-            case ACTION_KEY1:
-                key_state |= 1<<0;
+    if (pos == 0)
+        return true;
+    if (pressed) {
+        switch (pos) {
+        case ACTION_KEY1:
+            key_state |= 1 << 0;
             break;
-            case ACTION_KEY2:
-                key_state |= 1<<1;
+        case ACTION_KEY2:
+            key_state |= 1 << 1;
             break;
-            case ACTION_KEY3:
-                key_state |= 1<<2;
+        case ACTION_KEY3:
+            key_state |= 1 << 2;
             break;
-            case ACTION_KEY4:
-                key_state |= 1<<3;
+        case ACTION_KEY4:
+            key_state |= 1 << 3;
             break;
-            case ACTION_FN1:
-                key_state |= 1<<4;
+        case ACTION_FN1:
+            key_state |= 1 << 4;
             break;
         }
-        LOG_ERR("ACTION test state:%x,key:%x",key_state,pos);
-        if(!key_action.key3_press && ((key_state ==0x19) || (key_state ==0x1c) || (key_state ==0x1a)))
-        {
+        LOG_ERR("ACTION test state:%x,key:%x", key_state, pos);
+        if (!key_action.key3_press &&
+            ((key_state == 0x19) || (key_state == 0x1c) || (key_state == 0x1a))) {
             LOG_DBG("test 3key press");
-            key_action.key3_press =1;
-            if(key_state ==0x19)
-                key_action.action =3;
-            else if(key_state ==0x1c)
-                key_action.action =0;
-            else if(key_state ==0x1a)
-                key_action.action =1;
+            key_action.key3_press = 1;
+            if (key_state == 0x19)
+                key_action.action = 3;
+            else if (key_state == 0x1c)
+                key_action.action = 0;
+            else if (key_state == 0x1a)
+                key_action.action = 1;
             // key_press_time = k_uptime_get_32();
-            switch(key_action.action)
-            {
-                case 0:
-                    led_all_on(0xff,0,0);
+            switch (key_action.action) {
+            case 0:
+                led_all_on(0xff, 0, 0);
                 break;
-                case 1:
-                    led_all_on(0,0xff,0);
+            case 1:
+                led_all_on(0, 0xff, 0);
                 break;
-                case 3:
-                    led_all_on(0,0,0xff);
+            case 3:
+                led_all_on(0, 0, 0xff);
                 break;
             }
 
             set_report_rate_div(key_action.action);
-            LOG_ERR("set report rate:%d",key_action.action);
+            LOG_ERR("set report rate:%d", key_action.action);
             set_report_rate(key_action.action);
             void update_launcher_report_rate(void);
             update_launcher_report_rate();
             launcher_save_debounce();
 
-            if(key_state & 0x01)
-            {
+            if (key_state & 0x01) {
                 binding->param1 = ACTION_KEY1;
                 behavior_keymap_binding_released(binding, event);
             }
-            if(key_state & 0x02)
-            {
+            if (key_state & 0x02) {
                 binding->param1 = ACTION_KEY2;
                 behavior_keymap_binding_released(binding, event);
             }
-            if(key_state & 0x04)
-            {
+            if (key_state & 0x04) {
                 binding->param1 = ACTION_KEY3;
                 behavior_keymap_binding_released(binding, event);
             }
-            if(key_state & 0x08)
-            {
+            if (key_state & 0x08) {
                 binding->param1 = ACTION_KEY4;
                 behavior_keymap_binding_released(binding, event);
             }
-            
-            return false;
 
+            return false;
         }
-    }
-    else 
-    {
-        if(pos ==ACTION_KEY1 )
-            key_state &= ~(1<<0);
-        else if(pos ==ACTION_KEY2)
-            key_state &= ~(1<<1);
-        if(pos ==ACTION_KEY3 )
-            key_state &= ~(1<<2);
-        else if(pos ==ACTION_KEY4)
-            key_state &= ~(1<<3);
-        else if(pos ==ACTION_FN1)
-            key_state &= ~(1<<4);
-     
-        key_action.key3_press =0;
- 
+    } else {
+        if (pos == ACTION_KEY1)
+            key_state &= ~(1 << 0);
+        else if (pos == ACTION_KEY2)
+            key_state &= ~(1 << 1);
+        if (pos == ACTION_KEY3)
+            key_state &= ~(1 << 2);
+        else if (pos == ACTION_KEY4)
+            key_state &= ~(1 << 3);
+        else if (pos == ACTION_FN1)
+            key_state &= ~(1 << 4);
+
+        key_action.key3_press = 0;
     }
     return true;
 }
-#endif 
+#endif

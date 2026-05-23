@@ -17,9 +17,7 @@
 #pragma once
 #include <stdint.h>
 
-
 void retail_demo_start(void);
 void retail_demo_stop(void);
 
 // bool process_record_retail_demo(uint16_t keycode, keyrecord_t * record);
-

@@ -29,15 +29,9 @@ static uint8_t keys_held = 0;
 #if CONFIG_ADAPATIVE_NKRO
 struct zmk_adapative_nkro adapative_nkro;
 static ATOMIC_DEFINE(report_changed, 2);
-bool nkro_changed(void)
-{
-    return atomic_test_and_clear_bit(report_changed,NKRO_RPT);
-}
-bool kb_changed(void)
-{
-    return atomic_test_and_clear_bit(report_changed,KB_RPT);
-}
-#endif 
+bool nkro_changed(void) { return atomic_test_and_clear_bit(report_changed, NKRO_RPT); }
+bool kb_changed(void) { return atomic_test_and_clear_bit(report_changed, KB_RPT); }
+#endif
 
 #if IS_ENABLED(CONFIG_ZMK_MOUSE)
 
@@ -67,14 +61,13 @@ static bool zmk_nkro_enable;
 zmk_mod_flags_t zmk_hid_get_explicit_mods(void) { return explicit_modifiers; }
 
 int zmk_hid_register_mod(zmk_mod_t modifier) {
-#ifdef CONFIG_ENABLE_WIN_LOCK     
-    if(fn_win_lock && (modifier == 7 || modifier ==3)) 
-    {
-        explicit_modifier_counts[modifier]=0;
-        LOG_ERR("not send modifier:%d",modifier);
+#ifdef CONFIG_ENABLE_WIN_LOCK
+    if (fn_win_lock && (modifier == 7 || modifier == 3)) {
+        explicit_modifier_counts[modifier] = 0;
+        LOG_ERR("not send modifier:%d", modifier);
         return 0;
     }
-#endif 
+#endif
     explicit_modifier_counts[modifier]++;
     LOG_DBG("Modifier %d count %d", modifier, explicit_modifier_counts[modifier]);
     WRITE_BIT(explicit_modifiers, modifier, true);
@@ -82,12 +75,12 @@ int zmk_hid_register_mod(zmk_mod_t modifier) {
     SET_MODIFIERS(explicit_modifiers);
 #if CONFIG_ADAPATIVE_NKRO
     int ret = current == GET_MODIFIERS ? 0 : 1;
-    if(ret)
-        atomic_set_bit(report_changed,KB_RPT);
+    if (ret)
+        atomic_set_bit(report_changed, KB_RPT);
     return ret;
-#else    
+#else
     return current == GET_MODIFIERS ? 0 : 1;
-#endif 
+#endif
 }
 
 int zmk_hid_unregister_mod(zmk_mod_t modifier) {
@@ -98,12 +91,11 @@ int zmk_hid_unregister_mod(zmk_mod_t modifier) {
     explicit_modifier_counts[modifier]--;
 #if CONFIG_ZMK_LAUNCHER
     extern uint8_t macro_running;
-    if(macro_running)
-    {
-        explicit_modifier_counts[modifier]=0;
-        LOG_WRN("clear modifier:%d",modifier);
+    if (macro_running) {
+        explicit_modifier_counts[modifier] = 0;
+        LOG_WRN("clear modifier:%d", modifier);
     }
-#endif         
+#endif
     LOG_DBG("Modifier %d count: %d", modifier, explicit_modifier_counts[modifier]);
     if (explicit_modifier_counts[modifier] == 0) {
         LOG_DBG("Modifier %d released", modifier);
@@ -113,12 +105,12 @@ int zmk_hid_unregister_mod(zmk_mod_t modifier) {
     SET_MODIFIERS(explicit_modifiers);
 #if CONFIG_ADAPATIVE_NKRO
     int ret = current == GET_MODIFIERS ? 0 : 1;
-    if(ret)
-        atomic_set_bit(report_changed,KB_RPT);
+    if (ret)
+        atomic_set_bit(report_changed, KB_RPT);
     return ret;
-#else    
+#else
     return current == GET_MODIFIERS ? 0 : 1;
-#endif 
+#endif
 }
 
 bool zmk_hid_mod_is_pressed(zmk_mod_t modifier) {
@@ -164,59 +156,50 @@ static uint8_t try_toggle_count;
 static uint8_t toggle_nkro_up;
 void toggle_nkro_cb(struct k_work *work);
 K_WORK_DELAYABLE_DEFINE(toggle_nkro, toggle_nkro_cb);
-void toggle_nkro_cb(struct k_work *work)
-{
-    if(!all_key_up())
-    {
-        LOG_ERR("try toggle count:%d",try_toggle_count);
-        if(try_toggle_count++ <200)
-        {
-            k_work_reschedule(&toggle_nkro,K_MSEC(20));
-        }
-        else if(!toggle_nkro_up)
-        {
-            k_work_reschedule(&toggle_nkro,K_MSEC(20));
+void toggle_nkro_cb(struct k_work *work) {
+    if (!all_key_up()) {
+        LOG_ERR("try toggle count:%d", try_toggle_count);
+        if (try_toggle_count++ < 200) {
+            k_work_reschedule(&toggle_nkro, K_MSEC(20));
+        } else if (!toggle_nkro_up) {
+            k_work_reschedule(&toggle_nkro, K_MSEC(20));
         }
         return;
     }
     zmk_hid_keyboard_clear();
     zmk_endpoints_send_report(HID_USAGE_KEY);
-    
-    zmk_nkro_enable =zmk_nkro_enable?0:1 ;   
-    keyboard_report.report_id = zmk_nkro_enable?ZMK_HID_REPORT_ID_KEYBOARD_NKRO:ZMK_HID_REPORT_ID_KEYBOARD;
-    keyboard_report.body._reserved =zmk_nkro_enable;
-    LOG_ERR("nkro:%d",zmk_nkro_enable);
+
+    zmk_nkro_enable = zmk_nkro_enable ? 0 : 1;
+    keyboard_report.report_id =
+        zmk_nkro_enable ? ZMK_HID_REPORT_ID_KEYBOARD_NKRO : ZMK_HID_REPORT_ID_KEYBOARD;
+    keyboard_report.body._reserved = zmk_nkro_enable;
+    LOG_ERR("nkro:%d", zmk_nkro_enable);
     launcher_update_nkro(zmk_nkro_enable);
 }
-void zmk_toggle_nkro_up(void)
-{
-    toggle_nkro_up=1;
-    try_toggle_count=0;
+void zmk_toggle_nkro_up(void) {
+    toggle_nkro_up = 1;
+    try_toggle_count = 0;
 }
-void zmk_toggle_nkro(void)
-{
-#if !(CONFIG_ADAPATIVE_NKRO)    
-    toggle_nkro_up =0;
+void zmk_toggle_nkro(void) {
+#if !(CONFIG_ADAPATIVE_NKRO)
+    toggle_nkro_up = 0;
     zmk_hid_keyboard_clear();
     zmk_endpoints_send_report(HID_USAGE_KEY);
-    //delay some time to change nkro!
-    try_toggle_count=0;
-    k_work_reschedule(&toggle_nkro,K_MSEC(100));
-#if CONFIG_ENABLE_NKRO_LED_FLASH    
+    // delay some time to change nkro!
+    try_toggle_count = 0;
+    k_work_reschedule(&toggle_nkro, K_MSEC(100));
+#if CONFIG_ENABLE_NKRO_LED_FLASH
     void led_recover(uint8_t stop_rgb);
     led_recover(0);
-#endif    
-#endif  
+#endif
+#endif
 }
-bool zmk_get_nkro_status(void)
-{
-    return zmk_nkro_enable;
-}
-void zmk_set_nkro_status(bool enable)
-{
+bool zmk_get_nkro_status(void) { return zmk_nkro_enable; }
+void zmk_set_nkro_status(bool enable) {
     zmk_nkro_enable = enable;
-    keyboard_report.report_id = zmk_nkro_enable?ZMK_HID_REPORT_ID_KEYBOARD_NKRO:ZMK_HID_REPORT_ID_KEYBOARD;
-    keyboard_report.body._reserved =zmk_nkro_enable;
+    keyboard_report.report_id =
+        zmk_nkro_enable ? ZMK_HID_REPORT_ID_KEYBOARD_NKRO : ZMK_HID_REPORT_ID_KEYBOARD;
+    keyboard_report.body._reserved = zmk_nkro_enable;
 }
 #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
 zmk_hid_boot_report_t *zmk_hid_get_boot_report(void) {
@@ -224,10 +207,9 @@ zmk_hid_boot_report_t *zmk_hid_get_boot_report(void) {
         return boot_report_rollover(keyboard_report.body.modifiers);
     }
     boot_report.modifiers = keyboard_report.body.modifiers;
-    if(!zmk_nkro_enable)
-    {
-    #if CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE != HID_BOOT_KEY_LEN
-    // Form a boot report from a report of different size.
+    if (!zmk_nkro_enable) {
+#if CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE != HID_BOOT_KEY_LEN
+        // Form a boot report from a report of different size.
         int out = 0;
         for (int i = 0; i < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; i++) {
             uint8_t key = keyboard_report.body.keys[i];
@@ -244,11 +226,10 @@ zmk_hid_boot_report_t *zmk_hid_get_boot_report(void) {
         }
 
         return &boot_report;
-    #else
+#else
         return &keyboard_report.body;
-    #endif 
-    }
-    else {
+#endif
+    } else {
         memset(&boot_report.keys, 0, HID_BOOT_KEY_LEN);
         int ix = 0;
         uint8_t base_code = 0;
@@ -271,114 +252,97 @@ zmk_hid_boot_report_t *zmk_hid_get_boot_report(void) {
 }
 #endif
 #if CONFIG_ADAPATIVE_NKRO
-static inline int TOGGLE_KEYBOARD_nkro(uint16_t code, uint16_t val,uint8_t nkro)
-{
-    
-    if(nkro)
-    {
-        if(val) {
-            adapative_nkro.nkro_bits_count ++;
-            atomic_set_bit(report_changed,NKRO_RPT);
-            adapative_nkro.nkro_report.body._reserved =1;
+static inline int TOGGLE_KEYBOARD_nkro(uint16_t code, uint16_t val, uint8_t nkro) {
+
+    if (nkro) {
+        if (val) {
+            adapative_nkro.nkro_bits_count++;
+            atomic_set_bit(report_changed, NKRO_RPT);
+            adapative_nkro.nkro_report.body._reserved = 1;
             WRITE_BIT(adapative_nkro.nkro_report.body.keys[code / 8], code % 8, val);
-        }
-        else {
-            if(adapative_nkro.nkro_report.body.keys[code/8] & BIT(code%8)){
+        } else {
+            if (adapative_nkro.nkro_report.body.keys[code / 8] & BIT(code % 8)) {
                 WRITE_BIT(adapative_nkro.nkro_report.body.keys[code / 8], code % 8, val);
-                adapative_nkro.nkro_bits_count --;
-                atomic_set_bit(report_changed,NKRO_RPT);
-                adapative_nkro.nkro_report.body._reserved =1;
+                adapative_nkro.nkro_bits_count--;
+                atomic_set_bit(report_changed, NKRO_RPT);
+                adapative_nkro.nkro_report.body._reserved = 1;
                 return 1;
             }
         }
-        
-    }
-    else
-    {
-        for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) 
-        {                          
-            if (keyboard_report.body.keys[idx] != code) {                                             
-                continue;                                                                              
-            }                                                                                          
-            keyboard_report.body.keys[idx] = val; 
+
+    } else {
+        for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) {
+            if (keyboard_report.body.keys[idx] != code) {
+                continue;
+            }
+            keyboard_report.body.keys[idx] = val;
 
             if (val) {
-                adapative_nkro.kb_keys_count++;   
-                break;                                                                                 
-            }  
-            else
-            {
+                adapative_nkro.kb_keys_count++;
+                break;
+            } else {
                 adapative_nkro.kb_keys_count--;
-            }                                                                                    
+            }
         }
     }
     return 0;
 }
-#endif 
-static inline int TOGGLE_KEYBOARD(uint16_t code, uint16_t val)
-{
-    if(zmk_nkro_enable)
+#endif
+static inline int TOGGLE_KEYBOARD(uint16_t code, uint16_t val) {
+    if (zmk_nkro_enable)
         WRITE_BIT(keyboard_report.body.keys[code / 8], code % 8, val);
-    else
-    {
-        for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) 
-        {                          
-            if (keyboard_report.body.keys[idx] != code) {                                             
-                continue;                                                                              
-            }                                                                                          
-            keyboard_report.body.keys[idx] = val;                                                      
-            if (val) {                                                                                 
-                break;                                                                                 
-            }                                                                                          
+    else {
+        for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) {
+            if (keyboard_report.body.keys[idx] != code) {
+                continue;
+            }
+            keyboard_report.body.keys[idx] = val;
+            if (val) {
+                break;
+            }
         }
     }
     return 0;
-} 
-static inline int TOGGLE_CONSUMER(uint16_t match,uint16_t val)
-{
+}
+static inline int TOGGLE_CONSUMER(uint16_t match, uint16_t val) {
 #if IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_BASIC)
-    if(val>0xff) return -ENOTSUP;
-#endif   
-     for (int idx = 0; idx < CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE; idx++) {                         
-        if (consumer_report.body.keys[idx] != match) {                                             
-            continue;                                                                              
-        }                                                                                          
-        consumer_report.body.keys[idx] = val;                                                      
-        if (val) {                                                                                 
-            break;                                                                                 
-        }                                                                                          
+    if (val > 0xff)
+        return -ENOTSUP;
+#endif
+    for (int idx = 0; idx < CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE; idx++) {
+        if (consumer_report.body.keys[idx] != match) {
+            continue;
+        }
+        consumer_report.body.keys[idx] = val;
+        if (val) {
+            break;
+        }
     }
     return 0;
 }
 static inline int select_keyboard_usage(zmk_key_t usage) {
 #if CONFIG_ADAPATIVE_NKRO
-    if(adapative_nkro.kb_keys_count == CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE)
-    {
+    if (adapative_nkro.kb_keys_count == CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE) {
         if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
             return -EINVAL;
         }
-        TOGGLE_KEYBOARD_nkro(usage, 1,1);
-    }
-    else
-    {
-        TOGGLE_KEYBOARD_nkro(0U, usage,0);
+        TOGGLE_KEYBOARD_nkro(usage, 1, 1);
+    } else {
+        TOGGLE_KEYBOARD_nkro(0U, usage, 0);
 
-        atomic_set_bit(report_changed,KB_RPT);
+        atomic_set_bit(report_changed, KB_RPT);
     }
 #else
-    if(zmk_nkro_enable)
-    {
+    if (zmk_nkro_enable) {
 
         if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
             return -EINVAL;
         }
         TOGGLE_KEYBOARD(usage, 1);
-    }
-    else
-    {
+    } else {
         TOGGLE_KEYBOARD(0U, usage);
     }
-#endif 
+#endif
 #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
     ++keys_held;
 #endif
@@ -387,32 +351,28 @@ static inline int select_keyboard_usage(zmk_key_t usage) {
 
 static inline int deselect_keyboard_usage(zmk_key_t usage) {
 #if CONFIG_ADAPATIVE_NKRO
-    if(adapative_nkro.nkro_bits_count)
-    {
+    if (adapative_nkro.nkro_bits_count) {
         if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
             return -EINVAL;
         }
-        if(TOGGLE_KEYBOARD_nkro(usage, 0,1)) return 0;
-
+        if (TOGGLE_KEYBOARD_nkro(usage, 0, 1))
+            return 0;
     }
-    TOGGLE_KEYBOARD_nkro(usage, 0U,0);
+    TOGGLE_KEYBOARD_nkro(usage, 0U, 0);
 
-    atomic_set_bit(report_changed,KB_RPT);
-    LOG_ERR("kb keys:%d,%d",adapative_nkro.kb_keys_count,adapative_nkro.nkro_bits_count);
+    atomic_set_bit(report_changed, KB_RPT);
+    LOG_ERR("kb keys:%d,%d", adapative_nkro.kb_keys_count, adapative_nkro.nkro_bits_count);
 #else
-    if(zmk_nkro_enable)
-    {
+    if (zmk_nkro_enable) {
 
         if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
             return -EINVAL;
         }
         TOGGLE_KEYBOARD(usage, 0);
-    }
-    else 
-    {
+    } else {
         TOGGLE_KEYBOARD(usage, 0U);
     }
-#endif 
+#endif
 #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
     --keys_held;
 #endif
@@ -421,15 +381,12 @@ static inline int deselect_keyboard_usage(zmk_key_t usage) {
 
 static inline bool check_keyboard_usage(zmk_key_t usage) {
 #if CONFIG_ADAPATIVE_NKRO
-    if(adapative_nkro.nkro_bits_count)
-    {
-         if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
+    if (adapative_nkro.nkro_bits_count) {
+        if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
             return false;
         }
-        return adapative_nkro.nkro_report.body.keys[usage/8] & (1<< (usage%8));
-    }
-    else
-    {
+        return adapative_nkro.nkro_report.body.keys[usage / 8] & (1 << (usage % 8));
+    } else {
         for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) {
             if (keyboard_report.body.keys[idx] == usage) {
                 return true;
@@ -437,16 +394,13 @@ static inline bool check_keyboard_usage(zmk_key_t usage) {
         }
         return false;
     }
-#else    
-    if(zmk_nkro_enable)
-    {
+#else
+    if (zmk_nkro_enable) {
         if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
             return false;
         }
         return keyboard_report.body.keys[usage / 8] & (1 << (usage % 8));
-    }
-    else
-    {
+    } else {
         for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) {
             if (keyboard_report.body.keys[idx] == usage) {
                 return true;
@@ -509,21 +463,19 @@ bool zmk_hid_keyboard_is_pressed(zmk_key_t code) {
 
 void zmk_hid_keyboard_clear(void) {
     memset(&keyboard_report.body, 0, sizeof(keyboard_report.body));
-    keyboard_report.body._reserved = zmk_nkro_enable?1:0;
+    keyboard_report.body._reserved = zmk_nkro_enable ? 1 : 0;
 #if CONFIG_ADAPATIVE_NKRO
-    memset(&adapative_nkro.nkro_report.body,0,sizeof(adapative_nkro.nkro_report.body));
-    
-    if(adapative_nkro.nkro_bits_count)
-    {
-        atomic_set_bit(report_changed,NKRO_RPT);
-        adapative_nkro.nkro_bits_count=0;
+    memset(&adapative_nkro.nkro_report.body, 0, sizeof(adapative_nkro.nkro_report.body));
+
+    if (adapative_nkro.nkro_bits_count) {
+        atomic_set_bit(report_changed, NKRO_RPT);
+        adapative_nkro.nkro_bits_count = 0;
     }
-    if(adapative_nkro.kb_keys_count)
-    {
-        atomic_set_bit(report_changed,KB_RPT);
-        adapative_nkro.kb_keys_count=0;
+    if (adapative_nkro.kb_keys_count) {
+        atomic_set_bit(report_changed, KB_RPT);
+        adapative_nkro.kb_keys_count = 0;
     }
-#endif 
+#endif
 }
 
 int zmk_hid_consumer_press(zmk_key_t code) {
@@ -644,23 +596,16 @@ void zmk_hid_mouse_clear(void) { memset(&mouse_report.body, 0, sizeof(mouse_repo
 
 #endif // IS_ENABLED(CONFIG_ZMK_MOUSE)
 
-struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report(void) {
-    return &keyboard_report;
-}
+struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report(void) { return &keyboard_report; }
 
-struct zmk_hid_consumer_report *zmk_hid_get_consumer_report(void) {
-    return &consumer_report;
-}
+struct zmk_hid_consumer_report *zmk_hid_get_consumer_report(void) { return &consumer_report; }
 
 #if IS_ENABLED(CONFIG_ZMK_MOUSE)
 
-struct zmk_hid_mouse_report *zmk_hid_get_mouse_report(void) {
-    return &mouse_report;
-}
+struct zmk_hid_mouse_report *zmk_hid_get_mouse_report(void) { return &mouse_report; }
 
-void zmk_hid_set_mouse_report(uint8_t *payload)
-{
-    memcpy(&mouse_report.body,payload,sizeof(mouse_report.body));
+void zmk_hid_set_mouse_report(uint8_t *payload) {
+    memcpy(&mouse_report.body, payload, sizeof(mouse_report.body));
 }
 
 #endif // IS_ENABLED(CONFIG_ZMK_MOUSE)

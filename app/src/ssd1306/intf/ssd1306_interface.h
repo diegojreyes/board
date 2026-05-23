@@ -25,7 +25,6 @@
  * @file ssd1306_interface.h SSD1306 interface functions.
  */
 
-
 #ifndef _SSD1306_INTERFACE_H_
 #define _SSD1306_INTERFACE_H_
 
@@ -34,7 +33,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /**
  * @defgroup LCD_HW_INTERFACE_API I2C/SPI: physical interface functions
@@ -50,8 +48,7 @@ extern "C" {
  */
 
 /** Describes low level hardware API */
-typedef struct
-{
+typedef struct {
     /**
      * Indicates if spi or i2c interface is used.
      */
@@ -102,27 +99,27 @@ extern ssd1306_interface_t ssd1306_intf;
 /**
  * Deprecated
  */
-#define ssd1306_startTransmission     ssd1306_intf.start
+#define ssd1306_startTransmission ssd1306_intf.start
 
 /**
  * Deprecated
  */
-#define ssd1306_endTransmission       ssd1306_intf.stop
+#define ssd1306_endTransmission ssd1306_intf.stop
 
 /**
  * Deprecated
  */
-#define ssd1306_sendByte              ssd1306_intf.send
+#define ssd1306_sendByte ssd1306_intf.send
 
 /**
  * Deprecated
  */
-#define ssd1306_sendBytes             ssd1306_intf.send_buffer
+#define ssd1306_sendBytes ssd1306_intf.send_buffer
 
 /**
  * Deprecated
  */
-#define ssd1306_closeInterface        ssd1306_intf.close
+#define ssd1306_closeInterface ssd1306_intf.close
 
 /**
  * Sends command to SSD1306 device: includes initiating of

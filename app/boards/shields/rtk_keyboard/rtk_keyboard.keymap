@@ -28,7 +28,7 @@
     &kp SYS_WAKE                              &kp B   &kp N                      &mo FNMAC   &kp SLASH    &kp RALT          &kp F12          &kp DARW       &kp RARW      &kp KP_MINUS  &kp LARW      &kp C_NEXT    &kp LG(P)         &kp F13
     &kp LCTL     &kp GRAVE  &kp F1    &kp F2  &kp N5  &kp N6  &kp EQUAL          &kp F8      &kp MINUS                      &kp F9           &kp DEL        &kp INS       &kp PAGE_UP   &kp HOME      &kp C_PREV
     &kp F5       &kp N1     &kp N2    &kp N3  &kp N4  &kp N7  &kp N8             &kp N9      &kp N0       &kp PRINTSCREEN   &kp F10          &kp K_POWER    &kp K_SLEEP   &kp PAGE_DOWN &kp END       &kp C_AL_CALC
-            >;        
+            >;
         };
         mac_layer {
             bindings = <
@@ -68,7 +68,7 @@
     &kp C_AC_SEARCH   &bt BT_SEL 0     &bt BT_SEL 1          &bt BT_SEL 2   &bt BT_CLR   &none  &none    &none      &none    &none    &kp C_MUTE       &none     &none       &none   &none
             >;
         };
-        
+
     };
 };
 

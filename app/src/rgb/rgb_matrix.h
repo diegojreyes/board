@@ -24,7 +24,7 @@
 #include <zephyr/kernel.h>
 #include "./lib8tion/lib8tion.h"
 
-typedef bool (*rgb_effect_func)(effect_params_t* params);
+typedef bool (*rgb_effect_func)(effect_params_t *params);
 
 struct rgb_matrix_limits_t {
     uint8_t led_min_index;
@@ -33,32 +33,32 @@ struct rgb_matrix_limits_t {
 
 struct rgb_matrix_limits_t zmk_rgb_matrix_get_limits(uint8_t iter);
 
-#define RGB_MATRIX_USE_LIMITS_ITER(min, max, iter)                   \
-    struct rgb_matrix_limits_t limits = zmk_rgb_matrix_get_limits(iter); \
-    uint8_t                    min    = limits.led_min_index;        \
-    uint8_t                    max    = limits.led_max_index;        \
-    (void)min;                                                       \
+#define RGB_MATRIX_USE_LIMITS_ITER(min, max, iter)                                                 \
+    struct rgb_matrix_limits_t limits = zmk_rgb_matrix_get_limits(iter);                           \
+    uint8_t min = limits.led_min_index;                                                            \
+    uint8_t max = limits.led_max_index;                                                            \
+    (void)min;                                                                                     \
     (void)max;
 
 #define RGB_MATRIX_USE_LIMITS(min, max) RGB_MATRIX_USE_LIMITS_ITER(min, max, params->iter)
 
-#define RGB_MATRIX_INDICATOR_SET_COLOR(i, r, g, b) \
-    if (i >= led_min && i < led_max) {             \
-        zmk_rgb_matrix_set_color(i, r, g, b);          \
+#define RGB_MATRIX_INDICATOR_SET_COLOR(i, r, g, b)                                                 \
+    if (i >= led_min && i < led_max) {                                                             \
+        zmk_rgb_matrix_set_color(i, r, g, b);                                                      \
     }
 
-#define RGB_MATRIX_TEST_LED_FLAGS() \
-    if (!HAS_ANY_FLAGS(g_led_config.flags[i], params->flags)) continue
-
-
+#define RGB_MATRIX_TEST_LED_FLAGS()                                                                \
+    if (!HAS_ANY_FLAGS(g_led_config.flags[i], params->flags))                                      \
+    continue
 
 uint8_t zmk_rgb_matrix_map_row_column_to_led_kb(uint8_t row, uint8_t column, uint8_t *led_i);
 uint8_t zmk_rgb_matrix_map_row_column_to_led(uint8_t row, uint8_t column, uint8_t *led_i);
 
 void zmk_rgb_matrix_set_color(int index, uint8_t red, uint8_t green, uint8_t blue);
 void zmk_rgb_matrix_set_color_all(uint8_t red, uint8_t green, uint8_t blue);
-void zmk_rgb_matrix_region_set_color(uint8_t region ,int index, uint8_t red, uint8_t green, uint8_t blue);
-void zmk_rgb_matrix_region_set_color_all(uint8_t region,uint8_t red, uint8_t green, uint8_t blue);
+void zmk_rgb_matrix_region_set_color(uint8_t region, int index, uint8_t red, uint8_t green,
+                                     uint8_t blue);
+void zmk_rgb_matrix_region_set_color_all(uint8_t region, uint8_t red, uint8_t green, uint8_t blue);
 
 void process_rgb_matrix(uint8_t row, uint8_t col, bool pressed);
 
@@ -78,37 +78,37 @@ bool zmk_rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max);
 
 void zmk_rgb_matrix_reload_from_eeprom(void);
 
-void        zmk_rgb_matrix_set_suspend_state(bool state);
-bool        zmk_rgb_matrix_get_suspend_state(void);
-void        zmk_rgb_matrix_toggle(void);
-void        zmk_rgb_matrix_toggle_no_save(void);
-void        zmk_rgb_matrix_enable(void);
-void        zmk_rgb_matrix_disable(void);
-uint8_t     zmk_rgb_matrix_is_enabled(void);
-void        zmk_rgb_matrix_mode(uint8_t mode);
-void        zmk_rgb_matrix_mode_no_save(uint8_t mode);
-uint8_t     zmk_rgb_matrix_get_mode(void);
-void        zmk_rgb_matrix_step(void);
-void        zmk_rgb_matrix_step_reverse(void);
-void        zmk_rgb_matrix_sethsv(uint16_t hue, uint8_t sat, uint8_t val);
-void        zmk_rgb_matrix_sethsv_no_save(uint16_t hue, uint8_t sat, uint8_t val);
-HSV         zmk_rgb_matrix_get_hsv(void);
-uint8_t     zmk_rgb_matrix_get_hue(void);
-uint8_t     zmk_rgb_matrix_get_sat(void);
-uint8_t     zmk_rgb_matrix_get_val(void);
-void        zmk_rgb_matrix_increase_hue(void);
-void        zmk_rgb_matrix_decrease_hue(void);
-void        zmk_rgb_matrix_increase_sat(void);
-void        zmk_rgb_matrix_decrease_sat(void);
-void        zmk_rgb_matrix_increase_val(void);
-void        zmk_rgb_matrix_decrease_val(void);
-void        zmk_rgb_matrix_set_speed_no_save(uint8_t speed);
-void        zmk_rgb_matrix_set_speed(uint8_t speed);
-uint8_t     zmk_rgb_matrix_get_speed(void);
-void        zmk_rgb_matrix_increase_speed(void);
-void        zmk_rgb_matrix_decrease_speed(void);
+void zmk_rgb_matrix_set_suspend_state(bool state);
+bool zmk_rgb_matrix_get_suspend_state(void);
+void zmk_rgb_matrix_toggle(void);
+void zmk_rgb_matrix_toggle_no_save(void);
+void zmk_rgb_matrix_enable(void);
+void zmk_rgb_matrix_disable(void);
+uint8_t zmk_rgb_matrix_is_enabled(void);
+void zmk_rgb_matrix_mode(uint8_t mode);
+void zmk_rgb_matrix_mode_no_save(uint8_t mode);
+uint8_t zmk_rgb_matrix_get_mode(void);
+void zmk_rgb_matrix_step(void);
+void zmk_rgb_matrix_step_reverse(void);
+void zmk_rgb_matrix_sethsv(uint16_t hue, uint8_t sat, uint8_t val);
+void zmk_rgb_matrix_sethsv_no_save(uint16_t hue, uint8_t sat, uint8_t val);
+HSV zmk_rgb_matrix_get_hsv(void);
+uint8_t zmk_rgb_matrix_get_hue(void);
+uint8_t zmk_rgb_matrix_get_sat(void);
+uint8_t zmk_rgb_matrix_get_val(void);
+void zmk_rgb_matrix_increase_hue(void);
+void zmk_rgb_matrix_decrease_hue(void);
+void zmk_rgb_matrix_increase_sat(void);
+void zmk_rgb_matrix_decrease_sat(void);
+void zmk_rgb_matrix_increase_val(void);
+void zmk_rgb_matrix_decrease_val(void);
+void zmk_rgb_matrix_set_speed_no_save(uint8_t speed);
+void zmk_rgb_matrix_set_speed(uint8_t speed);
+uint8_t zmk_rgb_matrix_get_speed(void);
+void zmk_rgb_matrix_increase_speed(void);
+void zmk_rgb_matrix_decrease_speed(void);
 led_flags_t zmk_rgb_matrix_get_flags(void);
-void        zmk_rgb_matrix_set_flags(led_flags_t flags);
+void zmk_rgb_matrix_set_flags(led_flags_t flags);
 
 RGB rgb_matrix_hsv_to_rgb(HSV hsv);
 void zmk_rgb_matrix_update_pwm_buffers(void);
@@ -126,18 +126,13 @@ void enable_rgb_thread(void);
 static inline bool zmk_rgb_matrix_check_finished_leds(uint8_t led_idx) {
 
     return led_idx < RGB_MATRIX_LED_COUNT;
-
 }
-static inline uint32_t k_uptime_delta_32(uint32_t reftime)
-{
-    uint32_t uptime= k_uptime_get_32();
-    if( uptime >= reftime)
-    {
-        return uptime- reftime;
-    }
-    else
-    {
-        return (UINT32_MAX+1 -reftime +uptime);
+static inline uint32_t k_uptime_delta_32(uint32_t reftime) {
+    uint32_t uptime = k_uptime_get_32();
+    if (uptime >= reftime) {
+        return uptime - reftime;
+    } else {
+        return (UINT32_MAX + 1 - reftime + uptime);
     }
 }
 typedef struct {
@@ -150,25 +145,25 @@ typedef struct {
     // uint8_t rgb_mode;
     uint8_t bat_level;
     uint32_t bat_low_start_time;
-    uint8_t rgb_enable:1;
-    uint8_t init:1;
-    uint8_t running:1;
-    uint8_t exclude:1;
-    uint8_t bat_info:1;
-    uint8_t bat_low:1;
+    uint8_t rgb_enable : 1;
+    uint8_t init : 1;
+    uint8_t running : 1;
+    uint8_t exclude : 1;
+    uint8_t bat_info : 1;
+    uint8_t bat_low : 1;
 } _led_indicators;
-extern _led_indicators rgb_led_indicators ;
+extern _led_indicators rgb_led_indicators;
 
 extern rgb_config_t rgb_matrix_config;
 
-extern uint32_t     g_rgb_timer;
+extern uint32_t g_rgb_timer;
 extern led_config_t g_led_config;
 
 extern last_hit_t g_last_hit_tracker;
 
 extern uint8_t g_rgb_frame_buffer[MATRIX_ROWS][MATRIX_COLS];
 
-extern rgb_effect_func  rgb_effect_funcs[];
+extern rgb_effect_func rgb_effect_funcs[];
 extern const led_point_t k_rgb_matrix_center;
 
 extern bool rgb_control_enable;

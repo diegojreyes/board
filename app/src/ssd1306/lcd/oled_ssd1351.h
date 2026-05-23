@@ -25,7 +25,6 @@
  * @file oled_ssd1351.h support for RGB OLED 128x128 display
  */
 
-
 #ifndef _OLED_SSD1351_H_
 #define _OLED_SSD1351_H_
 
@@ -54,7 +53,7 @@ extern "C" {
  * @param mode 0 or 1
  * @deprecated Use ssd1306_setMode() instead.
  */
-void        ssd1351_setMode(lcd_mode_t mode);
+void ssd1351_setMode(lcd_mode_t mode);
 
 /**
  * @brief Inits 128x128 RGB OLED display (based on SSD1351 controller).
@@ -64,7 +63,7 @@ void        ssd1351_setMode(lcd_mode_t mode);
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         ssd1351_128x128_init(void);
+void ssd1351_128x128_init(void);
 
 /**
  * @brief Inits 128x128 RGB OLED display over spi (based on SSD1351 controller).
@@ -74,7 +73,7 @@ void         ssd1351_128x128_init(void);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         ssd1351_128x128_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void ssd1351_128x128_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @}

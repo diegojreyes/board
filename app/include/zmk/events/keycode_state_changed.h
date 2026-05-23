@@ -53,12 +53,14 @@ zmk_keycode_state_changed_from_encoded(uint32_t encoded, bool pressed, int64_t t
     //         cap_led_off();
     //         caps_lock_flag = 0;
     //     }
-    //     else if(id == HID_USAGE_KEY_KEYPAD_NUM_LOCK_AND_CLEAR && pressed == 1 && num_lock_flag == 0)
+    //     else if(id == HID_USAGE_KEY_KEYPAD_NUM_LOCK_AND_CLEAR && pressed == 1 && num_lock_flag ==
+    //     0)
     //     {
     //         num_led_on();
     //         num_lock_flag = 1;
     //     }
-    //     else if(id == HID_USAGE_KEY_KEYPAD_NUM_LOCK_AND_CLEAR && pressed == 1 && num_lock_flag == 1)
+    //     else if(id == HID_USAGE_KEY_KEYPAD_NUM_LOCK_AND_CLEAR && pressed == 1 && num_lock_flag ==
+    //     1)
     //     {
     //         num_led_off();
     //         num_lock_flag = 0;

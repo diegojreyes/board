@@ -47,8 +47,7 @@ extern "C" {
 /**
  * Enumeration, describing display type
  */
-typedef enum
-{
+typedef enum {
     /** Default type of LCD display: ssd1306 oled */
     LCD_TYPE_SSD1306,
     /** Experimental type of LCD display: pcd8544 led */
@@ -66,8 +65,7 @@ typedef enum
  * LCD_MODE_SSD1306_COMPAT is compatible mode, which should be used
  * with standard monochrome functions.
  */
-typedef enum
-{
+typedef enum {
     /**
      * Normal mode RGB displays. All ssd1306 monochrome direct draw
      * functions do not work in this mode.
@@ -85,16 +83,15 @@ typedef enum
 /**
  * Structure, describing display driver configuration
  */
-typedef struct
-{
+typedef struct {
     /** Current selected lcd display type */
     lcd_type_t type;
 
     /** Current display width */
-    lcduint_t  width;
+    lcduint_t width;
 
     /** Current display height */
-    lcduint_t  height;
+    lcduint_t height;
 
     /**
      * @brief Sets block in RAM of lcd display controller to write data to.
@@ -173,19 +170,19 @@ extern ssd1306_lcd_t ssd1306_lcd;
  * Current display height
  * @deprecated Use ssd1306_lcd.height instead.
  */
-#define s_displayHeight   ssd1306_lcd.height
+#define s_displayHeight ssd1306_lcd.height
 
 /**
  * Current display width
  * @deprecated Use ssd1306_lcd.width instead.
  */
-#define s_displayWidth    ssd1306_lcd.width
+#define s_displayWidth ssd1306_lcd.width
 
 /**
  * Current selected lcd display type
  * @deprecated Use ssd1306_lcd.type instead.
  */
-#define g_lcd_type  ssd1306_lcd.type
+#define g_lcd_type ssd1306_lcd.type
 
 /**
  * Sends byte data to SSD1306 controller memory.
@@ -194,7 +191,7 @@ extern ssd1306_lcd_t ssd1306_lcd;
  * @note At present this function is used only in Arkanoid demo.
  * @deprecated There is wide variaty of functions, that can be used for this.
  */
-void         ssd1306_sendData(uint8_t data) __attribute__ ((deprecated));
+void ssd1306_sendData(uint8_t data) __attribute__((deprecated));
 
 /**
  * @brief Sets block in RAM of lcd display controller to write data to.
@@ -212,7 +209,7 @@ void         ssd1306_sendData(uint8_t data) __attribute__ ((deprecated));
  * @warning - this function initiates session (i2c or spi) and do not close it.
  *            To close session, please, use ssd1306_intf.stop().
  */
-#define ssd1306_setRamBlock   ssd1306_lcd.set_block
+#define ssd1306_setRamBlock ssd1306_lcd.set_block
 
 /**
  * Switches to the start of next RAM page for the block, specified by
@@ -221,14 +218,14 @@ void         ssd1306_sendData(uint8_t data) __attribute__ ((deprecated));
  * next page.
  * @deprecated Use ssd1306_lcd.next_page() instead.
  */
-#define ssd1306_nextRamPage   ssd1306_lcd.next_page
+#define ssd1306_nextRamPage ssd1306_lcd.next_page
 
 /**
  * Sends 8 monochrome vertical pixels to OLED driver.
  * @param data - byte, representing 8 pixels.
  * @deprecated Use ssd1306_lcd.send_pixels1() instead.
  */
-#define ssd1306_sendPixels    ssd1306_lcd.send_pixels1
+#define ssd1306_sendPixels ssd1306_lcd.send_pixels1
 
 /**
  * Sends buffer containing 8 monochrome vertical pixels, encoded in each byte.
@@ -236,7 +233,7 @@ void         ssd1306_sendData(uint8_t data) __attribute__ ((deprecated));
  * @param len - length of buffer in bytes.
  * @deprecated Use ssd1306_lcd.send_pixels_buffer1() instead.
  */
-#define ssd1306_sendPixelsBuffer  ssd1306_lcd.send_pixels_buffer1
+#define ssd1306_sendPixelsBuffer ssd1306_lcd.send_pixels_buffer1
 
 /**
  * @brief Sends RGB pixel encoded in 3-3-2 format to OLED driver.
@@ -244,7 +241,7 @@ void         ssd1306_sendData(uint8_t data) __attribute__ ((deprecated));
  * @param data - byte, representing RGB8 pixel.
  * @deprecated Use ssd1306_lcd.send_pixels8() instead.
  */
-#define ssd1306_sendPixel8        ssd1306_lcd.send_pixels8
+#define ssd1306_sendPixel8 ssd1306_lcd.send_pixels8
 
 /**
  * @brief Sends configuration being passed to lcd display i2c/spi controller.
@@ -327,29 +324,28 @@ void ssd1306_resetController(int8_t rstPin, uint8_t delayMs);
  * @note It is assumed that column and row commands accept 2 single byte
  *       arguments: start and end of region
  */
-#define SSD1306_COMPAT_SPI_BLOCK_8BIT_CMDS(column_cmd, row_cmd) \
-    static uint8_t __s_column; \
-    static uint8_t __s_page; \
-    static void set_block_compat(lcduint_t x, lcduint_t y, lcduint_t w) \
-    { \
-        uint8_t rx = w ? (x + w - 1) : (ssd1306_lcd.width - 1); \
-        __s_column = x; \
-        __s_page = y; \
-        ssd1306_intf.start(); \
-        ssd1306_spiDataMode(0); \
-        ssd1306_intf.send(column_cmd); \
-        ssd1306_intf.send(x); \
-        ssd1306_intf.send(rx < ssd1306_lcd.width ? rx : (ssd1306_lcd.width - 1)); \
-        ssd1306_intf.send(row_cmd); \
-        ssd1306_intf.send(y<<3); \
-        ssd1306_intf.send(((y<<3) + 7) < ssd1306_lcd.height ? ((y<<3) + 7) : (ssd1306_lcd.height - 1)); \
-        ssd1306_spiDataMode(1); \
-    } \
-    static void next_page_compat(void) \
-    { \
-        ssd1306_intf.stop(); \
-        set_block_compat(__s_column,__s_page+1,0); \
-    } \
+#define SSD1306_COMPAT_SPI_BLOCK_8BIT_CMDS(column_cmd, row_cmd)                                    \
+    static uint8_t __s_column;                                                                     \
+    static uint8_t __s_page;                                                                       \
+    static void set_block_compat(lcduint_t x, lcduint_t y, lcduint_t w) {                          \
+        uint8_t rx = w ? (x + w - 1) : (ssd1306_lcd.width - 1);                                    \
+        __s_column = x;                                                                            \
+        __s_page = y;                                                                              \
+        ssd1306_intf.start();                                                                      \
+        ssd1306_spiDataMode(0);                                                                    \
+        ssd1306_intf.send(column_cmd);                                                             \
+        ssd1306_intf.send(x);                                                                      \
+        ssd1306_intf.send(rx < ssd1306_lcd.width ? rx : (ssd1306_lcd.width - 1));                  \
+        ssd1306_intf.send(row_cmd);                                                                \
+        ssd1306_intf.send(y << 3);                                                                 \
+        ssd1306_intf.send(((y << 3) + 7) < ssd1306_lcd.height ? ((y << 3) + 7)                     \
+                                                              : (ssd1306_lcd.height - 1));         \
+        ssd1306_spiDataMode(1);                                                                    \
+    }                                                                                              \
+    static void next_page_compat(void) {                                                           \
+        ssd1306_intf.stop();                                                                       \
+        set_block_compat(__s_column, __s_page + 1, 0);                                             \
+    }
 
 /**
  * Macro CONTROLLER_NATIVE_SPI_BLOCK_8BIT_CMDS() generates 2 static functions,
@@ -363,23 +359,20 @@ void ssd1306_resetController(int8_t rstPin, uint8_t delayMs);
  * @note It is assumed that column and row commands accept 2 single byte
  *       arguments: start and end of region
  */
-#define CONTROLLER_NATIVE_SPI_BLOCK_8BIT_CMDS(column_cmd, row_cmd) \
-    static void set_block_native(lcduint_t x, lcduint_t y, lcduint_t w) \
-    { \
-        uint8_t rx = w ? (x + w - 1) : (ssd1306_lcd.width - 1); \
-        ssd1306_intf.start(); \
-        ssd1306_spiDataMode(0); \
-        ssd1306_intf.send(column_cmd); \
-        ssd1306_intf.send(x); \
-        ssd1306_intf.send(rx < ssd1306_lcd.width ? rx : (ssd1306_lcd.width - 1)); \
-        ssd1306_intf.send(row_cmd); \
-        ssd1306_intf.send(y); \
-        ssd1306_intf.send(ssd1306_lcd.height - 1); \
-        ssd1306_spiDataMode(1); \
-    } \
-    static void next_page_native(void) \
-    { \
-    } \
+#define CONTROLLER_NATIVE_SPI_BLOCK_8BIT_CMDS(column_cmd, row_cmd)                                 \
+    static void set_block_native(lcduint_t x, lcduint_t y, lcduint_t w) {                          \
+        uint8_t rx = w ? (x + w - 1) : (ssd1306_lcd.width - 1);                                    \
+        ssd1306_intf.start();                                                                      \
+        ssd1306_spiDataMode(0);                                                                    \
+        ssd1306_intf.send(column_cmd);                                                             \
+        ssd1306_intf.send(x);                                                                      \
+        ssd1306_intf.send(rx < ssd1306_lcd.width ? rx : (ssd1306_lcd.width - 1));                  \
+        ssd1306_intf.send(row_cmd);                                                                \
+        ssd1306_intf.send(y);                                                                      \
+        ssd1306_intf.send(ssd1306_lcd.height - 1);                                                 \
+        ssd1306_spiDataMode(1);                                                                    \
+    }                                                                                              \
+    static void next_page_native(void) {}
 
 /**
  * Macro SSD1306_COMPAT_SEND_PIXELS_RGB8_CMDS() generates 2 static functions,
@@ -387,30 +380,23 @@ void ssd1306_resetController(int8_t rstPin, uint8_t delayMs);
  * send_pixels_compat(), send_pixels_buffer_compat(). These functions are to be used
  * when working in ssd1306 compatible mode.
  */
-#define SSD1306_COMPAT_SEND_PIXELS_RGB8_CMDS() \
-    extern uint16_t ssd1306_color; \
-    static void send_pixels_compat(uint8_t data) \
-    { \
-        for (uint8_t i=8; i>0; i--) \
-        { \
-            if ( data & 0x01 ) \
-            { \
-                ssd1306_intf.send( (uint8_t)ssd1306_color ); \
-            } \
-            else \
-            { \
-                ssd1306_intf.send( 0B00000000 ); \
-            } \
-            data >>= 1; \
-        } \
-    } \
-    static void send_pixels_buffer_compat(const uint8_t *buffer, uint16_t len) \
-    { \
-        while(len--) \
-        { \
-            send_pixels_compat(*buffer); \
-            buffer++; \
-        } \
+#define SSD1306_COMPAT_SEND_PIXELS_RGB8_CMDS()                                                     \
+    extern uint16_t ssd1306_color;                                                                 \
+    static void send_pixels_compat(uint8_t data) {                                                 \
+        for (uint8_t i = 8; i > 0; i--) {                                                          \
+            if (data & 0x01) {                                                                     \
+                ssd1306_intf.send((uint8_t)ssd1306_color);                                         \
+            } else {                                                                               \
+                ssd1306_intf.send(0B00000000);                                                     \
+            }                                                                                      \
+            data >>= 1;                                                                            \
+        }                                                                                          \
+    }                                                                                              \
+    static void send_pixels_buffer_compat(const uint8_t *buffer, uint16_t len) {                   \
+        while (len--) {                                                                            \
+            send_pixels_compat(*buffer);                                                           \
+            buffer++;                                                                              \
+        }                                                                                          \
     }
 
 /**
@@ -419,34 +405,26 @@ void ssd1306_resetController(int8_t rstPin, uint8_t delayMs);
  * send_pixels_compat16(), send_pixels_buffer_compat16(). These functions are to be used
  * when working in ssd1306 compatible mode.
  */
-#define SSD1306_COMPAT_SEND_PIXELS_RGB16_CMDS() \
-    extern uint16_t ssd1306_color; \
-    static void send_pixels_compat16(uint8_t data) \
-    { \
-        for (uint8_t i=8; i>0; i--) \
-        { \
-            if ( data & 0x01 ) \
-            { \
-                ssd1306_intf.send( (uint8_t)(ssd1306_color >> 8 ) ); \
-                ssd1306_intf.send( (uint8_t)(ssd1306_color & 0xFF) ); \
-            } \
-            else \
-            { \
-                ssd1306_intf.send( 0B00000000 ); \
-                ssd1306_intf.send( 0B00000000 ); \
-            } \
-            data >>= 1; \
-        } \
-    } \
-    static void send_pixels_buffer_compat16(const uint8_t *buffer, uint16_t len) \
-    { \
-        while(len--) \
-        { \
-            send_pixels_compat16(*buffer); \
-            buffer++; \
-        } \
+#define SSD1306_COMPAT_SEND_PIXELS_RGB16_CMDS()                                                    \
+    extern uint16_t ssd1306_color;                                                                 \
+    static void send_pixels_compat16(uint8_t data) {                                               \
+        for (uint8_t i = 8; i > 0; i--) {                                                          \
+            if (data & 0x01) {                                                                     \
+                ssd1306_intf.send((uint8_t)(ssd1306_color >> 8));                                  \
+                ssd1306_intf.send((uint8_t)(ssd1306_color & 0xFF));                                \
+            } else {                                                                               \
+                ssd1306_intf.send(0B00000000);                                                     \
+                ssd1306_intf.send(0B00000000);                                                     \
+            }                                                                                      \
+            data >>= 1;                                                                            \
+        }                                                                                          \
+    }                                                                                              \
+    static void send_pixels_buffer_compat16(const uint8_t *buffer, uint16_t len) {                 \
+        while (len--) {                                                                            \
+            send_pixels_compat16(*buffer);                                                         \
+            buffer++;                                                                              \
+        }                                                                                          \
     }
-
 
 /**
  * @}

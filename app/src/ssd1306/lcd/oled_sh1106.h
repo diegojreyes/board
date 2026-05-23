@@ -26,7 +26,6 @@
  * @file oled_sh1106.h support for OLED 128x64 display
  */
 
-
 #ifndef _OLED_SH1106_H_
 #define _OLED_SH1106_H_
 
@@ -47,7 +46,7 @@ extern "C" {
  * Inits 128x64 OLED display (based on SH1106 controller).
  * User must init communication interface (i2c or spi) prior to calling this function.
  */
-void         sh1106_128x64_init(void);
+void sh1106_128x64_init(void);
 
 /**
  * @brief Inits 128x64 OLED display over i2c (based on SH1106 controller).
@@ -57,7 +56,7 @@ void         sh1106_128x64_init(void);
  * If you use non-standard pins in your project, please perform call ssd1306_i2cInitEx() and
  * sh1106_128x64_init().
  */
-void         sh1106_128x64_i2c_init(void);
+void sh1106_128x64_i2c_init(void);
 
 /**
  * @brief Inits 128x64 OLED display over spi (based on SH1106 controller).
@@ -67,7 +66,7 @@ void         sh1106_128x64_i2c_init(void);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         sh1106_128x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void sh1106_128x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @}

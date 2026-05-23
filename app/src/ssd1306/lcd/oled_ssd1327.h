@@ -25,7 +25,6 @@
  * @file oled_ssd1325.h support for SSD1325 OLED 128x64 display
  */
 
-
 #ifndef _OLED_SSD1327_H_
 #define _OLED_SSD1327_H_
 
@@ -40,7 +39,6 @@ extern "C" {
  * @defgroup SSD1327_OLED_API SSD1327: ssd1327 control functions
  * @{
  */
-
 
 /**
  * @}

@@ -66,12 +66,11 @@ int zmk_hid_unregister_mod(zmk_mod_t modifier) {
     explicit_modifier_counts[modifier]--;
 #if CONFIG_ZMK_LAUNCHER
     extern uint8_t macro_running;
-    if(macro_running)
-    {
-        explicit_modifier_counts[modifier]=0;
-        LOG_WRN("clear modifier:%d",modifier);
+    if (macro_running) {
+        explicit_modifier_counts[modifier] = 0;
+        LOG_WRN("clear modifier:%d", modifier);
     }
-#endif         
+#endif
     LOG_DBG("Modifier %d count: %d", modifier, explicit_modifier_counts[modifier]);
     if (explicit_modifier_counts[modifier] == 0) {
         LOG_DBG("Modifier %d released", modifier);
@@ -442,23 +441,16 @@ void zmk_hid_mouse_clear(void) { memset(&mouse_report.body, 0, sizeof(mouse_repo
 
 #endif // IS_ENABLED(CONFIG_ZMK_MOUSE)
 
-struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report(void) {
-    return &keyboard_report;
-}
+struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report(void) { return &keyboard_report; }
 
-struct zmk_hid_consumer_report *zmk_hid_get_consumer_report(void) {
-    return &consumer_report;
-}
+struct zmk_hid_consumer_report *zmk_hid_get_consumer_report(void) { return &consumer_report; }
 
 #if IS_ENABLED(CONFIG_ZMK_MOUSE)
 
-struct zmk_hid_mouse_report *zmk_hid_get_mouse_report(void) {
-    return &mouse_report;
-}
+struct zmk_hid_mouse_report *zmk_hid_get_mouse_report(void) { return &mouse_report; }
 
-void zmk_hid_set_mouse_report(uint8_t *payload)
-{
-    memcpy(&mouse_report.body,payload,sizeof(mouse_report.body));
+void zmk_hid_set_mouse_report(uint8_t *payload) {
+    memcpy(&mouse_report.body, payload, sizeof(mouse_report.body));
 }
 
 #endif // IS_ENABLED(CONFIG_ZMK_MOUSE)

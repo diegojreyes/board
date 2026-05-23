@@ -57,13 +57,13 @@ extern "C" {
  * @ingroup LCD_INTERFACE_API
  * Returns display height in pixels
  */
-lcduint_t      ssd1306_displayHeight(void);
+lcduint_t ssd1306_displayHeight(void);
 
 /**
  * @ingroup LCD_INTERFACE_API
  * Returns display width in pixels
  */
-lcduint_t      ssd1306_displayWidth(void);
+lcduint_t ssd1306_displayWidth(void);
 
 #ifdef __cplusplus
 }

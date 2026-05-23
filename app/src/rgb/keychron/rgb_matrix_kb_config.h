@@ -18,9 +18,9 @@
 // #include "config.h"
 
 #ifndef EFFECT_LAYERS
-#define EFFECT_LAYERS       2
+#define EFFECT_LAYERS 2
 #endif
 
 #ifndef EFFECTS_PER_LAYER
-#define EFFECTS_PER_LAYER   5
+#define EFFECTS_PER_LAYER 5
 #endif

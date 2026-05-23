@@ -1,6 +1,6 @@
 if BOARD_RTL8762GKU
 
 config BOARD
-	default "rtl8762gku"
+    default "rtl8762gku"
 
 endif #BOARD_RTL8762GKU

@@ -25,7 +25,6 @@
  * @file nano_gfx.h Drawing in memory buffer
  */
 
-
 #ifndef _NANO_GFX_H_
 #define _NANO_GFX_H_
 
@@ -36,9 +35,8 @@
  * NanoCanvas represents objects for drawing in memory buffer
  * @deprecated Use NanoCanvas1, NanoCanvas8, NanoCanvas16 instead
  */
-class NanoCanvas
-{
-public:
+class NanoCanvas {
+  public:
     /**
      * Creates new canvas object.
      * Width can be of any value.
@@ -49,13 +47,14 @@ public:
      * @param h - height
      * @param bytes - pointer to memory buffer to use
      */
-    NanoCanvas(uint8_t w, uint8_t h, uint8_t *bytes)
-    {
+    NanoCanvas(uint8_t w, uint8_t h, uint8_t *bytes) {
         m_w = w;
         m_h = h;
         m_p = 3;
         m_invertByte = 0;
-        while (w >> (m_p+1)) { m_p++; };
+        while (w >> (m_p + 1)) {
+            m_p++;
+        };
         m_bytes = bytes;
         clear();
     };
@@ -66,7 +65,7 @@ public:
      * @param y - position Y
      * @deprecated Use putPixel() instead.
      */
-    inline void drawPixel(uint8_t x, uint8_t y) __attribute__ ((deprecated)) { putPixel(x,y); };
+    inline void drawPixel(uint8_t x, uint8_t y) __attribute__((deprecated)) { putPixel(x, y); };
 
     /**
      * Draws pixel on specified position
@@ -124,8 +123,9 @@ public:
      * @deprecated use printFixed() instead.
      */
     inline void char_f6x8(uint8_t x, uint8_t y, const char ch[], EFontStyle style = STYLE_NORMAL)
-    __attribute__ ((deprecated))
-    { charF6x8(x,y,ch,style); };
+        __attribute__((deprecated)) {
+        charF6x8(x, y, ch, style);
+    };
 
     /**
      * Prints text to canvas buffer
@@ -220,14 +220,14 @@ public:
      */
     void flipH();
 
-   /**
-    * Draws canvas on the LCD display
-    * @param x - horizontal position in pixels
-    * @param y - vertical position in blocks (pixels/8)
-    */
+    /**
+     * Draws canvas on the LCD display
+     * @param x - horizontal position in pixels
+     * @param y - vertical position in blocks (pixels/8)
+     */
     void blt(uint8_t x, uint8_t y);
 
-private:
+  private:
     uint8_t m_w;
     uint8_t m_p;
     uint8_t m_h;
@@ -236,4 +236,3 @@ private:
 };
 
 #endif
-

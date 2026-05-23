@@ -2,7 +2,7 @@
 
 / {
     chosen {
-        
+
         zmk,underglow = &led_strip;
     };
     led_strip: led-strip-composite {
@@ -16,14 +16,14 @@
         };
     };
 
-    
+
 
 };
 // dma is optional
 &dma0 {
     status = "okay";
 };
- 
+
 &spi0 {
     status = "okay";
     pinctrl-0 = <&spi0_default>;
@@ -32,10 +32,10 @@
     cs-gpios=
         <&gpioa  5 GPIO_ACTIVE_LOW>,  //cs0 p0_5
         <&gpiob  8 GPIO_ACTIVE_LOW>;  //cs1 p4_3
-        
+
     // dma is optional
-	dmas = <&dma0 6 17 0xa>, <&dma0 5 16 0x10021>;
-	dma-names = "rx", "tx";
+    dmas = <&dma0 6 17 0xa>, <&dma0 5 16 0x10021>;
+    dma-names = "rx", "tx";
 
         led_strip_0: ckled2001@0 {
             compatible = "zmk,spi,ckled2001";
@@ -59,8 +59,8 @@
             CK(9,11) CK(11,11) CK(10,11)
             CK(9,12) CK(11,12) CK(10,12)
             CK(9,13) CK(11,13) CK(10,13)
-            CK(9,14) CK(11,14) CK(10,14)            
-                
+            CK(9,14) CK(11,14) CK(10,14)
+
             CK(0,15) CK(2,15) CK(1,15)
             /* ROW 1 */
             /*   R        G        B */
@@ -100,7 +100,7 @@
             CK(3,14) CK(5,14) CK(4,14)
             CK(3,15) CK(5,15) CK(4,15)
 
-            CK(0,13) CK(2,13) CK(1,13) 
+            CK(0,13) CK(2,13) CK(1,13)
 
             >;
             current_tune =
@@ -154,7 +154,7 @@
             CK(3, 4) CK(5, 4) CK(4, 4)
             CK(3, 3) CK(5, 3) CK(4, 3)
             CK(3, 2) CK(5, 2) CK(4, 2)
-            CK(3, 1) CK(5, 1) CK(4, 1)            
+            CK(3, 1) CK(5, 1) CK(4, 1)
 
             CK(9, 2) CK(11, 2) CK(10, 2)
 
@@ -168,7 +168,7 @@
             // CK(0,10) CK(2,10) CK(1,10)
             CK(0, 9) CK(2, 9) CK(1, 9)
             CK(0, 8) CK(2, 8) CK(1, 8)
-            // CK(0, 7) CK(2, 7) CK(1, 7)            
+            // CK(0, 7) CK(2, 7) CK(1, 7)
             CK(0, 6) CK(2, 6) CK(1, 6)
             // CK(0, 5) CK(2, 5) CK(1, 5)
             CK(0, 4) CK(2, 4) CK(1, 4)
@@ -216,14 +216,14 @@
         group1 {
             psels =
             <RTL87X2G_PSEL(DWGPIO, P0_6, DIR_OUT, DRV_HIGH, PULL_UP)>;
-            
+
         };
     };
     ckled_sleep:ckled_sleep {
         group1 {
             psels =
             <RTL87X2G_PSEL(SW_MODE, P0_6, DIR_IN, DRV_LOW, PULL_DOWN)>;
-            
+
         };
     };
 };

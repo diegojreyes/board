@@ -88,11 +88,12 @@ int hid_listener_keycode_released(const struct zmk_keycode_state_changed *ev) {
 int hid_listener(const zmk_event_t *eh) {
     const struct zmk_keycode_state_changed *ev = as_zmk_keycode_state_changed(eh);
     if (ev) {
-        LOG_ERR("key:%x,%s",ev->keycode,ev->state?"down":"up");
-#ifdef CONFIG_SNAP_CLICK_ENABLE        
+        LOG_ERR("key:%x,%s", ev->keycode, ev->state ? "down" : "up");
+#ifdef CONFIG_SNAP_CLICK_ENABLE
         bool process_record_snap_click(const struct zmk_keycode_state_changed *ev);
-        if(!process_record_snap_click(ev)) return 0;
-#endif         
+        if (!process_record_snap_click(ev))
+            return 0;
+#endif
         if (ev->state) {
             hid_listener_keycode_pressed(ev);
         } else {

@@ -40,33 +40,25 @@ typedef size_t (*LcdWriter)(uint8_t ch);
 /**
  * Base template class for specific LCD console implementation
  */
-template <LcdWriter W>
-class LcdConsole: public Print
-{
-public:
+template <LcdWriter W> class LcdConsole : public Print {
+  public:
     /**
      * Creates console object to print text information on LCD display.
      */
-    explicit LcdConsole( ) { };
+    explicit LcdConsole() {};
 
     /**
      * Initializes console.
      */
-    void   begin()
-    {
-    }
+    void begin() {}
 
     /**
      * Writes single character to the display
      * @param ch - character to write
      */
-    size_t write(uint8_t ch) override
-    {
-        return W(ch);
-    }
+    size_t write(uint8_t ch) override { return W(ch); }
 
-private:
-
+  private:
 };
 
 /**
@@ -89,16 +81,15 @@ size_t ssd1306_consoleWriter(uint8_t ch);
  * }
  * ~~~~~~~~~~~~~~~
  */
-class Ssd1306Console: public LcdConsole<ssd1306_consoleWriter>
-{
-public:
+class Ssd1306Console : public LcdConsole<ssd1306_consoleWriter> {
+  public:
     using LcdConsole::LcdConsole;
 
     /**
      * Fills screen with zero-byte and sets
      * cursor position to top-left corner of the screen.
      */
-    void   clear();
+    void clear();
 
     /**
      * Set cursor position for text functions
@@ -106,11 +97,9 @@ public:
      * @param x horizontal position in pixels.
      * @param y vertical position in pixels.
      */
-    void   setCursor(lcduint_t x, lcduint_t y);
+    void setCursor(lcduint_t x, lcduint_t y);
 
-private:
-
+  private:
 };
 
 #endif
-

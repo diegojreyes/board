@@ -36,43 +36,38 @@
 // !!! PLATFORM I2C IMPLEMENTATION OPTIONAL !!!
 #if defined(CONFIG_PLATFORM_I2C_AVAILABLE) && defined(CONFIG_PLATFORM_I2C_ENABLE)
 static uint8_t s_i2c_addr = 0x3C;
-const struct device *dev= DEVICE_DT_GET(DT_NODELABEL(i2c0));
+const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
 static uint8_t s_buffer[128];
 static uint8_t s_dataSize = 0;
 extern uint8_t log_enable;
-static void platform_i2c_start(void)
-{
+static void platform_i2c_start(void) {
     // ... Open i2c channel for your device with specific s_i2c_addr
     s_dataSize = 0;
     // printk("<");
 }
 
-static void platform_i2c_stop(void)
-{
+static void platform_i2c_stop(void) {
     // ... Complete i2c communication
-    i2c_write(dev, s_buffer, s_dataSize,s_i2c_addr);
-    if(log_enable)
-    {
-        printk("i2c addr:%x, write:\n",s_i2c_addr);
-        for(int i=0;i<s_dataSize;i++)
-        {
-            if(i!=0 && i%16==0) printk("\n");
-            printk("%02x,",s_buffer[i]);
+    i2c_write(dev, s_buffer, s_dataSize, s_i2c_addr);
+    if (log_enable) {
+        printk("i2c addr:%x, write:\n", s_i2c_addr);
+        for (int i = 0; i < s_dataSize; i++) {
+            if (i != 0 && i % 16 == 0)
+                printk("\n");
+            printk("%02x,", s_buffer[i]);
         }
-            
+
         printk("\n");
     }
-    
+
     // printk(">i2c write:%d\n",ret);
     s_dataSize = 0;
 }
 
-static void platform_i2c_send(uint8_t data)
-{
+static void platform_i2c_send(uint8_t data) {
     s_buffer[s_dataSize] = data;
     s_dataSize++;
-    if (s_dataSize == sizeof(s_buffer))
-    {
+    if (s_dataSize == sizeof(s_buffer)) {
         /* Send function puts all data to internal buffer.  *
          * Restart transmission if internal buffer is full. */
         ssd1306_intf.stop();
@@ -81,31 +76,28 @@ static void platform_i2c_send(uint8_t data)
     }
 }
 
-static void platform_i2c_close(void)
-{
+static void platform_i2c_close(void) {
     // ... free all i2c resources here
 }
 
-static void platform_i2c_send_buffer(const uint8_t *data, uint16_t len)
-{
+static void platform_i2c_send_buffer(const uint8_t *data, uint16_t len) {
 
-    while (len--)
-    {
+    while (len--) {
         platform_i2c_send(*data);
         data++;
     }
 }
 
-void ssd1306_platform_i2cInit(int8_t busId, uint8_t addr, ssd1306_platform_i2cConfig_t * cfg)
-{
+void ssd1306_platform_i2cInit(int8_t busId, uint8_t addr, ssd1306_platform_i2cConfig_t *cfg) {
     if (!device_is_ready(dev)) {
-		return;
-	}
-    if (addr) s_i2c_addr = addr;
+        return;
+    }
+    if (addr)
+        s_i2c_addr = addr;
     ssd1306_intf.spi = 0;
     ssd1306_intf.start = &platform_i2c_start;
-    ssd1306_intf.stop  = &platform_i2c_stop;
-    ssd1306_intf.send  = &platform_i2c_send;
+    ssd1306_intf.stop = &platform_i2c_stop;
+    ssd1306_intf.send = &platform_i2c_send;
     ssd1306_intf.close = &platform_i2c_close;
     ssd1306_intf.send_buffer = &platform_i2c_send_buffer;
     // init your interface here
@@ -119,41 +111,35 @@ void ssd1306_platform_i2cInit(int8_t busId, uint8_t addr, ssd1306_platform_i2cCo
 
 #include "intf/spi/ssd1306_spi.h"
 
-static void platform_spi_start(void)
-{
+static void platform_spi_start(void) {
     // ... Open spi channel for your device with specific s_ssd1306_cs, s_ssd1306_dc
 }
 
-static void platform_spi_stop(void)
-{
+static void platform_spi_stop(void) {
     // ... Complete spi communication
 }
 
-static void platform_spi_send(uint8_t data)
-{
+static void platform_spi_send(uint8_t data) {
     // ... Send byte to spi communication channel
 }
 
-static void platform_spi_close(void)
-{
+static void platform_spi_close(void) {
     // ... free all spi resources here
 }
 
-static void platform_spi_send_buffer(const uint8_t *data, uint16_t len)
-{
+static void platform_spi_send_buffer(const uint8_t *data, uint16_t len) {
     // ... Send len bytes to spi communication channel here
 }
 
-void ssd1306_platform_spiInit(int8_t busId,
-                              int8_t cesPin,
-                              int8_t dcPin)
-{
-    if (cesPin>=0) s_ssd1306_cs = cesPin;
-    if (dcPin>=0) s_ssd1306_dc = dcPin;
+void ssd1306_platform_spiInit(int8_t busId, int8_t cesPin, int8_t dcPin) {
+    if (cesPin >= 0)
+        s_ssd1306_cs = cesPin;
+    if (dcPin >= 0)
+        s_ssd1306_dc = dcPin;
     ssd1306_intf.spi = 1;
     ssd1306_intf.start = &platform_spi_start;
-    ssd1306_intf.stop  = &platform_spi_stop;
-    ssd1306_intf.send  = &platform_spi_send;
+    ssd1306_intf.stop = &platform_spi_stop;
+    ssd1306_intf.send = &platform_spi_send;
     ssd1306_intf.close = &platform_spi_close;
     ssd1306_intf.send_buffer = &platform_spi_send_buffer;
     // init your interface here

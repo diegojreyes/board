@@ -17,7 +17,7 @@
 #pragma once
 
 #ifndef SNAP_CLICK_COUNT
-#    define SNAP_CLICK_COUNT 5
+#define SNAP_CLICK_COUNT 5
 #endif
 #include <stdint.h>
 
@@ -30,19 +30,18 @@ typedef struct __attribute__((__packed__)) {
 typedef union {
     uint8_t state;
     struct {
-        uint8_t state_key_1:1;
-        uint8_t state_key_2:1;
-        uint8_t last_single_key_1:1;
-        uint8_t last_single_key_2:1;
-        uint8_t reserved:4;
+        uint8_t state_key_1 : 1;
+        uint8_t state_key_2 : 1;
+        uint8_t last_single_key_1 : 1;
+        uint8_t last_single_key_2 : 1;
+        uint8_t reserved : 4;
     };
     struct {
-        uint8_t state_keys:2;
-        uint8_t last_single_key:2;
-        uint8_t reserved2:4;
+        uint8_t state_keys : 2;
+        uint8_t last_single_key : 2;
+        uint8_t reserved2 : 4;
     };
 } snap_click_state_t;
 
 void snap_click_config_reset(void);
 void snap_click_rx(uint8_t *data, uint8_t length);
-

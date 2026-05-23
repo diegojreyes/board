@@ -8,11 +8,11 @@
 * @author   Grace
 * @date     2023-12-06
 * @version  v1.1
-   **************************************************************************************
-   * @attention
-   * <h2><center>&copy; COPYRIGHT 2023 Realtek Semiconductor Corporation</center></h2>
-   **************************************************************************************
-  */
+**************************************************************************************
+* @attention
+* <h2><center>&copy; COPYRIGHT 2023 Realtek Semiconductor Corporation</center></h2>
+**************************************************************************************
+*/
 
 /*============================================================================*
  *                              Header Files
@@ -33,13 +33,13 @@
 #include "utils.h"
 #include "flash_map.h"
 
-#define MEMBER_OFFSET(struct_type, member)      ((uint32_t)&((struct_type *)0)->member)
+#define MEMBER_OFFSET(struct_type, member) ((uint32_t) & ((struct_type *)0)->member)
 /*============================================================================*
  *                              Macros
  *============================================================================*/
-#define SHA256_LENGTH                   32
-#define SHA256_BUFFER_SIZE              128
-#define READ_BACK_BUFFER_SIZE           64
+#define SHA256_LENGTH 32
+#define SHA256_BUFFER_SIZE 128
+#define READ_BACK_BUFFER_SIZE 64
 
 /*============================================================================*
  *                              Variables
@@ -59,9 +59,8 @@ uint32_t user_data_valid_bitmap = 0;
  *
  * @param  val          16bit data to be swapped.
  * @return value after being swapped.
-*/
-static uint16_t swap_16(uint16_t val)
-{
+ */
+static uint16_t swap_16(uint16_t val) {
     uint16_t result;
 
     /* Idiom Recognition for REV16 */
@@ -75,8 +74,7 @@ static uint16_t swap_16(uint16_t val)
  * @param  val  aes256 key to be swapped
  * @return None
  */
-static void aes256_key_swap(uint8_t key[32])
-{
+static void aes256_key_swap(uint8_t key[32]) {
     uint32_t tmp[4];
 
     memcpy(tmp, key, 16);
@@ -91,8 +89,7 @@ static void aes256_key_swap(uint8_t key[32])
  * @retval     true check pass
  * @retval     false check fail
  */
-static bool dfu_check_sha256(T_IMG_HEADER_FORMAT *p_header)
-{
+static bool dfu_check_sha256(T_IMG_HEADER_FORMAT *p_header) {
     uint32_t sha256sum[SHA256_LENGTH / 4] = {0};
     uint8_t sha256img[SHA256_LENGTH] = {0};
     uint8_t buf[SHA256_BUFFER_SIZE] = {0};
@@ -106,7 +103,7 @@ static bool dfu_check_sha256(T_IMG_HEADER_FORMAT *p_header)
     fmc_flash_nor_read((uint32_t)(pdata + MEMBER_OFFSET(T_IMG_CTRL_HEADER_FORMAT, payload_len)),
                        &len, 4);
     os_unlock(s);
-    DBG_DIRECT("payload_len:%x",len);
+    DBG_DIRECT("payload_len:%x", len);
     len += sizeof(T_IMG_HEADER_FORMAT) - sizeof(T_AUTH_HEADER_FORMAT);
 
     loop_cnt = len / SHA256_BUFFER_SIZE;
@@ -117,27 +114,23 @@ static bool dfu_check_sha256(T_IMG_HEADER_FORMAT *p_header)
     hw_sha256_init();
     hw_sha256_start(&ctx, NULL);
 
-    for (i = 0; i < loop_cnt; ++i)
-    {
+    for (i = 0; i < loop_cnt; ++i) {
         s = os_lock();
         fmc_flash_nor_read(pdata, buf, SHA256_BUFFER_SIZE);
         os_unlock(s);
-        if (i == 0)
-        {
-            //because not_ready is included when calculate image sha256
+        if (i == 0) {
+            // because not_ready is included when calculate image sha256
             ((T_IMG_CTRL_HEADER_FORMAT *)buf)->ctrl_flag.not_ready = 0;
         }
 
         hw_sha256_cpu_update(&ctx, buf, SHA256_BUFFER_SIZE);
         pdata += SHA256_BUFFER_SIZE;
     }
-    if (remain_size)
-    {
+    if (remain_size) {
         s = os_lock();
         fmc_flash_nor_read(pdata, buf, remain_size);
         os_unlock(s);
-        if (loop_cnt == 0)
-        {
+        if (loop_cnt == 0) {
             ((T_IMG_CTRL_HEADER_FORMAT *)buf)->ctrl_flag.not_ready = 0;
         }
 
@@ -160,15 +153,11 @@ static bool dfu_check_sha256(T_IMG_HEADER_FORMAT *p_header)
  * @param  input pointer to input data
  * @return None
  */
-void dfu_aes256_decrypt_16byte(uint8_t *input)
-{
-    static const uint8_t SECRET_KEY_DEFAULT[32] =
-    {
-        0x4E, 0x46, 0xF8, 0xC5, 0x09, 0x2B, 0x29, 0xE2,
-        0x9A, 0x97, 0x1A, 0x0C, 0xD1, 0xF6, 0x10, 0xFB,
-        0x1F, 0x67, 0x63, 0xDF, 0x80, 0x7A, 0x7E, 0x70,
-        0x96, 0x0D, 0x4C, 0xD3, 0x11, 0x8E, 0x60, 0x1A
-    };
+void dfu_aes256_decrypt_16byte(uint8_t *input) {
+    static const uint8_t SECRET_KEY_DEFAULT[32] = {0x4E, 0x46, 0xF8, 0xC5, 0x09, 0x2B, 0x29, 0xE2,
+                                                   0x9A, 0x97, 0x1A, 0x0C, 0xD1, 0xF6, 0x10, 0xFB,
+                                                   0x1F, 0x67, 0x63, 0xDF, 0x80, 0x7A, 0x7E, 0x70,
+                                                   0x96, 0x0D, 0x4C, 0xD3, 0x11, 0x8E, 0x60, 0x1A};
     uint8_t key_tmp[32];
 
     memcpy(key_tmp, SECRET_KEY_DEFAULT, 32);
@@ -182,12 +171,12 @@ void dfu_aes256_decrypt_16byte(uint8_t *input)
  * @param  image_id  image ID
  * @return bank size
  */
-uint32_t get_bank_size_by_img_id(IMG_ID image_id)
-{
+uint32_t get_bank_size_by_img_id(IMG_ID image_id) {
     uint32_t bank_size;
 
     T_IMG_HEADER_FORMAT *ota_header = (T_IMG_HEADER_FORMAT *)get_active_ota_bank_addr();
-    bank_size = ota_header->image_info[(image_id - IMG_OTA - 1) * 2 + 1];;
+    bank_size = ota_header->image_info[(image_id - IMG_OTA - 1) * 2 + 1];
+    ;
 
     return bank_size;
 }
@@ -198,8 +187,7 @@ uint32_t get_bank_size_by_img_id(IMG_ID image_id)
  * @param  reason      reset reason
  * @return None
  */
-void dfu_fw_reboot(WDTMode_TypeDef reset_mode, T_SW_RESET_REASON reason)
-{
+void dfu_fw_reboot(WDTMode_TypeDef reset_mode, T_SW_RESET_REASON reason) {
     DBG_DIRECT("dfu_fw_reboot: reset_mode %x, reason 0x%x", reset_mode, reason);
     chip_reset(reset_mode);
 }
@@ -209,8 +197,7 @@ void dfu_fw_reboot(WDTMode_TypeDef reset_mode, T_SW_RESET_REASON reason)
  * @param  None
  * @return Result: true: image need update, false: image don't need update
  */
-bool dfu_check_ota_mode_flag(void)
-{
+bool dfu_check_ota_mode_flag(void) {
     AON_NS_REG8X_FW_GENERAL_NS_TYPE aon_0x1D10 = {.d32 = AON_REG_READ(AON_NS_REG8X_FW_GENERAL_NS)};
     return aon_0x1D10.ota_mode;
 }
@@ -220,15 +207,11 @@ bool dfu_check_ota_mode_flag(void)
  * @param  enable ota mode flag
  * @return None
  */
-void dfu_set_ota_mode_flag(bool enable)
-{
+void dfu_set_ota_mode_flag(bool enable) {
     AON_NS_REG8X_FW_GENERAL_NS_TYPE aon_0x1D10 = {.d32 = AON_REG_READ(AON_NS_REG8X_FW_GENERAL_NS)};
-    if (enable)
-    {
+    if (enable) {
         aon_0x1D10.ota_mode = 1;
-    }
-    else
-    {
+    } else {
         aon_0x1D10.ota_mode = 0;
     }
     AON_REG_WRITE(AON_NS_REG8X_FW_GENERAL_NS, aon_0x1D10.d32);
@@ -239,8 +222,7 @@ void dfu_set_ota_mode_flag(bool enable)
  * @param  None
  * @return None
  */
-void dfu_switch_to_ota_mode(void)
-{
+void dfu_switch_to_ota_mode(void) {
     DFU_PRINT_INFO0("==>dfu_switch_to_ota_mode");
     dfu_set_ota_mode_flag(true);
 
@@ -252,8 +234,7 @@ void dfu_switch_to_ota_mode(void)
  * @param  None
  * @return IC type
  */
-uint8_t dfu_get_ic_type(void)
-{
+uint8_t dfu_get_ic_type(void) {
     uint8_t ic_type = IMG_IC_TYPE;
     uint32_t image_addr = get_header_addr_by_img_id(IMG_MCUAPP);
 
@@ -267,25 +248,19 @@ uint8_t dfu_get_ic_type(void)
  * @param  None
  * @return Active bank number
  */
-T_ACTIVE_BANK_NUM get_active_bank_num(void)
-{
+T_ACTIVE_BANK_NUM get_active_bank_num(void) {
     T_ACTIVE_BANK_NUM bank_num = OTA_BANK_MAX;
 
     uint32_t ota_bank0_addr = flash_partition_addr_get(PARTITION_FLASH_OTA_BANK_0);
     uint32_t ota_bank1_addr = flash_partition_addr_get(PARTITION_FLASH_OTA_BANK_1);
     uint32_t ota_header_addr = get_active_ota_bank_addr();
-    if (ota_bank0_addr == ota_header_addr)
-    {
+    if (ota_bank0_addr == ota_header_addr) {
         bank_num = OTA_BANK0;
-    }
-    else if (ota_bank1_addr == ota_header_addr)
-    {
+    } else if (ota_bank1_addr == ota_header_addr) {
         bank_num = OTA_BANK1;
-    }
-    else
-    {
+    } else {
         /* invalid case */
-        //bank_num = OTA_BANK_MAX;
+        // bank_num = OTA_BANK_MAX;
     }
 
     return bank_num;
@@ -296,46 +271,34 @@ T_ACTIVE_BANK_NUM get_active_bank_num(void)
  * @param  image_id  image ID
  * @return Image address
  */
-uint32_t dfu_get_temp_ota_bank_img_addr_by_img_id(IMG_ID image_id)
-{
+uint32_t dfu_get_temp_ota_bank_img_addr_by_img_id(IMG_ID image_id) {
     uint32_t image_addr = 0;
 
     /*not support image id*/
     if (image_id < IMG_DFU_FIRST ||
-        ((image_id >= IMG_DFU_MAX) && (image_id < IMG_USER_DATA_FIRST)))
-    {
+        ((image_id >= IMG_DFU_MAX) && (image_id < IMG_USER_DATA_FIRST))) {
         return image_addr;
     }
 
-    if (image_id < IMG_USER_DATA_MAX && image_id >= IMG_USER_DATA_FIRST)
-    {
+    if (image_id < IMG_USER_DATA_MAX && image_id >= IMG_USER_DATA_FIRST) {
         dfu_get_user_data_info(image_id, &image_addr, true);
         return image_addr;
     }
 
 #if (SUPPORT_BL_COPY_SECURE_IMAGE == 1)
-    if (image_id == IMG_OTA || (image_id >= IMG_BANK_FIRST && image_id < IMG_DFU_MAX))
-    {
+    if (image_id == IMG_OTA || (image_id >= IMG_BANK_FIRST && image_id < IMG_DFU_MAX)) {
         image_addr = get_temp_ota_bank_img_addr_by_img_id(image_id);
-    }
-    else
-    {
+    } else {
         image_addr = flash_nor_get_bank_addr(FLASH_OTA_TMP);
     }
 #else
-    if (!is_ota_support_bank_switch())
-    {
-        if (image_id == IMG_SECUREMCUAPP || image_id == IMG_SECUREMCUAPPDATA)
-        {
+    if (!is_ota_support_bank_switch()) {
+        if (image_id == IMG_SECUREMCUAPP || image_id == IMG_SECUREMCUAPPDATA) {
             image_addr = flash_partition_addr_get(PARTITION_FLASH_OTA_TMP);
-        }
-        else
-        {
+        } else {
             image_addr = get_temp_ota_bank_img_addr_by_img_id(image_id);
         }
-    }
-    else
-    {
+    } else {
         image_addr = get_temp_ota_bank_img_addr_by_img_id(image_id);
     }
 #endif
@@ -348,47 +311,35 @@ uint32_t dfu_get_temp_ota_bank_img_addr_by_img_id(IMG_ID image_id)
  * @param  image_id  image ID
  * @return Image size
  */
-uint32_t dfu_get_temp_ota_bank_img_size_by_img_id(IMG_ID image_id)
-{
+uint32_t dfu_get_temp_ota_bank_img_size_by_img_id(IMG_ID image_id) {
     uint32_t image_size = 0;
 
     /*not support image id*/
     if (image_id < IMG_DFU_FIRST ||
-        ((image_id >= IMG_DFU_MAX) && (image_id < IMG_USER_DATA_FIRST)))
-    {
-        //invalid image id
+        ((image_id >= IMG_DFU_MAX) && (image_id < IMG_USER_DATA_FIRST))) {
+        // invalid image id
         return image_size;
     }
 
-    if (image_id >= IMG_USER_DATA_FIRST && image_id < IMG_USER_DATA_MAX)
-    {
+    if (image_id >= IMG_USER_DATA_FIRST && image_id < IMG_USER_DATA_MAX) {
         dfu_get_user_data_info(image_id, &image_size, false);
         return image_size;
     }
 
 #if (SUPPORT_BL_COPY_SECURE_IMAGE == 1)
-    if (image_id == IMG_OTA || (image_id >= IMG_BANK_FIRST && image_id < IMG_DFU_MAX))
-    {
+    if (image_id == IMG_OTA || (image_id >= IMG_BANK_FIRST && image_id < IMG_DFU_MAX)) {
         image_size = get_temp_ota_bank_img_size_by_img_id(image_id);
-    }
-    else
-    {
+    } else {
         image_size = flash_nor_get_bank_size(FLASH_OTA_TMP);
     }
 #else
-    if (!is_ota_support_bank_switch())
-    {
-        if (image_id == IMG_SECUREMCUAPP || image_id == IMG_SECUREMCUAPPDATA)
-        {
+    if (!is_ota_support_bank_switch()) {
+        if (image_id == IMG_SECUREMCUAPP || image_id == IMG_SECUREMCUAPPDATA) {
             image_size = flash_partition_size_get(PARTITION_FLASH_OTA_TMP);
-        }
-        else
-        {
+        } else {
             image_size = get_temp_ota_bank_img_size_by_img_id(image_id);
         }
-    }
-    else
-    {
+    } else {
         image_size = get_temp_ota_bank_img_size_by_img_id(image_id);
     }
 
@@ -398,32 +349,29 @@ uint32_t dfu_get_temp_ota_bank_img_size_by_img_id(IMG_ID image_id)
 }
 
 /**
-* @brief calculate checksum of lenth of buffer in flash.
-*
-* @param  signature          signature to identify FW.
-* @param  offset             offset of the image.
-* @param  length             length of data.
-* @param  crcValue          ret crc value point.
-* @return  0 if buffer checksum calcs successfully, error line number otherwise
-*/
+ * @brief calculate checksum of lenth of buffer in flash.
+ *
+ * @param  signature          signature to identify FW.
+ * @param  offset             offset of the image.
+ * @param  length             length of data.
+ * @param  crcValue          ret crc value point.
+ * @return  0 if buffer checksum calcs successfully, error line number otherwise
+ */
 
-uint32_t dfu_check_bufcrc(uint8_t *buf, uint32_t length, uint16_t mCrcVal)
-{
+uint32_t dfu_check_bufcrc(uint8_t *buf, uint32_t length, uint16_t mCrcVal) {
     uint32_t ret = 0;
     uint16_t checksum16 = 0;
     uint32_t i;
     uint16_t *p16;
 
     p16 = (uint16_t *)buf;
-    for (i = 0; i < length / 2; ++i)
-    {
+    for (i = 0; i < length / 2; ++i) {
         checksum16 = checksum16 ^ (*p16);
         ++p16;
     }
 
     checksum16 = swap_16(checksum16);
-    if (checksum16 != mCrcVal)
-    {
+    if (checksum16 != mCrcVal) {
         ret = __LINE__;
     }
 
@@ -438,15 +386,13 @@ uint32_t dfu_check_bufcrc(uint8_t *buf, uint32_t length, uint16_t mCrcVal)
  * @param  offset    flash address offset
  * @return Result    0: success, others: fail
  */
-uint32_t dfu_flash_erase(IMG_ID image_id, uint32_t offset)
-{
+uint32_t dfu_flash_erase(IMG_ID image_id, uint32_t offset) {
     uint32_t result = 0;
     uint32_t dfu_base_addr;
 
     dfu_base_addr = dfu_get_temp_ota_bank_img_addr_by_img_id(image_id);
 
-    if (dfu_base_addr == 0)
-    {
+    if (dfu_base_addr == 0) {
         return __LINE__;
     }
 
@@ -458,16 +404,15 @@ uint32_t dfu_flash_erase(IMG_ID image_id, uint32_t offset)
 }
 
 /**
-    * @brief    write data to flash
-    * @param    img_id  image id
-    * @param    offset  image offset
-    * @param    total_offset  total offset when ota temp mode
-    * @param    p_void  point of data
-    * @return   0: success; other: fail
-    */
+ * @brief    write data to flash
+ * @param    img_id  image id
+ * @param    offset  image offset
+ * @param    total_offset  total offset when ota temp mode
+ * @param    p_void  point of data
+ * @return   0: success; other: fail
+ */
 uint32_t dfu_write_data_to_flash(uint16_t img_id, uint32_t offset, uint32_t total_offset,
-                                 uint32_t length, void *p_void)
-{
+                                 uint32_t length, void *p_void) {
     uint32_t ret = 0;
     uint32_t dfu_base_addr;
     uint8_t readback_buffer[READ_BACK_BUFFER_SIZE];
@@ -477,29 +422,25 @@ uint32_t dfu_write_data_to_flash(uint16_t img_id, uint32_t offset, uint32_t tota
     uint32_t remain_size = length;
     uint32_t s;
 
-    DBG_DIRECT("==>dfu_write_data_to_flash: total_offset=0x%x, offset=%d, length=%d",
-                     total_offset, offset, length);
+    DBG_DIRECT("==>dfu_write_data_to_flash: total_offset=0x%x, offset=%d, length=%d", total_offset,
+               offset, length);
 
-    if (p_void == 0)
-    {
+    if (p_void == 0) {
         ret = __LINE__;
         goto L_EXIT;
     }
 
     dfu_base_addr = dfu_get_temp_ota_bank_img_addr_by_img_id((IMG_ID)img_id);
 
-    if (dfu_base_addr == 0)
-    {
+    if (dfu_base_addr == 0) {
         ret = __LINE__;
         goto L_EXIT;
     }
 
-    if (img_id >= IMG_DFU_FIRST && img_id < IMG_DFU_MAX)
-    {
+    if (img_id >= IMG_DFU_FIRST && img_id < IMG_DFU_MAX) {
         dfu_base_addr += total_offset;
     }
-    if (offset == 0)
-    {
+    if (offset == 0) {
         T_IMG_HEADER_FORMAT *p_header = (T_IMG_HEADER_FORMAT *)p_void;
 
         p_header->ctrl_header.ctrl_flag.not_ready = 0x1;
@@ -507,19 +448,14 @@ uint32_t dfu_write_data_to_flash(uint16_t img_id, uint32_t offset, uint32_t tota
 
     dest_addr = dfu_base_addr + offset;
     DBG_DIRECT("==>dfu_write_data_to_flash:dfu_base_addr=0x%x, dest_addr=0x%x", dfu_base_addr,
-                     dest_addr);
-    if ((dest_addr % FLASH_SECTOR_SIZE) == 0)
-    {
+               dest_addr);
+    if ((dest_addr % FLASH_SECTOR_SIZE) == 0) {
         s = os_lock();
         fmc_flash_nor_erase(dest_addr, FMC_FLASH_NOR_ERASE_SECTOR);
         os_unlock(s);
-    }
-    else
-    {
-        if ((dest_addr / FLASH_SECTOR_SIZE) != ((dest_addr + length) / FLASH_SECTOR_SIZE))
-        {
-            if ((dest_addr + length) % FLASH_SECTOR_SIZE)
-            {
+    } else {
+        if ((dest_addr / FLASH_SECTOR_SIZE) != ((dest_addr + length) / FLASH_SECTOR_SIZE)) {
+            if ((dest_addr + length) % FLASH_SECTOR_SIZE) {
                 s = os_lock();
                 fmc_flash_nor_erase((dest_addr + length) & ~(FLASH_SECTOR_SIZE - 1),
                                     FMC_FLASH_NOR_ERASE_SECTOR);
@@ -534,14 +470,13 @@ uint32_t dfu_write_data_to_flash(uint16_t img_id, uint32_t offset, uint32_t tota
 
     SCB_InvalidateDCache_by_Addr((uint32_t *)dest_addr, length);
 
-    while (remain_size)
-    {
-        read_back_len = (remain_size >= READ_BACK_BUFFER_SIZE) ? READ_BACK_BUFFER_SIZE : remain_size;
+    while (remain_size) {
+        read_back_len =
+            (remain_size >= READ_BACK_BUFFER_SIZE) ? READ_BACK_BUFFER_SIZE : remain_size;
         s = os_lock();
         fmc_flash_nor_read(dest_addr, readback_buffer, read_back_len);
         os_unlock(s);
-        if (memcmp(readback_buffer, p_src, read_back_len) != 0)
-        {
+        if (memcmp(readback_buffer, p_src, read_back_len) != 0) {
             ret = __LINE__;
             goto L_EXIT;
         }
@@ -557,13 +492,12 @@ L_EXIT:
 }
 
 /**
-    * @brief    check the integrity of the image
-    * @param    img_id    image id
-    * @param    offset    address offset
-    * @return   ture:success ; false: fail
-    */
-bool dfu_checksum(IMG_ID img_id, uint32_t offset)
-{
+ * @brief    check the integrity of the image
+ * @param    img_id    image id
+ * @param    offset    address offset
+ * @return   ture:success ; false: fail
+ */
+bool dfu_checksum(IMG_ID img_id, uint32_t offset) {
     uint32_t base_addr = 0;
     uint32_t image_total_length = 0;
     bool ret = false;
@@ -571,42 +505,40 @@ bool dfu_checksum(IMG_ID img_id, uint32_t offset)
 
     base_addr = dfu_get_temp_ota_bank_img_addr_by_img_id(img_id);
 
-    if (base_addr == 0)
-    {
+    if (base_addr == 0) {
         return false;
     }
 
-    if (img_id >= IMG_DFU_FIRST && img_id < IMG_DFU_MAX)
-    {
+    if (img_id >= IMG_DFU_FIRST && img_id < IMG_DFU_MAX) {
         base_addr += offset;
     }
 
     fmc_flash_nor_read(base_addr + offsetof(T_IMG_HEADER_FORMAT, ctrl_header) +
-                       offsetof(T_IMG_CTRL_HEADER_FORMAT, payload_len),
+                           offsetof(T_IMG_CTRL_HEADER_FORMAT, payload_len),
                        &image_total_length, 4);
     image_total_length += sizeof(T_IMG_HEADER_FORMAT);
-    DBG_DIRECT("base addr:%x,offset:%x,totol:%d",base_addr,offsetof(T_IMG_HEADER_FORMAT, ctrl_header) +
-                       offsetof(T_IMG_CTRL_HEADER_FORMAT, payload_len),image_total_length);
+    DBG_DIRECT("base addr:%x,offset:%x,totol:%d", base_addr,
+               offsetof(T_IMG_HEADER_FORMAT, ctrl_header) +
+                   offsetof(T_IMG_CTRL_HEADER_FORMAT, payload_len),
+               image_total_length);
     /*store wdg config and check wdg enable*/
     bool wdt_en = WDT_IsEnable();
     WDTMode_TypeDef wdt_mode = WDT_GetMode();
     uint32_t wdt_timeout = WDT_GetTimeoutMs();
 
     /*if ota large img, need modify wdg timeout period*/
-    if (wdt_en && image_total_length > 0x100000)
-    {
+    if (wdt_en && image_total_length > 0x100000) {
         /*1M and less---4s, 2M and less---8s,..., 8M and less---32s*/
         uint32_t img_align_len = ((image_total_length + (0x100000 - 1)) & (~(0x100000 - 1)));
         uint32_t wdt_period = 4000 * (img_align_len / 0x100000);
         DBG_DIRECT("<==dfu_checksum: Change WDG Period to %d ms, image_total_length 0x%x",
-                         wdt_period, image_total_length);
+                   wdt_period, image_total_length);
         WDT_Start(wdt_period, RESET_ALL);
     }
 
     ret = dfu_check_sha256((T_IMG_HEADER_FORMAT *)base_addr);
 
-    if (wdt_en && image_total_length > 0x100000)
-    {
+    if (wdt_en && image_total_length > 0x100000) {
         /* restore wdg config */
         WDT_Start(wdt_timeout, wdt_mode);
     }
@@ -617,24 +549,25 @@ bool dfu_checksum(IMG_ID img_id, uint32_t offset)
 }
 
 /**
-    * @brief    clear not ready flag of specific image
-    * @param    addr    address of the image
-    * @return   void
-    */
-void dfu_set_ready(T_IMG_HEADER_FORMAT *p_header)
-{
+ * @brief    clear not ready flag of specific image
+ * @param    addr    address of the image
+ * @return   void
+ */
+void dfu_set_ready(T_IMG_HEADER_FORMAT *p_header) {
     T_IMG_CTRL_HEADER_FORMAT ctrl_header;
     uint16_t ctrl_flag;
     uint32_t s;
 
     s = os_lock();
-    fmc_flash_nor_read((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag, sizeof(ctrl_flag));
+    fmc_flash_nor_read((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag,
+                       sizeof(ctrl_flag));
     os_unlock(s);
     DFU_PRINT_TRACE2("==>dfu_set_ready: p_header 0x%x, ctrl_flag 0x%x", p_header, ctrl_flag);
 
     ctrl_flag &= ~0x80;
     s = os_lock();
-    fmc_flash_nor_write((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag, sizeof(ctrl_flag));
+    fmc_flash_nor_write((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag,
+                        sizeof(ctrl_flag));
     fmc_flash_nor_read((uint32_t)&p_header->ctrl_header, &ctrl_header, sizeof(ctrl_header));
     os_unlock(s);
     DFU_PRINT_TRACE2("<==dfu_set_ready:img_id 0x%x, after ctrl_flag 0x%x", ctrl_header.image_id,
@@ -646,25 +579,22 @@ void dfu_set_ready(T_IMG_HEADER_FORMAT *p_header)
  * @param  p_header pointer to image header
  * @return None
  */
-void dfu_set_obsolete(T_IMG_HEADER_FORMAT *p_header)
-{
+void dfu_set_obsolete(T_IMG_HEADER_FORMAT *p_header) {
     uint16_t ctrl_flag;
     uint32_t s;
     s = os_lock();
-    fmc_flash_nor_read((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag, sizeof(ctrl_flag));
+    fmc_flash_nor_read((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag,
+                       sizeof(ctrl_flag));
     ctrl_flag &= ~0x0100;
-    fmc_flash_nor_write((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag, sizeof(ctrl_flag));
+    fmc_flash_nor_write((uint32_t) & (p_header->ctrl_header.ctrl_flag), &ctrl_flag,
+                        sizeof(ctrl_flag));
     os_unlock(s);
 }
 
-
-T_USER_DATA_ERROR_TYPE dfu_get_user_data_info(IMG_ID image_id,
-                                              uint32_t *img_info, bool is_addr)
-{
+T_USER_DATA_ERROR_TYPE dfu_get_user_data_info(IMG_ID image_id, uint32_t *img_info, bool is_addr) {
     T_USER_DATA_ERROR_TYPE err_code = USER_DATA_SUCCESS;
 
-    switch (image_id)
-    {
+    switch (image_id) {
     case IMG_USER_DATA1:
         *img_info = is_addr ? USER_DATA1_ADDR : USER_DATA1_SIZE;
         break;

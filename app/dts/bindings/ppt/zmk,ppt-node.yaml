@@ -4,7 +4,6 @@
 description: |
   RTL87X2G PPT.
 compatible: "zmk,ppt-node"
-
 include: [base.yaml]
 
 properties:

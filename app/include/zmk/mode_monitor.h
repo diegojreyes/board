@@ -8,13 +8,13 @@
 
 #pragma once
 
-#define GPIO_PIN_LEVEL_LOW   0
+#define GPIO_PIN_LEVEL_LOW 0
 #define GPIO_PIN_LEVEL_HIGH 1
 #define USB_IN_DETECT_NUM 5
 #define USB_OUT_DETECT_NUM 6
 
-#define WINDOWS  0
-#define MACOS    1
+#define WINDOWS 0
+#define MACOS 1
 
 typedef struct APP_MODE {
     bool is_in_bt_mode;
@@ -33,11 +33,11 @@ extern T_APP_MODE app_mode;
 extern T_APP_GLOBAL_DATA app_global_data;
 
 enum app_mode_type {
-    WIN_MAC_MODE=0,
+    WIN_MAC_MODE = 0,
     USB_MODE,
     BT_MODE,
     PPT_MODE,
-    
+
 };
 
 void cap_led_on(void);

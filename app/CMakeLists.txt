@@ -243,10 +243,10 @@ zephyr_cc_option(-Wfatal-errors)
 
 
 # ---------------------------------------------------------------------------
-# After a successful build: prepend header to the firmware image for RTK's 
-# OTA DFU, which requires a header with metadata. 
-# The header prepending tool is a available for Windows, Linux x86_64, 
-# and macOS ARM64. 
+# After a successful build: prepend header to the firmware image for RTK's
+# OTA DFU, which requires a header with metadata.
+# The header prepending tool is a available for Windows, Linux x86_64,
+# and macOS ARM64.
 # ---------------------------------------------------------------------------
 if(WIN32)
   set(_PREPEND_HEADER tools/prepend_header/windows-x86_64/prepend_header.exe)

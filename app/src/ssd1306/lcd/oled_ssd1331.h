@@ -25,7 +25,6 @@
  * @file oled_ssd1331.h support for RGB OLED 96x64 display
  */
 
-
 #ifndef _OLED_SSD1331_H_
 #define _OLED_SSD1331_H_
 
@@ -72,7 +71,7 @@ void ssd1331_setRotation(uint8_t rotation);
  * @param mode 0 or 1
  * @deprecated Use ssd1306_setMode() instead.
  */
-void        ssd1331_setMode(lcd_mode_t mode);
+void ssd1331_setMode(lcd_mode_t mode);
 
 /**
  * @brief Inits 96x64 RGB OLED display (based on SSD1331 controller).
@@ -82,7 +81,7 @@ void        ssd1331_setMode(lcd_mode_t mode);
  * @see ssd1306_i2cInit()
  * @see ssd1306_spiInit()
  */
-void         ssd1331_96x64_init(void);
+void ssd1331_96x64_init(void);
 
 /**
  * @brief Inits 96x64 RGB OLED display over spi in 8-bit mode (based on SSD1331 controller).
@@ -92,7 +91,7 @@ void         ssd1331_96x64_init(void);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         ssd1331_96x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void ssd1331_96x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * @brief Inits 96x64 RGB OLED display over spi in 16-bit mode (based on SSD1331 controller).
@@ -102,7 +101,7 @@ void         ssd1331_96x64_spi_init(int8_t rstPin, int8_t cesPin, int8_t dcPin);
  * @param cesPin - chip enable pin to LCD slave (-1 if not used)
  * @param dcPin - data/command pin to control LCD dc (required)
  */
-void         ssd1331_96x64_spi_init16(int8_t rstPin, int8_t cesPin, int8_t dcPin);
+void ssd1331_96x64_spi_init16(int8_t rstPin, int8_t cesPin, int8_t dcPin);
 
 /**
  * Draws line
@@ -114,7 +113,7 @@ void         ssd1331_96x64_spi_init16(int8_t rstPin, int8_t cesPin, int8_t dcPin
  *
  * @note This API can be used only with ssd1331 RGB oled displays
  */
-void         ssd1331_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t color);
+void ssd1331_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint16_t color);
 
 /**
  * Copies block in GDRAM to new position
@@ -132,7 +131,8 @@ void         ssd1331_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, ui
  *       (for example, use 250us delay). This time is required for
  *       oled display to become ready to accept new commands.
  */
-void ssd1331_copyBlock(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, uint8_t newLeft, uint8_t newTop);
+void ssd1331_copyBlock(uint8_t left, uint8_t top, uint8_t right, uint8_t bottom, uint8_t newLeft,
+                       uint8_t newTop);
 
 /**
  * @}

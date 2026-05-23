@@ -25,7 +25,6 @@
  * @file ssd1306_generic.h SSD1306 generic API functions
  */
 
-
 #ifndef _SSD1306_GENERIC_H_
 #define _SSD1306_GENERIC_H_
 
@@ -40,10 +39,11 @@ extern "C" {
 ///////////////////////////////////////////////////////////////////////
 
 /** Flag means that more chars are required to decode utf-8 */
-#define SSD1306_MORE_CHARS_REQUIRED  0xffff
+#define SSD1306_MORE_CHARS_REQUIRED 0xffff
 
 /**
- * @defgroup LCD_GENERIC_API DIRECT DRAW: Generic API functions, common for all displays and all display modes.
+ * @defgroup LCD_GENERIC_API DIRECT DRAW: Generic API functions, common for all displays and all
+ * display modes.
  * @{
  * @brief Generic API functions, common for all displays and all display modes.
  *
@@ -55,7 +55,7 @@ extern "C" {
  * @param x - horizontal position in pixels
  * @param y - vertical position in blocks (pixels/8)
  */
-void         ssd1306_setPos(uint8_t x, uint8_t y);
+void ssd1306_setPos(uint8_t x, uint8_t y);
 
 /**
  * @brief Sets cursor position for text mode print functions.
@@ -72,10 +72,10 @@ void ssd1306_setCursor(lcdint_t x, lcdint_t y);
  * Please refer to github wiki on how to generate new fonts.
  * @param progmemFont - font to setup located in Flash area
  */
-void ssd1306_setFixedFont(const uint8_t * progmemFont);
+void ssd1306_setFixedFont(const uint8_t *progmemFont);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-void ssd1306_setFixedFont_oldStyle(const uint8_t * progmemFont);
+void ssd1306_setFixedFont_oldStyle(const uint8_t *progmemFont);
 #endif
 
 /**
@@ -85,7 +85,7 @@ void ssd1306_setFixedFont_oldStyle(const uint8_t * progmemFont);
  * @param progmemFont - font to setup located in Flash area
  * @note This function supports new fonts of ssd1306 library 1.7.8 and above
  */
-void ssd1306_setFreeFont(const uint8_t * progmemFont);
+void ssd1306_setFreeFont(const uint8_t *progmemFont);
 
 /**
  * Function allows sets secondary font for specific language.
@@ -94,7 +94,7 @@ void ssd1306_setFreeFont(const uint8_t * progmemFont);
  * @param progmemUnicode font containing unicode table (refer to
  *        ssd1306xled_font6x8_German as example).
  */
-void ssd1306_setSecondaryFont(const uint8_t * progmemUnicode);
+void ssd1306_setSecondaryFont(const uint8_t *progmemUnicode);
 
 /**
  * Function allows to set another font for the library.
@@ -107,7 +107,7 @@ void ssd1306_setSecondaryFont(const uint8_t * progmemUnicode);
  * @param progmemFont - font to setup located in Flash area
  * @deprecated Use ssd1306_setFixedFont() instead.
  */
-void ssd1306_setFont6x8(const uint8_t * progmemFont) __attribute__ ((deprecated));
+void ssd1306_setFont6x8(const uint8_t *progmemFont) __attribute__((deprecated));
 
 /**
  * @brief returns char data for currently set (active) font.
@@ -142,7 +142,7 @@ void ssd1306_enableAsciiMode(void);
  * @note This function supports squix fonts for ssd1306 library 1.7.8 and above
  * @warning Squix fonts are not fully supported, use them at your own risk
  */
-void ssd1306_setSquixFont(const uint8_t * progmemFont);
+void ssd1306_setSquixFont(const uint8_t *progmemFont);
 
 /**
  * Returns 16-bit unicode char, encoded in utf8
@@ -162,7 +162,6 @@ uint16_t ssd1306_unicode16FromUtf8(uint8_t ch);
  */
 lcduint_t ssd1306_getTextSize(const char *text, lcduint_t *height);
 
-
 ///////////////////////////////////////////////////////////////////////
 //                 HIGH-LEVEL GRAPH FUNCTIONS
 ///////////////////////////////////////////////////////////////////////
@@ -170,18 +169,17 @@ lcduint_t ssd1306_getTextSize(const char *text, lcduint_t *height);
 /**
  * Describes menu object
  */
-typedef struct
-{
+typedef struct {
     /// list of menu items of the menu
     const char **items;
     /// count of menu items in the menu
-    uint8_t     count;
+    uint8_t count;
     /// currently selected item. Internally updated.
-    uint8_t     selection;
+    uint8_t selection;
     /// selected item, when last redraw operation was performed. Internally updated.
-    uint8_t     oldSelection;
+    uint8_t oldSelection;
     /// position of menu scrolling. Internally updated
-    uint8_t     scrollPosition;
+    uint8_t scrollPosition;
 } SAppMenu;
 
 /**
@@ -226,10 +224,7 @@ void ssd1306_showMenu8(SAppMenu *menu);
 void ssd1306_showMenu16(SAppMenu *menu);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-static inline void ssd1331_showMenu8(SAppMenu *menu)
-{
-    ssd1306_showMenu8(menu);
-}
+static inline void ssd1331_showMenu8(SAppMenu *menu) { ssd1306_showMenu8(menu); }
 #endif
 
 /**
@@ -261,10 +256,7 @@ void ssd1306_updateMenu8(SAppMenu *menu);
 void ssd1306_updateMenu16(SAppMenu *menu);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-static inline void ssd1331_updateMenu8(SAppMenu *menu)
-{
-    ssd1306_updateMenu8(menu);
-}
+static inline void ssd1331_updateMenu8(SAppMenu *menu) { ssd1306_updateMenu8(menu); }
 #endif
 
 /**

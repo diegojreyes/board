@@ -35,25 +35,19 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #if IS_ENABLED(CONFIG_ZMK_MOUSE)
 void zmk_hid_set_mouse_report(uint8_t *payload);
 int zmk_endpoints_send_mouse_report();
-int host_mouse_send(report_mouse_t *rp)
-{
+int host_mouse_send(report_mouse_t *rp) {
     zmk_hid_set_mouse_report(&rp->buttons);
     zmk_endpoints_send_mouse_report();
     return 0;
 }
 
-
-static uint32_t timer_read(void){
-    return k_uptime_get_32();
-}
-uint32_t timer_elapsed(uint32_t last) {
-    return TIMER_DIFF_32(k_uptime_get_32(), last);
-}
+static uint32_t timer_read(void) { return k_uptime_get_32(); }
+uint32_t timer_elapsed(uint32_t last) { return TIMER_DIFF_32(k_uptime_get_32(), last); }
 
 static inline int8_t times_inv_sqrt2(int8_t x) {
     // 181/256 (0.70703125) is used as an approximation for 1/sqrt(2)
     // because it is close to the exact value which is 0.707106781
-    const int16_t  n = x * 181;
+    const int16_t n = x * 181;
     const uint16_t d = 256;
 
     // To ensure that the integer result is rounded accurately after
@@ -63,17 +57,17 @@ static inline int8_t times_inv_sqrt2(int8_t x) {
     return n < 0 ? (n - d / 2) / d : (n + d / 2) / d;
 }
 
-static report_mouse_t mouse_report = {ZMK_HID_REPORT_ID_MOUSE,0};
-static void           mousekey_debug(void);
-static uint8_t        mousekey_accel        = 0;
-static uint8_t        mousekey_repeat       = 0;
-static uint8_t        mousekey_wheel_repeat = 0;
+static report_mouse_t mouse_report = {ZMK_HID_REPORT_ID_MOUSE, 0};
+static void mousekey_debug(void);
+static uint8_t mousekey_accel = 0;
+static uint8_t mousekey_repeat = 0;
+static uint8_t mousekey_wheel_repeat = 0;
 #ifdef MOUSEKEY_INERTIA
-static uint8_t mousekey_frame     = 0; // track whether gesture is inactive, first frame, or repeating
-static int8_t  mousekey_x_dir     = 0; // -1 / 0 / 1 = left / neutral / right
-static int8_t  mousekey_y_dir     = 0; // -1 / 0 / 0 = up / neutral / down
-static int8_t  mousekey_x_inertia = 0; // current velocity, limit +/- MOUSEKEY_TIME_TO_MAX
-static int8_t  mousekey_y_inertia = 0; // ...
+static uint8_t mousekey_frame = 0; // track whether gesture is inactive, first frame, or repeating
+static int8_t mousekey_x_dir = 0;  // -1 / 0 / 1 = left / neutral / right
+static int8_t mousekey_y_dir = 0;  // -1 / 0 / 0 = up / neutral / down
+static int8_t mousekey_x_inertia = 0; // current velocity, limit +/- MOUSEKEY_TIME_TO_MAX
+static int8_t mousekey_y_inertia = 0; // ...
 #endif
 #ifdef MK_KINETIC_SPEED
 static uint32_t mouse_timer = 0;
@@ -104,17 +98,17 @@ uint8_t mk_time_to_max = MOUSEKEY_TIME_TO_MAX;
 /* milliseconds between the initial key press and first repeated motion event (0-2550) */
 uint8_t mk_wheel_delay = MOUSEKEY_WHEEL_DELAY / 10;
 /* milliseconds between repeated motion events (0-255) */
-#    ifdef MK_KINETIC_SPEED
+#ifdef MK_KINETIC_SPEED
 uint16_t mk_wheel_interval = 1000U / MOUSEKEY_WHEEL_INITIAL_MOVEMENTS;
-#    else
+#else
 uint8_t mk_wheel_interval = MOUSEKEY_WHEEL_INTERVAL;
-#    endif
-uint8_t mk_wheel_max_speed   = MOUSEKEY_WHEEL_MAX_SPEED;
+#endif
+uint8_t mk_wheel_max_speed = MOUSEKEY_WHEEL_MAX_SPEED;
 uint8_t mk_wheel_time_to_max = MOUSEKEY_WHEEL_TIME_TO_MAX;
 
-#    ifndef MK_COMBINED
-#        ifndef MK_KINETIC_SPEED
-#            ifndef MOUSEKEY_INERTIA
+#ifndef MK_COMBINED
+#ifndef MK_KINETIC_SPEED
+#ifndef MOUSEKEY_INERTIA
 
 /* Default accelerated mode */
 
@@ -136,7 +130,7 @@ static uint8_t move_unit(void) {
     return (unit > MOUSEKEY_MOVE_MAX ? MOUSEKEY_MOVE_MAX : (unit == 0 ? 1 : unit));
 }
 
-#            else // MOUSEKEY_INERTIA mode
+#else // MOUSEKEY_INERTIA mode
 
 static int8_t move_unit(uint8_t axis) {
     int16_t unit;
@@ -145,23 +139,24 @@ static int8_t move_unit(uint8_t axis) {
     int8_t inertia, dir;
     if (axis) {
         inertia = mousekey_y_inertia;
-        dir     = mousekey_y_dir;
+        dir = mousekey_y_dir;
     } else {
         inertia = mousekey_x_inertia;
-        dir     = mousekey_x_dir;
+        dir = mousekey_x_dir;
     }
 
     if (mousekey_frame < 2) { // first frame(s): initial keypress moves one pixel
         mousekey_frame = 1;
-        unit           = dir * MOUSEKEY_MOVE_DELTA;
+        unit = dir * MOUSEKEY_MOVE_DELTA;
     } else { // acceleration
         // linear acceleration (is here for reference, but doesn't feel as good during use)
         // unit = (MOUSEKEY_MOVE_DELTA * mk_max_speed * inertia) / mk_time_to_max;
 
         // x**2 acceleration (quadratic, more precise for short movements)
         int16_t percent = (inertia << 8) / mk_time_to_max;
-        percent         = ((int32_t)percent * percent) >> 8;
-        if (inertia < 0) percent = -percent;
+        percent = ((int32_t)percent * percent) >> 8;
+        if (inertia < 0)
+            percent = -percent;
 
         // unit = sign(inertia) + (percent of max speed)
         if (inertia > 0)
@@ -181,7 +176,7 @@ static int8_t move_unit(uint8_t axis) {
     return unit;
 }
 
-#            endif // end MOUSEKEY_INERTIA mode
+#endif // end MOUSEKEY_INERTIA mode
 
 static uint8_t wheel_unit(void) {
     uint16_t unit;
@@ -196,12 +191,13 @@ static uint8_t wheel_unit(void) {
     } else if (mousekey_wheel_repeat >= mk_wheel_time_to_max) {
         unit = MOUSEKEY_WHEEL_DELTA * mk_wheel_max_speed;
     } else {
-        unit = (MOUSEKEY_WHEEL_DELTA * mk_wheel_max_speed * mousekey_wheel_repeat) / mk_wheel_time_to_max;
+        unit = (MOUSEKEY_WHEEL_DELTA * mk_wheel_max_speed * mousekey_wheel_repeat) /
+               mk_wheel_time_to_max;
     }
     return (unit > MOUSEKEY_WHEEL_MAX ? MOUSEKEY_WHEEL_MAX : (unit == 0 ? 1 : unit));
 }
 
-#        else /* #ifndef MK_KINETIC_SPEED */
+#else /* #ifndef MK_KINETIC_SPEED */
 
 /*
  * Kinetic movement  acceleration algorithm
@@ -216,9 +212,9 @@ static uint8_t wheel_unit(void) {
  * B: base mouse travel speed
  */
 const uint16_t mk_accelerated_speed = MOUSEKEY_ACCELERATED_SPEED;
-const uint16_t mk_base_speed        = MOUSEKEY_BASE_SPEED;
+const uint16_t mk_base_speed = MOUSEKEY_BASE_SPEED;
 const uint16_t mk_decelerated_speed = MOUSEKEY_DECELERATED_SPEED;
-const uint16_t mk_initial_speed     = MOUSEKEY_INITIAL_SPEED;
+const uint16_t mk_initial_speed = MOUSEKEY_INITIAL_SPEED;
 
 static uint8_t move_unit(void) {
     uint16_t speed = mk_initial_speed;
@@ -229,7 +225,8 @@ static uint8_t move_unit(void) {
         speed = mk_accelerated_speed;
     } else if (mousekey_repeat && mouse_timer) {
         const uint16_t time_elapsed = timer_elapsed(mouse_timer) / 50;
-        speed                       = mk_initial_speed + MOUSEKEY_MOVE_DELTA * time_elapsed + (MOUSEKEY_MOVE_DELTA * time_elapsed * time_elapsed) / 2;
+        speed = mk_initial_speed + MOUSEKEY_MOVE_DELTA * time_elapsed +
+                (MOUSEKEY_MOVE_DELTA * time_elapsed * time_elapsed) / 2;
         if (speed > mk_base_speed) {
             speed = mk_base_speed;
         }
@@ -255,7 +252,8 @@ static uint8_t wheel_unit(void) {
     } else if (mousekey_wheel_repeat && mouse_timer) {
         if (mk_wheel_interval != MOUSEKEY_WHEEL_BASE_MOVEMENTS) {
             const uint16_t time_elapsed = timer_elapsed(mouse_timer) / 50;
-            speed                       = MOUSEKEY_WHEEL_INITIAL_MOVEMENTS + 1 * time_elapsed + (1 * time_elapsed * time_elapsed) / 2;
+            speed = MOUSEKEY_WHEEL_INITIAL_MOVEMENTS + 1 * time_elapsed +
+                    (1 * time_elapsed * time_elapsed) / 2;
         }
         if (speed > MOUSEKEY_WHEEL_BASE_MOVEMENTS) {
             speed = MOUSEKEY_WHEEL_BASE_MOVEMENTS;
@@ -265,8 +263,8 @@ static uint8_t wheel_unit(void) {
     return 1;
 }
 
-#        endif /* #ifndef MK_KINETIC_SPEED */
-#    else      /* #ifndef MK_COMBINED */
+#endif /* #ifndef MK_KINETIC_SPEED */
+#else  /* #ifndef MK_COMBINED */
 
 /* Combined mode */
 
@@ -306,9 +304,9 @@ static uint8_t wheel_unit(void) {
     return (unit > MOUSEKEY_WHEEL_MAX ? MOUSEKEY_WHEEL_MAX : (unit == 0 ? 1 : unit));
 }
 
-#    endif /* #ifndef MK_COMBINED */
+#endif /* #ifndef MK_COMBINED */
 
-#    ifdef MOUSEKEY_INERTIA
+#ifdef MOUSEKEY_INERTIA
 
 static int8_t calc_inertia(int8_t direction, int8_t velocity) {
     // simulate acceleration and deceleration
@@ -328,7 +326,7 @@ static int8_t calc_inertia(int8_t direction, int8_t velocity) {
     return velocity;
 }
 
-#    endif
+#endif
 
 void mousekey_task(void) {
     // report cursor and scroll movement independently
@@ -339,10 +337,11 @@ void mousekey_task(void) {
     mouse_report.v = 0;
     mouse_report.h = 0;
 
-#    ifdef MOUSEKEY_INERTIA
+#ifdef MOUSEKEY_INERTIA
 
     // if an animation is in progress and it's time for the next frame
-    if ((mousekey_frame) && timer_elapsed(last_timer_c) > ((mousekey_frame > 1) ? mk_interval : mk_delay * 10)) {
+    if ((mousekey_frame) &&
+        timer_elapsed(last_timer_c) > ((mousekey_frame > 1) ? mk_interval : mk_delay * 10)) {
         mousekey_x_inertia = calc_inertia(mousekey_x_dir, mousekey_x_inertia);
         mousekey_y_inertia = calc_inertia(mousekey_y_dir, mousekey_y_inertia);
 
@@ -350,25 +349,32 @@ void mousekey_task(void) {
         mouse_report.y = move_unit(1);
 
         // prevent sticky "drift"
-        if ((!mousekey_x_dir) && (!mousekey_x_inertia)) tmpmr.x = 0;
-        if ((!mousekey_y_dir) && (!mousekey_y_inertia)) tmpmr.y = 0;
+        if ((!mousekey_x_dir) && (!mousekey_x_inertia))
+            tmpmr.x = 0;
+        if ((!mousekey_y_dir) && (!mousekey_y_inertia))
+            tmpmr.y = 0;
 
-        if (mousekey_frame < 2) mousekey_frame++;
+        if (mousekey_frame < 2)
+            mousekey_frame++;
     }
 
     // reset if not moving and no movement keys are held
     if ((!mousekey_x_dir) && (!mousekey_y_dir) && (!mousekey_x_inertia) && (!mousekey_y_inertia)) {
         mousekey_frame = 0;
-        tmpmr.x        = 0;
-        tmpmr.y        = 0;
+        tmpmr.x = 0;
+        tmpmr.y = 0;
     }
 
-#    else // default acceleration
+#else // default acceleration
 
-    if ((tmpmr.x || tmpmr.y) && timer_elapsed(last_timer_c) > (mousekey_repeat ? mk_interval : mk_delay * 10)) {
-        if (mousekey_repeat != UINT8_MAX) mousekey_repeat++;
-        if (tmpmr.x != 0) mouse_report.x = move_unit() * ((tmpmr.x > 0) ? 1 : -1);
-        if (tmpmr.y != 0) mouse_report.y = move_unit() * ((tmpmr.y > 0) ? 1 : -1);
+    if ((tmpmr.x || tmpmr.y) &&
+        timer_elapsed(last_timer_c) > (mousekey_repeat ? mk_interval : mk_delay * 10)) {
+        if (mousekey_repeat != UINT8_MAX)
+            mousekey_repeat++;
+        if (tmpmr.x != 0)
+            mouse_report.x = move_unit() * ((tmpmr.x > 0) ? 1 : -1);
+        if (tmpmr.y != 0)
+            mouse_report.y = move_unit() * ((tmpmr.y > 0) ? 1 : -1);
 
         /* diagonal move [1/sqrt(2)] */
         if (mouse_report.x && mouse_report.y) {
@@ -383,12 +389,17 @@ void mousekey_task(void) {
         }
     }
 
-#    endif // MOUSEKEY_INERTIA or not
+#endif // MOUSEKEY_INERTIA or not
 
-    if ((tmpmr.v || tmpmr.h) && timer_elapsed(last_timer_w) > (mousekey_wheel_repeat ? mk_wheel_interval : mk_wheel_delay * 10)) {
-        if (mousekey_wheel_repeat != UINT8_MAX) mousekey_wheel_repeat++;
-        if (tmpmr.v != 0) mouse_report.v = wheel_unit() * ((tmpmr.v > 0) ? 1 : -1);
-        if (tmpmr.h != 0) mouse_report.h = wheel_unit() * ((tmpmr.h > 0) ? 1 : -1);
+    if ((tmpmr.v || tmpmr.h) &&
+        timer_elapsed(last_timer_w) >
+            (mousekey_wheel_repeat ? mk_wheel_interval : mk_wheel_delay * 10)) {
+        if (mousekey_wheel_repeat != UINT8_MAX)
+            mousekey_wheel_repeat++;
+        if (tmpmr.v != 0)
+            mouse_report.v = wheel_unit() * ((tmpmr.v > 0) ? 1 : -1);
+        if (tmpmr.h != 0)
+            mouse_report.h = wheel_unit() * ((tmpmr.h > 0) ? 1 : -1);
 
         /* diagonal move [1/sqrt(2)] */
         if (mouse_report.v && mouse_report.h) {
@@ -403,7 +414,8 @@ void mousekey_task(void) {
         }
     }
 
-    if (has_mouse_report_changed(&mouse_report, &tmpmr) || should_mousekey_report_send(&mouse_report)) {
+    if (has_mouse_report_changed(&mouse_report, &tmpmr) ||
+        should_mousekey_report_send(&mouse_report)) {
         mousekey_send();
     }
     // save the state for later
@@ -411,37 +423,39 @@ void mousekey_task(void) {
 }
 
 void mousekey_on(uint8_t code) {
-#    ifdef MK_KINETIC_SPEED
+#ifdef MK_KINETIC_SPEED
     if (mouse_timer == 0) {
         mouse_timer = timer_read();
     }
-#    endif
+#endif
 
-#    ifndef MOUSEKEY_INERTIA
+#ifndef MOUSEKEY_INERTIA
     // If mouse report is not zero, the current mousekey press is overlapping
     // with another. Restart acceleration for smoother directional transition.
     if (mouse_report.x || mouse_report.y || mouse_report.h || mouse_report.v) {
-#        ifdef MK_KINETIC_SPEED
+#ifdef MK_KINETIC_SPEED
         mouse_timer = timer_read() - (MOUSEKEY_INTERVAL << 2);
-#        else
-        mousekey_repeat       = MOUSEKEY_MOVE_DELTA;
+#else
+        mousekey_repeat = MOUSEKEY_MOVE_DELTA;
         mousekey_wheel_repeat = MOUSEKEY_WHEEL_DELTA;
-#        endif
+#endif
     }
-#    endif // ifndef MOUSEKEY_INERTIA
+#endif // ifndef MOUSEKEY_INERTIA
 
-#    ifdef MOUSEKEY_INERTIA
+#ifdef MOUSEKEY_INERTIA
 
     // initial keypress sets impulse and activates first frame of movement
     if ((code == KC_MS_UP) || (code == KC_MS_DOWN)) {
         mousekey_y_dir = (code == KC_MS_DOWN) ? 1 : -1;
-        if (mousekey_frame < 2) mouse_report.y = move_unit(1);
+        if (mousekey_frame < 2)
+            mouse_report.y = move_unit(1);
     } else if ((code == KC_MS_LEFT) || (code == KC_MS_RIGHT)) {
         mousekey_x_dir = (code == KC_MS_RIGHT) ? 1 : -1;
-        if (mousekey_frame < 2) mouse_report.x = move_unit(0);
+        if (mousekey_frame < 2)
+            mouse_report.x = move_unit(0);
     }
 
-#    else // no inertia
+#else // no inertia
 
     if (code == KC_MS_UP)
         mouse_report.y = move_unit() * -1;
@@ -452,7 +466,7 @@ void mousekey_on(uint8_t code) {
     else if (code == KC_MS_RIGHT)
         mouse_report.x = move_unit();
 
-#    endif // inertia or not
+#endif // inertia or not
 
     else if (code == KC_MS_WH_UP)
         mouse_report.v = wheel_unit();
@@ -473,7 +487,7 @@ void mousekey_on(uint8_t code) {
 }
 
 void mousekey_off(uint8_t code) {
-#    ifdef MOUSEKEY_INERTIA
+#ifdef MOUSEKEY_INERTIA
 
     // key release clears impulse unless opposite direction is held
     if ((code == KC_MS_UP) && (mousekey_y_dir < 1))
@@ -485,7 +499,7 @@ void mousekey_off(uint8_t code) {
     else if ((code == KC_MS_RIGHT) && (mousekey_x_dir > -1))
         mousekey_x_dir = 0;
 
-#    else // no inertia
+#else // no inertia
 
     if (code == KC_MS_UP && mouse_report.y < 0)
         mouse_report.y = 0;
@@ -496,7 +510,7 @@ void mousekey_off(uint8_t code) {
     else if (code == KC_MS_RIGHT && mouse_report.x > 0)
         mouse_report.x = 0;
 
-#    endif // inertia or not
+#endif // inertia or not
 
     else if (code == KC_MS_WH_UP && mouse_report.v > 0)
         mouse_report.v = 0;
@@ -516,36 +530,39 @@ void mousekey_off(uint8_t code) {
         mousekey_accel &= ~(1 << 2);
     if (mouse_report.x == 0 && mouse_report.y == 0) {
         mousekey_repeat = 0;
-#    ifdef MK_KINETIC_SPEED
+#ifdef MK_KINETIC_SPEED
         mouse_timer = 0;
-#    endif /* #ifdef MK_KINETIC_SPEED */
+#endif /* #ifdef MK_KINETIC_SPEED */
     }
-    if (mouse_report.v == 0 && mouse_report.h == 0) mousekey_wheel_repeat = 0;
+    if (mouse_report.v == 0 && mouse_report.h == 0)
+        mousekey_wheel_repeat = 0;
 }
 
 #else /* #ifndef MK_3_SPEED */
 
 enum { mkspd_unmod, mkspd_0, mkspd_1, mkspd_2, mkspd_COUNT };
-#    ifndef MK_MOMENTARY_ACCEL
-static uint8_t  mk_speed                 = mkspd_1;
-#    else
-static uint8_t mk_speed      = mkspd_unmod;
+#ifndef MK_MOMENTARY_ACCEL
+static uint8_t mk_speed = mkspd_1;
+#else
+static uint8_t mk_speed = mkspd_unmod;
 static uint8_t mkspd_DEFAULT = mkspd_unmod;
-#    endif
-static uint16_t last_timer_c             = 0;
-static uint16_t last_timer_w             = 0;
-uint16_t        c_offsets[mkspd_COUNT]   = {MK_C_OFFSET_UNMOD, MK_C_OFFSET_0, MK_C_OFFSET_1, MK_C_OFFSET_2};
-uint16_t        c_intervals[mkspd_COUNT] = {MK_C_INTERVAL_UNMOD, MK_C_INTERVAL_0, MK_C_INTERVAL_1, MK_C_INTERVAL_2};
-uint16_t        w_offsets[mkspd_COUNT]   = {MK_W_OFFSET_UNMOD, MK_W_OFFSET_0, MK_W_OFFSET_1, MK_W_OFFSET_2};
-uint16_t        w_intervals[mkspd_COUNT] = {MK_W_INTERVAL_UNMOD, MK_W_INTERVAL_0, MK_W_INTERVAL_1, MK_W_INTERVAL_2};
+#endif
+static uint16_t last_timer_c = 0;
+static uint16_t last_timer_w = 0;
+uint16_t c_offsets[mkspd_COUNT] = {MK_C_OFFSET_UNMOD, MK_C_OFFSET_0, MK_C_OFFSET_1, MK_C_OFFSET_2};
+uint16_t c_intervals[mkspd_COUNT] = {MK_C_INTERVAL_UNMOD, MK_C_INTERVAL_0, MK_C_INTERVAL_1,
+                                     MK_C_INTERVAL_2};
+uint16_t w_offsets[mkspd_COUNT] = {MK_W_OFFSET_UNMOD, MK_W_OFFSET_0, MK_W_OFFSET_1, MK_W_OFFSET_2};
+uint16_t w_intervals[mkspd_COUNT] = {MK_W_INTERVAL_UNMOD, MK_W_INTERVAL_0, MK_W_INTERVAL_1,
+                                     MK_W_INTERVAL_2};
 
 void mousekey_task(void) {
     // report cursor and scroll movement independently
     report_mouse_t tmpmr = mouse_report;
-    mouse_report.x       = 0;
-    mouse_report.y       = 0;
-    mouse_report.v       = 0;
-    mouse_report.h       = 0;
+    mouse_report.x = 0;
+    mouse_report.y = 0;
+    mouse_report.v = 0;
+    mouse_report.h = 0;
 
     if ((tmpmr.x || tmpmr.y) && timer_elapsed(last_timer_c) > c_intervals[mk_speed]) {
         mouse_report.x = tmpmr.x;
@@ -556,7 +573,8 @@ void mousekey_task(void) {
         mouse_report.h = tmpmr.h;
     }
 
-    if (has_mouse_report_changed(&mouse_report, &tmpmr) || should_mousekey_report_send(&mouse_report)) {
+    if (has_mouse_report_changed(&mouse_report, &tmpmr) ||
+        should_mousekey_report_send(&mouse_report)) {
         mousekey_send();
     }
     memcpy(&mouse_report, &tmpmr, sizeof(tmpmr));
@@ -565,14 +583,22 @@ void mousekey_task(void) {
 void adjust_speed(void) {
     uint16_t const c_offset = c_offsets[mk_speed];
     uint16_t const w_offset = w_offsets[mk_speed];
-    if (mouse_report.x > 0) mouse_report.x = c_offset;
-    if (mouse_report.x < 0) mouse_report.x = c_offset * -1;
-    if (mouse_report.y > 0) mouse_report.y = c_offset;
-    if (mouse_report.y < 0) mouse_report.y = c_offset * -1;
-    if (mouse_report.h > 0) mouse_report.h = w_offset;
-    if (mouse_report.h < 0) mouse_report.h = w_offset * -1;
-    if (mouse_report.v > 0) mouse_report.v = w_offset;
-    if (mouse_report.v < 0) mouse_report.v = w_offset * -1;
+    if (mouse_report.x > 0)
+        mouse_report.x = c_offset;
+    if (mouse_report.x < 0)
+        mouse_report.x = c_offset * -1;
+    if (mouse_report.y > 0)
+        mouse_report.y = c_offset;
+    if (mouse_report.y < 0)
+        mouse_report.y = c_offset * -1;
+    if (mouse_report.h > 0)
+        mouse_report.h = w_offset;
+    if (mouse_report.h < 0)
+        mouse_report.h = w_offset * -1;
+    if (mouse_report.v > 0)
+        mouse_report.v = w_offset;
+    if (mouse_report.v < 0)
+        mouse_report.v = w_offset * -1;
     // adjust for diagonals
     if (mouse_report.x && mouse_report.y) {
         mouse_report.x = times_inv_sqrt2(mouse_report.x);
@@ -591,9 +617,9 @@ void adjust_speed(void) {
 }
 
 void mousekey_on(uint8_t code) {
-    uint16_t const c_offset  = c_offsets[mk_speed];
-    uint16_t const w_offset  = w_offsets[mk_speed];
-    uint8_t const  old_speed = mk_speed;
+    uint16_t const c_offset = c_offsets[mk_speed];
+    uint16_t const w_offset = w_offsets[mk_speed];
+    uint8_t const old_speed = mk_speed;
     if (code == KC_MS_UP)
         mouse_report.y = c_offset * -1;
     else if (code == KC_MS_DOWN)
@@ -618,13 +644,14 @@ void mousekey_on(uint8_t code) {
         mk_speed = mkspd_1;
     else if (code == KC_MS_ACCEL2)
         mk_speed = mkspd_2;
-    if (mk_speed != old_speed) adjust_speed();
+    if (mk_speed != old_speed)
+        adjust_speed();
 }
 
 void mousekey_off(uint8_t code) {
-#    ifdef MK_MOMENTARY_ACCEL
+#ifdef MK_MOMENTARY_ACCEL
     uint8_t const old_speed = mk_speed;
-#    endif
+#endif
     if (code == KC_MS_UP && mouse_report.y < 0)
         mouse_report.y = 0;
     else if (code == KC_MS_DOWN && mouse_report.y > 0)
@@ -643,15 +670,16 @@ void mousekey_off(uint8_t code) {
         mouse_report.h = 0;
     else if (IS_MOUSEKEY_BUTTON(code))
         mouse_report.buttons &= ~(1 << (code - KC_MS_BTN1));
-#    ifdef MK_MOMENTARY_ACCEL
+#ifdef MK_MOMENTARY_ACCEL
     else if (code == KC_MS_ACCEL0)
         mk_speed = mkspd_DEFAULT;
     else if (code == KC_MS_ACCEL1)
         mk_speed = mkspd_DEFAULT;
     else if (code == KC_MS_ACCEL2)
         mk_speed = mkspd_DEFAULT;
-    if (mk_speed != old_speed) adjust_speed();
-#    endif
+    if (mk_speed != old_speed)
+        adjust_speed();
+#endif
 }
 
 #endif /* #ifndef MK_3_SPEED */
@@ -659,27 +687,31 @@ void mousekey_off(uint8_t code) {
 void mousekey_send(void) {
     mousekey_debug();
     uint32_t time = timer_read();
-    if (mouse_report.x || mouse_report.y) last_timer_c = time;
-    if (mouse_report.v || mouse_report.h) last_timer_w = time;
+    if (mouse_report.x || mouse_report.y)
+        last_timer_c = time;
+    if (mouse_report.v || mouse_report.h)
+        last_timer_w = time;
     host_mouse_send(&mouse_report);
 }
 
 void mousekey_clear(void) {
-    mouse_report          = (report_mouse_t){};
-    mousekey_repeat       = 0;
+    mouse_report = (report_mouse_t){};
+    mousekey_repeat = 0;
     mousekey_wheel_repeat = 0;
-    mousekey_accel        = 0;
+    mousekey_accel = 0;
 #ifdef MOUSEKEY_INERTIA
-    mousekey_frame     = 0;
+    mousekey_frame = 0;
     mousekey_x_inertia = 0;
     mousekey_y_inertia = 0;
-    mousekey_x_dir     = 0;
-    mousekey_y_dir     = 0;
+    mousekey_x_dir = 0;
+    mousekey_y_dir = 0;
 #endif
 }
 
 static inline void mousekey_debug(void) {
-    LOG_DBG("mousekey [btn|x y v h](rep/acl): [%02x|%d %d %d %d](%d/%d)",mouse_report.buttons,mouse_report.x,mouse_report.y,mouse_report.v,mouse_report.h,mousekey_repeat,mousekey_accel);
+    LOG_DBG("mousekey [btn|x y v h](rep/acl): [%02x|%d %d %d %d](%d/%d)", mouse_report.buttons,
+            mouse_report.x, mouse_report.y, mouse_report.v, mouse_report.h, mousekey_repeat,
+            mousekey_accel);
     // if (!debug_mouse) return;
     // print("mousekey [btn|x y v h](rep/acl): [");
     // print_hex8(mouse_report.buttons);
@@ -698,66 +730,62 @@ static inline void mousekey_debug(void) {
     // print(")\n");
 }
 
-report_mouse_t mousekey_get_report(void) {
-    return mouse_report;
-}
+report_mouse_t mousekey_get_report(void) { return mouse_report; }
 
 bool should_mousekey_report_send(report_mouse_t *mouse_report) {
     return mouse_report->x || mouse_report->y || mouse_report->v || mouse_report->h;
 }
-__attribute__((weak)) bool has_mouse_report_changed(report_mouse_t* new_report, report_mouse_t* old_report) {
+__attribute__((weak)) bool has_mouse_report_changed(report_mouse_t *new_report,
+                                                    report_mouse_t *old_report) {
     // memcmp doesn't work here because of the `report_id` field when using
     // shared mouse endpoint
     bool changed = ((new_report->buttons != old_report->buttons) ||
-                    (new_report->x != 0 && new_report->x != old_report->x) || (new_report->y != 0 && new_report->y != old_report->y) || (new_report->h != 0 && new_report->h != old_report->h) || (new_report->v != 0 && new_report->v != old_report->v));
+                    (new_report->x != 0 && new_report->x != old_report->x) ||
+                    (new_report->y != 0 && new_report->y != old_report->y) ||
+                    (new_report->h != 0 && new_report->h != old_report->h) ||
+                    (new_report->v != 0 && new_report->v != old_report->v));
     return changed;
 }
 
 #define MY_STACK_SIZE 1024
 #define MY_PRIORITY 2
 void zmk_mouse_thread(void);
-static void mouse_sleep_worker(struct k_work *work) ;
+static void mouse_sleep_worker(struct k_work *work);
 
-K_THREAD_DEFINE(zmk_mouse_tid, MY_STACK_SIZE,
-                zmk_mouse_thread, NULL, NULL, NULL,
-                MY_PRIORITY, 0, 0);
+K_THREAD_DEFINE(zmk_mouse_tid, MY_STACK_SIZE, zmk_mouse_thread, NULL, NULL, NULL, MY_PRIORITY, 0,
+                0);
 
 static K_WORK_DELAYABLE_DEFINE(mouse_sleep_work, mouse_sleep_worker);
 
-static K_SEM_DEFINE(thread_wait_sem, 0, 1); 
+static K_SEM_DEFINE(thread_wait_sem, 0, 1);
 static bool zmk_mouse_enable;
-static void mouse_sleep_worker(struct k_work *work) 
-{
+static void mouse_sleep_worker(struct k_work *work) {
     // k_thread_suspend(zmk_mouse_tid);
-    zmk_mouse_enable =false;
+    zmk_mouse_enable = false;
     LOG_DBG(".");
 }
-void zmk_mouse_thread(void)
-{
+void zmk_mouse_thread(void) {
     // k_sem_take(&thread_wait_sem,K_FOREVER);
     LOG_DBG(".");
-    static uint8_t count=0;
-    while(1)
-    {
-        if(!zmk_mouse_enable)
-        {
-            k_sem_take(&thread_wait_sem,K_FOREVER);
-            zmk_mouse_enable =true;
+    static uint8_t count = 0;
+    while (1) {
+        if (!zmk_mouse_enable) {
+            k_sem_take(&thread_wait_sem, K_FOREVER);
+            zmk_mouse_enable = true;
         }
         mousekey_task();
         k_msleep(8);
-        if(count++>125)
-        {
+        if (count++ > 125) {
             LOG_DBG(".");
-            count=0;
+            count = 0;
         }
     }
 }
 
 static int mouse_listener_keycode_pressed(const struct zmk_mouse_button_state_changed *ev) {
 
-    LOG_DBG("mouse,press:%x",ev->buttons);
-    if(!zmk_mouse_enable)
+    LOG_DBG("mouse,press:%x", ev->buttons);
+    if (!zmk_mouse_enable)
         k_sem_give(&thread_wait_sem);
     k_work_cancel_delayable(&mouse_sleep_work);
     mousekey_on(ev->buttons);
@@ -767,9 +795,9 @@ static int mouse_listener_keycode_pressed(const struct zmk_mouse_button_state_ch
 }
 static int mouse_listener_keycode_released(const struct zmk_mouse_button_state_changed *ev) {
 
-    LOG_DBG("mouse,release:%x",ev->buttons);
+    LOG_DBG("mouse,release:%x", ev->buttons);
     mousekey_off(ev->buttons);
-    k_work_reschedule(&mouse_sleep_work,K_MSEC(200));
+    k_work_reschedule(&mouse_sleep_work, K_MSEC(200));
     mousekey_send();
 
     return 0;

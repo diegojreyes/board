@@ -26,7 +26,6 @@
  * @file lcd_pcd8544.h support for LED 84x48 display (PCD8544)
  */
 
-
 #ifndef _LCD_PCD8544_H_
 #define _LCD_PCD8544_H_
 
@@ -50,7 +49,6 @@ extern "C" {
  * @see ssd1306_spiInit()
  */
 void pcd8544_84x48_init(void);
-
 
 /**
  * Inits 84x48 LED display over spi (based on PCD8544 controller)

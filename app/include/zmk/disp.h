@@ -7,7 +7,7 @@ enum {
     DISP_LIGHT_SPEED,
     DISP_LIGHT_MODE,
     DISP_RECOVER,
-    DISP_NONE=0xff
+    DISP_NONE = 0xff
 };
 enum {
     TYPE_LIGHTNESS,
@@ -15,20 +15,20 @@ enum {
     TYPE_LIGHTMODE,
 };
 typedef struct {
-    uint8_t start:1;
-    uint8_t running:1;
-    uint8_t batlow:1;
-}_charge_state;
+    uint8_t start : 1;
+    uint8_t running : 1;
+    uint8_t batlow : 1;
+} _charge_state;
 typedef union {
     uint8_t status;
     struct {
-        uint8_t caps_lock:1;
-        uint8_t num_lock:1;        
-        uint8_t win_lock:1;
-        uint8_t res:1;
-        uint8_t mode:4;
+        uint8_t caps_lock : 1;
+        uint8_t num_lock : 1;
+        uint8_t win_lock : 1;
+        uint8_t res : 1;
+        uint8_t mode : 4;
     };
-}_kb_status;
+} _kb_status;
 int disp_init(void);
 void disp_welcom(void);
 void disp_test(void);
@@ -38,7 +38,7 @@ void disp_exit_sleep(void);
 void disp_reset(void);
 void disp_set_led_state(uint8_t state);
 void disp_set_mode(uint8_t mode);
-void disp_change_setting(uint8_t type ,uint8_t value);
+void disp_change_setting(uint8_t type, uint8_t value);
 void disp_update_bat(uint8_t level);
 void disp_bat_charging(void);
 void disp_bat_charging_stop(void);

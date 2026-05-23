@@ -29,23 +29,23 @@ enum {
     PER_KEY_RGB_MAX,
 };
 
-typedef  struct  {
-    uint8_t  effect;
+typedef struct {
+    uint8_t effect;
     uint8_t hue;
     uint8_t sat;
     uint8_t speed;
     uint32_t time;
-}  __attribute__((packed)) effect_config_t ;
+} __attribute__((packed)) effect_config_t;
 
 typedef union {
     uint8_t raw;
     struct {
-        uint8_t    num_lock : 1;
-        uint8_t    caps_lock : 1;
-        uint8_t    scroll_lock : 1;
-        uint8_t    compose : 1;
-        uint8_t    kana : 1;
-        uint8_t    reserved : 3;
+        uint8_t num_lock : 1;
+        uint8_t caps_lock : 1;
+        uint8_t scroll_lock : 1;
+        uint8_t compose : 1;
+        uint8_t kana : 1;
+        uint8_t reserved : 3;
     };
 } os_led_t;
 
@@ -56,11 +56,9 @@ typedef union {
 //     uint8_t v;
 // } HSV2;
 
-typedef  struct  {
+typedef struct {
     os_led_t disable;
-    HSV  hsv;
-} __attribute__((packed)) os_indicator_config_t ;
+    HSV hsv;
+} __attribute__((packed)) os_indicator_config_t;
 
-
-
-#endif 
+#endif

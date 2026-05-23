@@ -25,7 +25,6 @@
  * @file ssd1306_1bit.h SSD1306 basic draw functions
  */
 
-
 #ifndef _SSD1306_1BIT_H_
 #define _SSD1306_1BIT_H_
 
@@ -44,10 +43,10 @@ extern "C" {
  * @{
  * @brief LCD direct draw functions for all display types: color and monochrome.
  *
- * @details LCD direct draw functions are applicable for all display types. These functions will work
- *        both for monochrome and 8-bit/16-bit color OLED displays. You need remember, that for RGB
- *        oled displays these functions work only in special ssd1306 compatible mode. If you're going to
- *        combine NanoEngine capabilities with these functions, don't forget to switch addressing
+ * @details LCD direct draw functions are applicable for all display types. These functions will
+ * work both for monochrome and 8-bit/16-bit color OLED displays. You need remember, that for RGB
+ *        oled displays these functions work only in special ssd1306 compatible mode. If you're
+ * going to combine NanoEngine capabilities with these functions, don't forget to switch addressing
  *        mode via ssd1306_setMode().
  *        Direct draw functions draw directly in GDRAM and do not use any double-buffering.
  */
@@ -55,24 +54,24 @@ extern "C" {
 /**
  * Fills screen with pattern byte
  */
-void         ssd1306_fillScreen(uint8_t fill_Data);
+void ssd1306_fillScreen(uint8_t fill_Data);
 
 /**
  * Fills screen with zero-byte
  */
-void         ssd1306_clearScreen(void);
+void ssd1306_clearScreen(void);
 
 /**
  * All drawing functions start to work in negative mode.
  * Old picture on the display remains unchanged.
  */
-void         ssd1306_negativeMode(void);
+void ssd1306_negativeMode(void);
 
 /**
  * All drawing functions start to work in positive (default) mode.
  * Old picture on the display remains unchanged.
  */
-void         ssd1306_positiveMode(void);
+void ssd1306_positiveMode(void);
 
 /**
  * Prints text to screen using fixed font.
@@ -83,12 +82,13 @@ void         ssd1306_positiveMode(void);
  * @returns number of chars in string
  * @see ssd1306_setFixedFont
  * @warning ssd1306_printFixed() can output chars at fixed y positions: 0, 8, 16, 24, 32, etc.
- *          If you specify [10,18], ssd1306_printFixed() will output text starting at [10,16] position.
- * @warning Be careful with you flash space! Do not mix too many different functions in single sketch.
- *          ssd1306_printFixedN() uses much flash: ~396 bytes, ssd1306_printFixed() needs 388 bytes.
+ *          If you specify [10,18], ssd1306_printFixed() will output text starting at [10,16]
+ * position.
+ * @warning Be careful with you flash space! Do not mix too many different functions in single
+ * sketch. ssd1306_printFixedN() uses much flash: ~396 bytes, ssd1306_printFixed() needs 388 bytes.
  *          Placing both of these functions to your sketch will consume almost 1KiB.
  */
-uint8_t     ssd1306_printFixed(uint8_t xpos, uint8_t y, const char *ch, EFontStyle style);
+uint8_t ssd1306_printFixed(uint8_t xpos, uint8_t y, const char *ch, EFontStyle style);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 uint8_t ssd1306_printFixed_oldStyle(uint8_t xpos, uint8_t y, const char *ch, EFontStyle style);
@@ -103,13 +103,15 @@ uint8_t ssd1306_printFixed_oldStyle(uint8_t xpos, uint8_t y, const char *ch, EFo
  * @returns number of chars in string
  * @see ssd1306_setFixedFont
  * @warning ssd1306_printFixed2x() can output chars at fixed y positions: 0, 8, 16, 24, 32, etc.
- *          If you specify [10,18], ssd1306_printFixed2x() will output text starting at [10,16] position.
- * @warning Be careful with you flash space! Do not mix too many different functions in single sketch.
- *          ssd1306_printFixedN() uses much flash: ~474 bytes, ssd1306_printFixed() needs 388 bytes.
+ *          If you specify [10,18], ssd1306_printFixed2x() will output text starting at [10,16]
+ * position.
+ * @warning Be careful with you flash space! Do not mix too many different functions in single
+ * sketch. ssd1306_printFixedN() uses much flash: ~474 bytes, ssd1306_printFixed() needs 388 bytes.
  *          Placing both of these functions to your sketch will consume almost 1KiB.
  * @deprecated Use ssd1306_printFixedN() instead.
  */
-uint8_t     ssd1306_printFixed2x(uint8_t xpos, uint8_t y, const char ch[], EFontStyle style) __attribute__ ((deprecated));
+uint8_t ssd1306_printFixed2x(uint8_t xpos, uint8_t y, const char ch[], EFontStyle style)
+    __attribute__((deprecated));
 
 /**
  * Prints text to screen using size fixed font, scaled by factor value. <br>
@@ -125,12 +127,14 @@ uint8_t     ssd1306_printFixed2x(uint8_t xpos, uint8_t y, const char ch[], EFont
  * @returns number of chars in string
  * @see ssd1306_setFixedFont
  * @warning ssd1306_printFixed2x() can output chars at fixed y positions: 0, 8, 16, 24, 32, etc.
- *          If you specify [10,18], ssd1306_printFixed2x() will output text starting at [10,16] position.
- * @warning Be careful with you flash space! Do not mix too many different functions in single sketch.
- *          ssd1306_printFixedN() uses much flash: ~474 bytes, ssd1306_printFixed() needs 388 bytes.
+ *          If you specify [10,18], ssd1306_printFixed2x() will output text starting at [10,16]
+ * position.
+ * @warning Be careful with you flash space! Do not mix too many different functions in single
+ * sketch. ssd1306_printFixedN() uses much flash: ~474 bytes, ssd1306_printFixed() needs 388 bytes.
  *          Placing both of these functions to your sketch will consume almost 1KiB.
  */
-uint8_t     ssd1306_printFixedN(uint8_t xpos, uint8_t y, const char ch[], EFontStyle style, uint8_t factor);
+uint8_t ssd1306_printFixedN(uint8_t xpos, uint8_t y, const char ch[], EFontStyle style,
+                            uint8_t factor);
 
 /**
  * @brief Prints single character to display at current cursor position
@@ -139,7 +143,7 @@ uint8_t     ssd1306_printFixedN(uint8_t xpos, uint8_t y, const char ch[], EFontS
  * @param ch - character to print to the display. 'LF' and 'CR' are skipped
  * @return returns number of printed characters.
  */
-size_t      ssd1306_write(uint8_t ch);
+size_t ssd1306_write(uint8_t ch);
 
 /**
  * @brief Prints null-terminated string to display at current cursor position
@@ -148,7 +152,7 @@ size_t      ssd1306_write(uint8_t ch);
  * @param ch - string to print to the display. 'LF' and 'CR' are skipped
  * @return returns number of printed characters.
  */
-size_t      ssd1306_print(const char ch[]);
+size_t ssd1306_print(const char ch[]);
 
 /**
  * Prints text to screen using font 6x8.
@@ -159,13 +163,12 @@ size_t      ssd1306_print(const char ch[]);
  * @returns number of chars in string
  * @deprecated Use ssd1306_printFixed() instead.
  */
-uint8_t      ssd1306_charF6x8(uint8_t x, uint8_t y,
-                              const char ch[],
-                              EFontStyle style
+uint8_t ssd1306_charF6x8(uint8_t x, uint8_t y, const char ch[],
+                         EFontStyle style
 #ifdef __cplusplus
-                              = STYLE_NORMAL
+                         = STYLE_NORMAL
 #endif
-                             ) __attribute__ ((deprecated));
+                         ) __attribute__((deprecated));
 
 /**
  * Prints text to screen using double size font 12x16.
@@ -176,11 +179,8 @@ uint8_t      ssd1306_charF6x8(uint8_t x, uint8_t y,
  * @returns number of chars in string
  * @deprecated Use ssd1306_drawFixedN() instead.
  */
-uint8_t      ssd1306_charF12x16(uint8_t xpos,
-                                uint8_t y,
-                                const char ch[],
-                                EFontStyle style) __attribute__ ((deprecated));
-
+uint8_t ssd1306_charF12x16(uint8_t xpos, uint8_t y, const char ch[], EFontStyle style)
+    __attribute__((deprecated));
 
 /**
  * Prints text to screen using set font.
@@ -195,11 +195,8 @@ uint8_t      ssd1306_charF12x16(uint8_t xpos,
  * @returns number of chars in string
  * @deprecated This function is removed as superflouse.
  */
-uint8_t      ssd1306_charF6x8_eol(uint8_t left,
-                                  uint8_t y,
-                                  const char ch[],
-                                  EFontStyle style,
-                                  uint8_t right) __attribute__ ((deprecated));
+uint8_t ssd1306_charF6x8_eol(uint8_t left, uint8_t y, const char ch[], EFontStyle style,
+                             uint8_t right) __attribute__((deprecated));
 
 /**
  * Put single pixel on the LCD.
@@ -213,7 +210,7 @@ uint8_t      ssd1306_charF6x8_eol(uint8_t left,
  * @param x - horizontal position in pixels
  * @param y - vertical position in pixels
  */
-void         ssd1306_putPixel(uint8_t x, uint8_t y);
+void ssd1306_putPixel(uint8_t x, uint8_t y);
 
 /**
  * Puts eight vertical pixels on the LCD at once.
@@ -229,7 +226,7 @@ void         ssd1306_putPixel(uint8_t x, uint8_t y);
  * @param y - vertical position pixels. Should be multiply of 8.
  * @param pixels - bit-pixels to draw on display
  */
-void         ssd1306_putPixels(uint8_t x, uint8_t y, uint8_t pixels);
+void ssd1306_putPixels(uint8_t x, uint8_t y, uint8_t pixels);
 
 /**
  * Draws rectangle
@@ -238,7 +235,7 @@ void         ssd1306_putPixels(uint8_t x, uint8_t y, uint8_t pixels);
  * @param x2 - right boundary in pixel units
  * @param y2 - bottom boundary int pixel units
  */
-void         ssd1306_drawRect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
+void ssd1306_drawRect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
 /**
  * Fill rectangle directly in OLED display GDRAM.
@@ -266,7 +263,7 @@ void ssd1306_fillRect(lcdint_t x1, lcdint_t y1, lcdint_t x2, lcdint_t y2);
  *          can be overwritten by black color. If you use RGB oled, based on ssd1331 controller,
  *          use ssd1331_drawLine() function.
  */
-void         ssd1306_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
+void ssd1306_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
 /**
  * Draws horizontal line
@@ -274,7 +271,7 @@ void         ssd1306_drawLine(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
  * @param y1 - position Y in pixels
  * @param x2 - right boundary in pixels
  */
-void         ssd1306_drawHLine(uint8_t x1, uint8_t y1, uint8_t x2);
+void ssd1306_drawHLine(uint8_t x1, uint8_t y1, uint8_t x2);
 
 /**
  * Draws vertical line
@@ -282,7 +279,7 @@ void         ssd1306_drawHLine(uint8_t x1, uint8_t y1, uint8_t x2);
  * @param y1 - top boundary in pixels
  * @param y2 - bottom boundary in pixels
  */
-void         ssd1306_drawVLine(uint8_t x1, uint8_t y1, uint8_t y2);
+void ssd1306_drawVLine(uint8_t x1, uint8_t y1, uint8_t y2);
 
 /**
  * Draws bitmap, located in SRAM, on the display
@@ -300,7 +297,7 @@ void         ssd1306_drawVLine(uint8_t x1, uint8_t y1, uint8_t y2);
  * @param h - height of bitmap in pixels (must be divided by 8)
  * @param buf - pointer to data, located in SRAM: each byte represents 8 vertical pixels.
  */
-void         ssd1306_drawBuffer(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
+void ssd1306_drawBuffer(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
 
 /**
  * Draws bitmap, located in SRAM, on the display
@@ -312,8 +309,7 @@ void         ssd1306_drawBuffer(uint8_t x, uint8_t y, uint8_t w, uint8_t h, cons
  * @param h - height of bitmap in pixels (must be divided by 8)
  * @param buf - pointer to data, located in SRAM: each byte represents 2 horizontal pixels.
  */
-void         ssd1306_drawBuffer1_4(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
-
+void ssd1306_drawBuffer1_4(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
 
 /**
  * Draws bitmap, located in SRAM, on the display
@@ -331,14 +327,15 @@ void         ssd1306_drawBuffer1_4(uint8_t x, uint8_t y, uint8_t w, uint8_t h, c
  * @param h - height of bitmap in pixels (must be divided by 8)
  * @param buf - pointer to data, located in SRAM: each byte represents 8 vertical pixels.
  *
- * @note ssd1306_drawBufferFast() doesn't support negative draw mode. Use ssd1306_drawBuffer() instead.
+ * @note ssd1306_drawBufferFast() doesn't support negative draw mode. Use ssd1306_drawBuffer()
+ * instead.
  */
-void         ssd1306_drawBufferFast(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, const uint8_t *buf);
+void ssd1306_drawBufferFast(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, const uint8_t *buf);
 
 /**
  * @copydoc ssd1306_drawBuffer
  */
-#define      ssd1306_drawCanvas(x, y, w, h, buf)   ssd1306_drawBuffer(x, y, w, h, buf)
+#define ssd1306_drawCanvas(x, y, w, h, buf) ssd1306_drawBuffer(x, y, w, h, buf)
 
 /**
  * Draws bitmap, located in Flash, on the display
@@ -350,7 +347,7 @@ void         ssd1306_drawBufferFast(lcdint_t x, lcdint_t y, lcduint_t w, lcduint
  * @param h - height of bitmap in pixels (must be divided by 8)
  * @param buf - pointer to data, located in Flash: each byte represents 8 vertical pixels.
  */
-void         ssd1306_drawBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
+void ssd1306_drawBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
 
 /**
  * Draws bitmap, located in Flash, on the display
@@ -362,7 +359,7 @@ void         ssd1306_drawBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, cons
  * @param h - height of bitmap in pixels (must be divided by 8)
  * @param buf - pointer to data, located in Flash: each byte represents 8 vertical pixels.
  */
-void         ssd1306_drawXBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
+void ssd1306_drawXBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
 
 /**
  * Draw bitmap, located in Flash, on the display
@@ -378,7 +375,7 @@ void         ssd1306_drawXBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, con
  * @param h - height of bitmap in pixels (must be divided by 8)
  * @param buf - pointer to data, located in Flash.
  */
-void         ssd1306_drawBitmap1_4(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
+void ssd1306_drawBitmap1_4(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint8_t *buf);
 
 /**
  * Draws bitmap, located in Flash, on the display
@@ -389,7 +386,7 @@ void         ssd1306_drawBitmap1_4(uint8_t x, uint8_t y, uint8_t w, uint8_t h, c
  * @param h - height of bitmap in pixels (must be divided by 8)
  * @param buf - pointer to data, located in Flash: each byte represents 8 vertical pixels.
  */
-void         gfx_drawMonoBitmap(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, const uint8_t *buf);
+void gfx_drawMonoBitmap(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h, const uint8_t *buf);
 
 /**
  * Fills block with black pixels
@@ -399,7 +396,7 @@ void         gfx_drawMonoBitmap(lcdint_t x, lcdint_t y, lcduint_t w, lcduint_t h
  * @param h - height of block in pixels (must be divided by 8)
  * @note usually this method is used to erase bitmap on the screen.
  */
-void         ssd1306_clearBlock(uint8_t x, uint8_t y, uint8_t w, uint8_t h);
+void ssd1306_clearBlock(uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 
 /**
  * Draws bitmap, located in Flash, on the display. This sprite must have wx8 size
@@ -408,26 +405,26 @@ void         ssd1306_clearBlock(uint8_t x, uint8_t y, uint8_t w, uint8_t h);
  * @param w - width in pixels
  * @param sprite - pointer to data, located in Flash: each byte represents 8 vertical pixels.
  */
-void         ssd1306_drawSpriteEx(uint8_t x, uint8_t y, uint8_t w, const uint8_t *sprite);
+void ssd1306_drawSpriteEx(uint8_t x, uint8_t y, uint8_t w, const uint8_t *sprite);
 
 /**
  * Draws sprite on the display. Position can be changed by
  * updating x and y fields of SPRITE structure.
  * @param sprite - pointer to SPRITE structure
  */
-void         ssd1306_drawSprite(SPRITE *sprite);
+void ssd1306_drawSprite(SPRITE *sprite);
 
 /**
  * Clears sprite from the display leaving black rectangle.
  * @param sprite - pointer to SPRITE structure
  */
-void         ssd1306_eraseSprite(SPRITE *sprite);
+void ssd1306_eraseSprite(SPRITE *sprite);
 
 /**
  * Clears some sprite parts in old position on the display.
  * @param sprite - pointer to SPRITE structure
  */
-void         ssd1306_eraseTrace(SPRITE *sprite);
+void ssd1306_eraseTrace(SPRITE *sprite);
 
 /**
  * Creates sprite object. Sprite height is fixed to 8 pixels
@@ -437,7 +434,7 @@ void         ssd1306_eraseTrace(SPRITE *sprite);
  * @param data - pointer to data, located in Flash: each byte represents 8 vertical pixels.
  * @return SPRITE structure
  */
-SPRITE       ssd1306_createSprite(uint8_t x, uint8_t y, uint8_t w, const uint8_t *data);
+SPRITE ssd1306_createSprite(uint8_t x, uint8_t y, uint8_t w, const uint8_t *data);
 
 /**
  * Replaces image of the sprite with different data. The width must be the same as
@@ -445,7 +442,7 @@ SPRITE       ssd1306_createSprite(uint8_t x, uint8_t y, uint8_t w, const uint8_t
  * @param sprite - pointer to SPRITE structure
  * @param data - pointer to data, located in Flash: each byte represents 8 vertical pixels.
  */
-void         ssd1306_replaceSprite(SPRITE *sprite, const uint8_t *data);
+void ssd1306_replaceSprite(SPRITE *sprite, const uint8_t *data);
 
 /**
  * @}

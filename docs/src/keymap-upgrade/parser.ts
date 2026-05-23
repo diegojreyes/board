@@ -2,7 +2,7 @@ import Parser from "web-tree-sitter";
 
 const TREE_SITTER_WASM_URL = new URL(
   "/node_modules/web-tree-sitter/tree-sitter.wasm",
-  import.meta.url
+  import.meta.url,
 );
 
 export let Devicetree: Parser.Language;
@@ -49,7 +49,7 @@ export function findCapture(name: string, captures: Parser.QueryCapture[]) {
 export function captureHasText(
   name: string,
   captures: Parser.QueryCapture[],
-  text: string
+  text: string,
 ) {
   const node = findCapture(name, captures);
   return node?.text === text;
@@ -69,7 +69,7 @@ export function captureHasText(
  */
 export function findDevicetreeNode(
   tree: Parser.Tree,
-  path: string
+  path: string,
 ): Parser.SyntaxNode[] {
   const query = Devicetree.query("(node) @node");
   const matches = query.matches(tree.rootNode);
@@ -101,7 +101,7 @@ export interface FindPropertyOptions {
 export function findDevicetreeProperty(
   node: Parser.SyntaxNode,
   name: string,
-  options: FindPropertyOptions & { recursive: true }
+  options: FindPropertyOptions & { recursive: true },
 ): Parser.SyntaxNode[];
 
 /**
@@ -116,16 +116,16 @@ export function findDevicetreeProperty(
 export function findDevicetreeProperty(
   node: Parser.SyntaxNode,
   name: string,
-  options?: FindPropertyOptions
+  options?: FindPropertyOptions,
 ): Parser.SyntaxNode | null;
 
 export function findDevicetreeProperty(
   node: Parser.SyntaxNode,
   name: string,
-  options?: FindPropertyOptions
+  options?: FindPropertyOptions,
 ): Parser.SyntaxNode[] | Parser.SyntaxNode | null {
   const query = Devicetree.query(
-    `(property name: (identifier) @name (#eq? @name "${name}")) @prop`
+    `(property name: (identifier) @name (#eq? @name "${name}")) @prop`,
   );
   const matches = query.matches(node);
   const props = matches.map(({ captures }) => findCapture("prop", captures)!);
@@ -137,7 +137,7 @@ export function findDevicetreeProperty(
   // The query finds all descendants. Filter to just the properties that belong
   // to the given devicetree node.
   const childProps = props.filter((prop) =>
-    getContainingDevicetreeNode(prop)?.equals(node)
+    getContainingDevicetreeNode(prop)?.equals(node),
   );
 
   // Sort in descending order to select the last instance of the property.

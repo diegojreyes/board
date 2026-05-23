@@ -4,24 +4,24 @@
 DT_COMPAT_ZMK_SN3734 := zmk,sn3734
 
 config SN3734
-	bool "SN3734 compatible LED strip controller driver"
-	default $(dt_compat_enabled,$(DT_COMPAT_ZMK_SN3734))
-	#depends on I2C
-	depends on LED_STRIP
-	help
-	  Enable driver for SN3734 compatible LED strip controller.
-	  
+    bool "SN3734 compatible LED strip controller driver"
+    default $(dt_compat_enabled,$(DT_COMPAT_ZMK_SN3734))
+    #depends on I2C
+    depends on LED_STRIP
+    help
+      Enable driver for SN3734 compatible LED strip controller.
+
 config SN3734_INIT_PRIORITY
-	int "device init priority"
-	default 90
+    int "device init priority"
+    default 90
 
 config SN3734_I2C
-	bool "use i2c"
-	default n
-	select I2C 
+    bool "use i2c"
+    default n
+    select I2C
 
 config SN3734_SPI
-	bool "use spi"
-	default n
-	select SPI 
+    bool "use spi"
+    default n
+    select SPI
 

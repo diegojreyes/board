@@ -57,7 +57,12 @@ typedef unsigned int lcduint_t;
 #endif
 
 /** swaps content of a and b variables of type type */
-#define ssd1306_swap_data(a, b, type)  { type t = a; a = b; b = t; }
+#define ssd1306_swap_data(a, b, type)                                                              \
+    {                                                                                              \
+        type t = a;                                                                                \
+        a = b;                                                                                     \
+        b = t;                                                                                     \
+    }
 
 #ifdef __cplusplus
 extern "C" {
@@ -87,9 +92,8 @@ typedef struct {
  * @param cfg Specify scl and sda for the platform. If you want to use default pin numbers,
  *        please pass -1 for both members.
  */
-void ssd1306_platform_i2cInit(int8_t busId, uint8_t addr, ssd1306_platform_i2cConfig_t * cfg);
+void ssd1306_platform_i2cInit(int8_t busId, uint8_t addr, ssd1306_platform_i2cConfig_t *cfg);
 #endif
-
 
 // !!! PLATFORM SPI IMPLEMENTATION OPTIONAL !!!
 #if defined(CONFIG_PLATFORM_SPI_AVAILABLE) && defined(CONFIG_PLATFORM_SPI_ENABLE)
@@ -121,5 +125,3 @@ void ssd1306_platform_spiInit(int8_t busId, int8_t cesPin, int8_t dcPin);
  */
 
 #endif
-
-

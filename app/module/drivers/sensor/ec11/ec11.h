@@ -16,7 +16,6 @@ struct ec11_config {
 
     const uint16_t steps;
     const uint8_t resolution;
-
 };
 
 struct ec11_data {

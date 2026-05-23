@@ -10,7 +10,6 @@
 
 #include <zmk/event_manager.h>
 
-
 struct zmk_led_state_changed {
     uint8_t led_state;
     uint8_t transport;

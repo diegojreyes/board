@@ -20,20 +20,20 @@ extern struct zmk_event_subscription __event_subscriptions_start[];
 extern struct zmk_event_subscription __event_subscriptions_end[];
 
 int zmk_event_manager_handle_from(zmk_event_t *event, uint8_t start_index) {
-    static uint8_t inited=0;
-    if(!inited)
-    {
-        inited =1;
-        // LOG_ERR("zmk_events:%p,start:%p,end:%p,size:%d",__zmk_events_rom_start,__event_type_start,__event_subscriptions_end,(uint32_t)__event_subscriptions_end - (uint32_t)__event_type_start);
-        memcpy(__event_type_start,__zmk_events_rom_start,(uint32_t)__event_subscriptions_end - (uint32_t)__event_type_start);
-
+    static uint8_t inited = 0;
+    if (!inited) {
+        inited = 1;
+        // LOG_ERR("zmk_events:%p,start:%p,end:%p,size:%d",__zmk_events_rom_start,__event_type_start,__event_subscriptions_end,(uint32_t)__event_subscriptions_end
+        // - (uint32_t)__event_type_start);
+        memcpy(__event_type_start, __zmk_events_rom_start,
+               (uint32_t)__event_subscriptions_end - (uint32_t)__event_type_start);
     }
     int ret = 0;
     uint8_t len = __event_subscriptions_end - __event_subscriptions_start;
     // LOG_DBG("start index:%d,event len:%d",start_index,len);
-    
+
     for (int i = start_index; i < len; i++) {
-        
+
         struct zmk_event_subscription *ev_sub = __event_subscriptions_start + i;
         // LOG_HEXDUMP_DBG(ev_sub,sizeof(struct zmk_event_subscription),"sub");
         // LOG_DBG("sub event:%p,%p",ev_sub->event_type,event->event);

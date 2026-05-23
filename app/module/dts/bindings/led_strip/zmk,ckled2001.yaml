@@ -36,9 +36,7 @@ properties:
   map:
     type: array
     required: true
-    
+
   current_tune:
     type: array
     #required: true
-
-

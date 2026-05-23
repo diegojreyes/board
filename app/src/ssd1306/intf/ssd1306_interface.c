@@ -26,42 +26,34 @@
 // #include "spi/ssd1306_spi.h"
 #include <stddef.h>
 
-static void ssd1306_send_buffer_generic(const uint8_t* buffer, uint16_t size);
+static void ssd1306_send_buffer_generic(const uint8_t *buffer, uint16_t size);
 
-ssd1306_interface_t ssd1306_intf =
-{
-    .send_buffer = ssd1306_send_buffer_generic
-};
+ssd1306_interface_t ssd1306_intf = {.send_buffer = ssd1306_send_buffer_generic};
 
-void ssd1306_commandStart(void)
-{
+void ssd1306_commandStart(void) {
     ssd1306_intf.start();
     // if (ssd1306_intf.spi)
     //     ssd1306_spiDataMode(0);
     // else
-        ssd1306_intf.send(0x00);
+    ssd1306_intf.send(0x00);
 }
 
-void ssd1306_dataStart(void)
-{
+void ssd1306_dataStart(void) {
     ssd1306_intf.start();
     // if (ssd1306_intf.spi)
     //     ssd1306_spiDataMode(1);
     // else
-        ssd1306_intf.send(0x40);
+    ssd1306_intf.send(0x40);
 }
 
-void ssd1306_sendCommand(uint8_t command)
-{
+void ssd1306_sendCommand(uint8_t command) {
     ssd1306_commandStart();
     ssd1306_intf.send(command);
     ssd1306_intf.stop();
 }
 
-void ssd1306_send_buffer_generic(const uint8_t* buffer, uint16_t size)
-{
-    while (size--)
-    {
+void ssd1306_send_buffer_generic(const uint8_t *buffer, uint16_t size) {
+    while (size--) {
         ssd1306_intf.send(*buffer);
         buffer++;
     }
