@@ -1,0 +1,8 @@
+# Copyright (c) 2020 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: Keychron Behavior
+
+compatible: "zmk,behavior-keychron"
+
+include: two_param.yaml

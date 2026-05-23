@@ -1,0 +1,38 @@
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: SN3734 LED strip controller
+
+compatible: "zmk,sn3734"
+
+include: [spi-device.yaml,pinctrl-device.yaml]
+
+properties:
+  label:
+    type: string
+    # required: true
+
+  chain-length:
+    type: int
+    required: true
+
+
+  map:
+    type: array
+    required: true
+    
+  current_tune:
+    type: array
+    #required: true
+
+  pwrctrl-gpios:
+    type: phandle-array
+    required: true
+    description: SDB pin.
+
+  pinctrl-0:
+    required: true
+
+  pinctrl-names:
+    required: true
+

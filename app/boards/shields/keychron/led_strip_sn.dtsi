@@ -1,0 +1,182 @@
+#include <dt-bindings/zmk/sn3734.h>
+
+/ {
+    chosen {
+        
+        zmk,underglow = &led_strip;
+    };
+    led_strip: led-strip-composite {
+        compatible = "zmk,led-strip-composite";
+        chain-length = <67>;
+        strip0 {
+            led-strip = <&led_strip_0>;
+        };
+        
+    };
+
+    
+
+};
+// dma is optional
+&dma0 {
+    status = "okay";
+};
+ 
+&spi0 {
+    status = "okay";
+    pinctrl-0 = <&spi0_default>;
+    pinctrl-1 = <&spi0_sleep>;
+    pinctrl-names = "default","sleep";
+    cs-gpios=
+        <&gpioa  5 GPIO_ACTIVE_LOW>;  //cs0 p0_5
+        // <&gpiob  8 GPIO_ACTIVE_LOW>;  //cs1 p4_3
+        
+    // dma is optional
+	dmas = <&dma0 6 17 0xa>, <&dma0 5 16 0x10021>;
+	dma-names = "rx", "tx";
+
+        led_strip_0: ckled2001@0 {
+            compatible = "zmk,sn3734";
+            reg = <0>;
+            spi-max-frequency = <4000000>;
+            chain-length = <67>; //15+15+14+13+10
+            map = <
+            /* ROW 0 */
+            /*   R        G        B */
+            SN(9,1) SN(7,1) SN(8,1)
+            SN(9,2) SN(7,2) SN(8,2)
+            SN(9,3) SN(7,3) SN(8,3)
+            SN(9,4) SN(7,4) SN(8,4)
+            SN(9,5) SN(7,5) SN(8,5)
+            SN(9,6) SN(7,6) SN(8,6)
+            SN(9,7) SN(7,7) SN(8,7)
+            SN(9,8) SN(7,8) SN(8,8)
+            SN(9,9) SN(7,9) SN(8,9)
+            SN(9,10) SN(7,10) SN(8,10)
+            SN(9,11) SN(7,11) SN(8,11)
+            SN(9,12) SN(7,12) SN(8,12)
+
+            SN(18,1) SN(16,1) SN(17,1)
+            SN(18,2) SN(16,2) SN(17,2)
+            SN(18,3) SN(16,3) SN(17,3)
+            
+            /* ROW 1 */
+            /*   R        G        B */
+            SN(6,1) SN(4,1) SN(5,1)
+            SN(6,2) SN(4,2) SN(5,2)
+            SN(6,3) SN(4,3) SN(5,3)
+            SN(6,4) SN(4,4) SN(5,4)
+            SN(6,5) SN(4,5) SN(5,5)
+            SN(6,6) SN(4,6) SN(5,6)
+            SN(6,7) SN(4,7) SN(5,7)
+            SN(6,8) SN(4,8) SN(5,8)
+            SN(6,9) SN(4,9) SN(5,9)
+            SN(6,10) SN(4,10) SN(5,10)
+            SN(6,11) SN(4,11) SN(5,11)
+            SN(6,12) SN(4,12) SN(5,12)
+
+            SN(18,4) SN(16,4) SN(17,4)
+            SN(18,5) SN(16,5) SN(17,5)
+            SN(18,6) SN(16,6) SN(17,6)
+ 
+            /* ROW 2 */
+            /*   R        G        B */
+            SN(3,1) SN(1,1) SN(2,1)
+            SN(3,2) SN(1,2) SN(2,2)
+            SN(3,3) SN(1,3) SN(2,3)
+            SN(3,4) SN(1,4) SN(2,4)
+            SN(3,5) SN(1,5) SN(2,5)
+            SN(3,6) SN(1,6) SN(2,6)
+            SN(3,7) SN(1,7) SN(2,7)
+            SN(3,8) SN(1,8) SN(2,8)
+            SN(3,9) SN(1,9) SN(2,9)
+            SN(3,10) SN(1,10) SN(2,10)
+            SN(3,11) SN(1,11) SN(2,11)
+            SN(3,12) SN(1,12) SN(2,12)
+
+            SN(18,7) SN(16,7) SN(17,7)
+            SN(18,8) SN(16,8) SN(17,8)
+       
+            /* ROW 3 */
+            /*   R        G        B */
+            SN(15,1) SN(13,1) SN(14,1)
+            // SN(15,2) SN(13,2) SN(14,2)
+            SN(15,3) SN(13,3) SN(14,3)
+            SN(15,4) SN(13,4) SN(14,4)
+            SN(15,5) SN(13,5) SN(14,5)
+            SN(15,6) SN(13,6) SN(14,6)
+            SN(15,7) SN(13,7) SN(14,7)
+            SN(15,8) SN(13,8) SN(14,8)
+            SN(15,9) SN(13,9) SN(14,9)
+            SN(15,10) SN(13,10) SN(14,10)
+            SN(15,11) SN(13,11) SN(14,11)
+            SN(15,12) SN(13,12) SN(14,12)
+
+            SN(18,9) SN(16,9) SN(17,9)
+            SN(18,10) SN(16,10) SN(17,10)
+            
+            /* ROW 3 */
+            /*   R        G        B */
+            SN(12,1) SN(10,1) SN(11,1)
+            SN(12,2) SN(10,2) SN(11,2)
+            SN(12,3) SN(10,3) SN(11,3)
+            // SN(12,4) SN(10,4) SN(11,4)
+            // SN(12,5) SN(10,5) SN(11,5)
+            // SN(12,6) SN(10,6) SN(11,6)
+            SN(12,7) SN(10,7) SN(11,7)
+            // SN(12,8) SN(10,8) SN(11,8)
+            // SN(12,9) SN(10,9) SN(11,9)
+            // SN(12,10) SN(10,10) SN(11,10)
+            SN(12,11) SN(10,11) SN(11,11)
+            SN(12,12) SN(10,12) SN(11,12)
+
+            SN(12,9) SN(10,9) SN(11,9)
+            SN(12,10) SN(10,10) SN(11,10)
+            SN(18,11) SN(16,11) SN(17,11)
+            SN(18,12) SN(16,12) SN(17,12)
+
+            >;
+            current_tune =
+            <0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff 0xff >;
+            pwrctrl-gpios =<&gpioa 6 GPIO_ACTIVE_HIGH>;  //P0_6
+            pinctrl-0 = <&ckled_default>;
+            pinctrl-1 = <&ckled_sleep>;
+            pinctrl-names = "default","sleep";
+    };
+    
+};
+
+&pinctrl {
+
+
+    spi0_default:spi0_default{
+        group1 {
+            psels = <RTL87X2G_PSEL(SPI0_CLK_MASTER, P4_0, DIR_OUT, DRV_HIGH, PULL_UP)>,
+            <RTL87X2G_PSEL(SPI0_MO_MASTER, P4_2, DIR_OUT, DRV_HIGH, PULL_UP)>,
+            <RTL87X2G_PSEL(SPI0_CSN_0_MASTER, P0_5, DIR_OUT, DRV_HIGH, PULL_UP)>;
+            // <RTL87X2G_PSEL(SPI0_CSN_1_MASTER, P4_3, DIR_OUT, DRV_HIGH, PULL_UP)>;
+        };
+    };
+    spi0_sleep:spi0_sleep{
+        group1 {
+            psels = <RTL87X2G_PSEL(SW_MODE, P4_0, DIR_IN, DRV_LOW, PULL_DOWN)>,
+            <RTL87X2G_PSEL(SW_MODE, P4_2, DIR_IN, DRV_LOW, PULL_DOWN)>,
+            <RTL87X2G_PSEL(SW_MODE, P0_5, DIR_IN, DRV_LOW, PULL_DOWN)>;
+            // <RTL87X2G_PSEL(SW_MODE, P4_3, DIR_IN, DRV_LOW, PULL_DOWN)>;
+        };
+    };
+    ckled_default:ckled_default {
+        group1 {
+            psels =
+            <RTL87X2G_PSEL(DWGPIO, P0_6, DIR_OUT, DRV_HIGH, PULL_UP)>;
+            
+        };
+    };
+    ckled_sleep:ckled_sleep {
+        group1 {
+            psels =
+            <RTL87X2G_PSEL(SW_MODE, P0_6, DIR_IN, DRV_LOW, PULL_DOWN)>;
+            
+        };
+    };
+};

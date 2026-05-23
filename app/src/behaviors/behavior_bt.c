@@ -18,6 +18,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include <zmk/ble.h>
 
+
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
 
 static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
@@ -37,6 +38,7 @@ static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
         return 0;
     case BT_DISC_CMD:
         return zmk_ble_prof_disconnect(binding->param2);
+
     default:
         LOG_ERR("Unknown BT command: %d", binding->param1);
     }

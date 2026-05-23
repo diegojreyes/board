@@ -128,6 +128,7 @@ static inline int on_sticky_key_timeout(struct active_sticky_key *sticky_key) {
     } else {
         release_sticky_key_behavior(sticky_key, sticky_key->release_at);
     }
+    return 0;
 }
 
 static int stop_timer(struct active_sticky_key *sticky_key) {

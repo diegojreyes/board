@@ -18,6 +18,18 @@ struct q_item {
     bool press : 1;
     uint32_t wait : 31;
 };
+#if CONFIG_ZMK_LAUNCHER
+extern uint8_t macro_exec_start;
+extern uint8_t macro_exec_end;
+bool macro_enabled_dlps=true;
+uint8_t macro_running=0;
+#endif 
+
+#include <zephyr/drivers/counter.h>
+#define TIMER DT_NODELABEL(timer2)
+void rtk_counter_start(uint32_t usec);
+const struct device *const counter_dev = DEVICE_DT_GET(TIMER);
+static bool counter_running;
 
 K_MSGQ_DEFINE(zmk_behavior_queue_msgq, sizeof(struct q_item), CONFIG_ZMK_BEHAVIORS_QUEUE_SIZE, 4);
 
@@ -42,11 +54,41 @@ static void behavior_queue_process_next(struct k_work *work) {
 
         LOG_DBG("Processing next queued behavior in %dms", item.wait);
 
-        if (item.wait > 0) {
-            k_work_schedule(&queue_work, K_MSEC(item.wait));
+        if (item.wait >= 0) {
+            if(item.wait ==0)
+                k_work_schedule(&queue_work, K_NO_WAIT);//K_MSEC(item.wait));
+            else
+                rtk_counter_start(item.wait-60);
             break;
         }
     }
+#if CONFIG_ZMK_LAUNCHER
+    if(k_msgq_num_used_get(&zmk_behavior_queue_msgq)>0)
+    {
+        if(macro_exec_start)
+        {
+            macro_enabled_dlps=false;
+            macro_running =1;
+        }
+            
+    }
+    else 
+    {
+        if(macro_exec_end)
+        {
+            macro_running =0;
+            macro_exec_start=0;
+            macro_exec_end=0;
+            void ppt_macro_end(void);
+            ppt_macro_end();
+            counter_stop(counter_dev);
+            counter_running =false;
+            macro_enabled_dlps =true;
+            LOG_ERR("macro stop");
+        }
+        
+    }
+#endif     
 }
 
 int zmk_behavior_queue_add(uint32_t position, const struct zmk_behavior_binding binding, bool press,
@@ -57,10 +99,69 @@ int zmk_behavior_queue_add(uint32_t position, const struct zmk_behavior_binding 
     if (ret < 0) {
         return ret;
     }
-
-    if (!k_work_delayable_is_pending(&queue_work)) {
+    //add:wait macro queue to fill!
+    // extern uint8_t macro_exec_start;
+    // if(macro_exec_start)
+    // {
+    //     macro_exec_start =0;
+    //     k_work_schedule(&queue_work, K_MSEC(2));
+    // }
+    // else
+    // if (!k_work_delayable_is_pending(&queue_work)) 
+    if(!counter_running && !k_work_delayable_is_pending(&queue_work))
+    {
         behavior_queue_process_next(&queue_work.work);
     }
 
     return 0;
+}
+#if CONFIG_ZMK_LAUNCHER
+uint8_t behavior_queue_is_full(void)
+{
+    return (k_msgq_num_used_get(&zmk_behavior_queue_msgq)>(CONFIG_ZMK_BEHAVIORS_QUEUE_SIZE-32))?1:0;
+}
+uint16_t get_behavior_queue_num(void)
+{
+    return k_msgq_num_used_get(&zmk_behavior_queue_msgq);
+}
+#endif 
+
+
+static struct counter_top_cfg top_cfg;
+static void counter_interrupt_fn(const struct device *dev,
+				      void *user_data)
+{
+    counter_running =false;
+    // LOG_ERR("counter int!");
+    if(!k_work_delayable_is_pending(&queue_work))
+    {
+        k_work_schedule(&queue_work, K_NO_WAIT);
+        counter_stop(counter_dev);
+        macro_enabled_dlps = true;
+    }
+        
+   
+}
+void rtk_counter_start(uint32_t usec)
+{
+    
+    if (!device_is_ready(counter_dev)) {
+		printk("device not ready.\n");
+		return ;
+	}
+
+	counter_start(counter_dev);
+
+	top_cfg.flags = 0;
+	top_cfg.ticks = counter_us_to_ticks(counter_dev, usec);
+	top_cfg.callback = counter_interrupt_fn;
+	top_cfg.user_data = &top_cfg;
+
+	int err = counter_set_top_value(counter_dev, &top_cfg);
+    if(err)
+    {
+        LOG_ERR("counter set top err:%d",err);
+    }
+    counter_running =true;
+    macro_enabled_dlps=false;
 }

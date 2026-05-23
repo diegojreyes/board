@@ -16,7 +16,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <dt-bindings/zmk/hid_usage_pages.h>
 #include <zmk/endpoints.h>
 
-static int hid_listener_keycode_pressed(const struct zmk_keycode_state_changed *ev) {
+int hid_listener_keycode_pressed(const struct zmk_keycode_state_changed *ev) {
     int err, explicit_mods_changed, implicit_mods_changed;
 
     if (!is_mod(ev->usage_page, ev->keycode) &&
@@ -55,7 +55,7 @@ static int hid_listener_keycode_pressed(const struct zmk_keycode_state_changed *
     return zmk_endpoints_send_report(ev->usage_page);
 }
 
-static int hid_listener_keycode_released(const struct zmk_keycode_state_changed *ev) {
+int hid_listener_keycode_released(const struct zmk_keycode_state_changed *ev) {
     int err, explicit_mods_changed, implicit_mods_changed;
 
     LOG_DBG("usage_page 0x%02X keycode 0x%02X implicit_mods 0x%02X explicit_mods 0x%02X",
@@ -88,6 +88,11 @@ static int hid_listener_keycode_released(const struct zmk_keycode_state_changed 
 int hid_listener(const zmk_event_t *eh) {
     const struct zmk_keycode_state_changed *ev = as_zmk_keycode_state_changed(eh);
     if (ev) {
+        LOG_ERR("key:%x,%s",ev->keycode,ev->state?"down":"up");
+#ifdef CONFIG_SNAP_CLICK_ENABLE        
+        bool process_record_snap_click(const struct zmk_keycode_state_changed *ev);
+        if(!process_record_snap_click(ev)) return 0;
+#endif         
         if (ev->state) {
             hid_listener_keycode_pressed(ev);
         } else {

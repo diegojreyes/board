@@ -8,11 +8,14 @@
 /*============================================================================*
  *                              Macros
  *============================================================================*/
+#ifdef CONFIG_REALTEK_USING_PPT_SYNC_MASTER
+#define SYNC_SUPPORT_MD1R 1
+#endif 
 #define PPT_DEFAULT_INTERVAL_TIME           250 /* 250us */
-#define PPT_DEFAULT_HEARTBEAT_INTERVAL_TIME 250000 /* 250ms */
+#define PPT_DEFAULT_HEARTBEAT_INTERVAL_TIME (250000*2) /* 250ms */
 
-#define PPT_PAIR_TIME_MAX_COUNT         30 /* 30s */
-#define PPT_RECONNECT_TIME_MAX_COUNT    4 /* 4s */
+#define PPT_PAIR_TIME_MAX_COUNT        (160)//(3*60) /* 30s */
+#define PPT_RECONNECT_TIME_MAX_COUNT    3 /* 4s */
 
 #define KEYBOARD_DATA_SIZE                  3
 #define CONSUMER_DATA_SIZE                  2
@@ -24,7 +27,7 @@
 #define USB_REPORT_RATE_LEVEL_1             4000
 #define USB_REPORT_RATE_LEVEL_2             8000
 
-#define PPT_REPORT_RATE_LEVEL_0             1000
+#define PPT_REPORT_RATE_LEVEL_0             250//1000
 #define PPT_REPORT_RATE_LEVEL_1             2000
 #define PPT_REPORT_RATE_LEVEL_2             4000
 #define PPT_REPORT_RATE_DEFAULT_INDEX       2
@@ -41,6 +44,7 @@ typedef enum
     KEYBOARD_PPT_STATUS_CONNECTING,        /* start sync but not connected */
     KEYBOARD_PPT_STATUS_CONNECTED,         /* connected success status */
     KEYBOARD_PPT_STATUS_LOW_POWER,         /* low power mode*/
+    KEYBOARD_PPT_STATUS_DISCONNECT_BY_USER,
 } T_KEYBOARD_PPT_STATUS;
 
 typedef enum
@@ -92,10 +96,13 @@ void keyboard_ppt_set_sync_interval(void);
 bool keyboard_app_ppt_send_data(sync_msg_type_t type, uint8_t msg_retrans_count,
                                 T_KEYBOARD_DATA keyboard_data);
 enum zmk_ppt_conn_state zmk_ppt_get_conn_state(void);
+uint8_t zmk_ppt_get_state(void);
 bool zmk_ppt_is_ready(void);
 void zmk_ppt_init(void);
 #if FEAUTRE_SUPPORT_VENDOR_SHORTCUT_KEY
 bool app_ppt_send_vendor_data(sync_msg_type_t type, uint8_t msg_retrans_count,
                               uint8_t *vendor_data);
 #endif
+
+void zmk_ppt_reconn(void);
 

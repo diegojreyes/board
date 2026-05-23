@@ -399,8 +399,8 @@ config ZMK_IDLE_TIMEOUT
 
 config ZMK_SLEEP
     bool "Enable deep sleep support"
-    depends on HAS_POWEROFF
-    select POWEROFF
+    # depends on HAS_POWEROFF
+    # select POWEROFF
     imply USB
 
 if ZMK_SLEEP
@@ -504,6 +504,7 @@ config ZMK_LOGGING_MINIMAL
 if !ZMK_LOGGING_MINIMAL
 
 config ZMK_LOG_LEVEL
+    int "debug log level"
     default 4
 
 endif
@@ -662,6 +663,20 @@ choice CBPRINTF_IMPLEMENTATION
     default CBPRINTF_NANO
 
 endchoice
+
+config ZMK_LAUNCHER
+    bool "enable dynamic setting"
+    default y
+
+if ZMK_LAUNCHER
+config LAUNCHER_USER_SET_DEBOUNCE
+    bool "enable user set bebouce"
+    default n
+endif     
+
+config ZMK_SSD1306  
+    bool "enable ssd1306 display"
+    default n
 
 module = ZMK
 module-str = zmk

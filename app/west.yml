@@ -1,13 +1,11 @@
 manifest:
   remotes:
-    - name: zephyrproject-rtos
-      url-base: https://github.com/zephyrproject-rtos
-    - name: rtkconnectivity
-      url-base: https://github.com/rtkconnectivity
+    - name: keychron
+      url-base: https://github.com/Keychron
   projects:
     - name: zephyr
-      remote: rtkconnectivity
-      revision: realtek-main-v3.5.0
+      remote: keychron
+      revision: rtl87x2g
       clone-depth: 1
       import:
         name-blocklist:

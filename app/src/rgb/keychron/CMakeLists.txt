@@ -1,0 +1,5 @@
+target_sources_ifdef(CONFIG_KEYCHRON_RGB_ENABLE app PRIVATE keychron_rgb.c)
+target_sources_ifdef(CONFIG_KEYCHRON_RGB_ENABLE app PRIVATE mixed_rgb.c)
+target_sources_ifdef(CONFIG_KEYCHRON_RGB_ENABLE app PRIVATE per_key_rgb.c)
+target_sources_ifdef(CONFIG_RETAIL_DEMO_ENABLE app PRIVATE retail_demo.c)
+target_sources_ifdef(CONFIG_SNAP_CLICK_ENABLE  app PRIVATE snap_click.c)

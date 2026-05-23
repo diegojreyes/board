@@ -28,6 +28,18 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
+void lowpower_settings(void);
+void winlock_led_onoff(uint8_t onoff);
+
+#undef CONFIG_SETTINGS  //disable save settings;
+uint8_t *get_keyboard_report(size_t *len);
+#define USE_HARDWARE_SELECT_TRANSPORT
+#ifdef USE_HARDWARE_SELECT_TRANSPORT
+    enum zmk_transport get_hardware_select_transport(void);
+    static void disc_worker(struct k_work *work) ;
+    K_WORK_DELAYABLE_DEFINE(disc_work,disc_worker);
+#endif 
+
 #define DEFAULT_TRANSPORT                                                                          \
     COND_CODE_1(IS_ENABLED(CONFIG_ZMK_BLE), (ZMK_TRANSPORT_BLE), (ZMK_TRANSPORT_USB))
 
@@ -91,7 +103,7 @@ int zmk_endpoint_instance_to_str(struct zmk_endpoint_instance endpoint, char *st
 
 #define INSTANCE_INDEX_OFFSET_USB 0
 #define INSTANCE_INDEX_OFFSET_BLE ZMK_ENDPOINT_USB_COUNT
-#define INSTANCE_INDEX_OFFSET_PPT (ZMK_ENDPOINT_USB_COUNT+INSTANCE_INDEX_OFFSET_BLE)
+#define INSTANCE_INDEX_OFFSET_PPT (INSTANCE_INDEX_OFFSET_BLE+ZMK_ENDPOINT_BLE_COUNT)
 
 int zmk_endpoint_instance_to_index(struct zmk_endpoint_instance endpoint) {
     switch (endpoint.transport) {
@@ -134,7 +146,64 @@ int zmk_endpoints_toggle_transport(void) {
 struct zmk_endpoint_instance zmk_endpoints_selected(void) {
     return current_instance;
 }
+#if CONFIG_ADAPATIVE_NKRO
 
+extern struct zmk_adapative_nkro adapative_nkro;
+int zmk_usb_hid_send_report(const uint8_t *report, size_t len);
+bool nkro_changed(void);
+bool kb_changed(void);
+
+int transport_send(struct zmk_hid_keyboard_report *report, uint8_t len)
+{
+    int err = 0;
+    switch (current_instance.transport) {
+        case ZMK_TRANSPORT_USB: {
+            err =zmk_usb_hid_send_report((uint8_t *)report,len);
+            if (err) {
+                LOG_ERR("FAILED TO SEND OVER USB: %d", err);
+            }
+        }
+        break;
+        case ZMK_TRANSPORT_PPT:{
+            err = zmk_ppt_send_keyboard_report((uint8_t *) &report->body, len-1);
+            if (err) {
+                LOG_ERR("FAILED TO SEND OVER PPT: %d", err);
+            }
+        }
+        break;
+        case ZMK_TRANSPORT_BLE: {
+            err = zmk_hog_send_keyboard_report(&report->body);
+            if (err) {
+                LOG_ERR("FAILED TO SEND OVER HOG: %d", err);
+            }
+        }
+        break;
+    }
+    return err;
+}
+static int send_keyboard_report(void) {
+    extern struct zmk_adapative_nkro adapative_nkro;
+    int ret=0;
+    if(kb_changed())
+    {
+        struct zmk_hid_keyboard_report *report = zmk_hid_get_keyboard_report();
+        report->report_id = ZMK_HID_REPORT_ID_KEYBOARD;
+        report->body._reserved =0;
+        uint8_t len =  CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE+3;
+        ret =transport_send(report,len);
+    }
+    if(nkro_changed())
+    {
+        adapative_nkro.nkro_report.report_id =ZMK_HID_REPORT_ID_KEYBOARD_NKRO;
+        adapative_nkro.nkro_report.body.modifiers=0;
+        adapative_nkro.nkro_report.body._reserved=1;
+        struct zmk_hid_keyboard_report *report =&adapative_nkro.nkro_report;
+        uint8_t len = sizeof(adapative_nkro.nkro_report);
+        ret =transport_send(report,len);
+    }
+    return ret;
+}
+#else
 static int send_keyboard_report(void) {
     switch (current_instance.transport) {
     case ZMK_TRANSPORT_USB: {
@@ -149,11 +218,17 @@ static int send_keyboard_report(void) {
         return -ENOTSUP;
 #endif /* IS_ENABLED(CONFIG_ZMK_USB) */
     }
-
+    case ZMK_TRANSPORT_PPT:{
+        size_t len =0;
+        uint8_t *p_data = get_keyboard_report(&len);
+        return zmk_ppt_send_keyboard_report(p_data+1, zmk_get_nkro_status()?len-1:CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE+2);
+    }
+        break;
     case ZMK_TRANSPORT_BLE: {
 #if IS_ENABLED(CONFIG_ZMK_BLE)
         struct zmk_hid_keyboard_report *keyboard_report = zmk_hid_get_keyboard_report();
         int err = zmk_hog_send_keyboard_report(&keyboard_report->body);
+        // int err = zmk_hog_send_keyboard_report(keyboard_report);
         if (err) {
             LOG_ERR("FAILED TO SEND OVER HOG: %d", err);
         }
@@ -164,24 +239,24 @@ static int send_keyboard_report(void) {
 #endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
     }
 
-    case ZMK_TRANSPORT_PPT: {
-#if IS_ENABLED(CONFIG_ZMK_PPT)
-        int err = zmk_ppt_send_keyboard_report();
-        if (err) {
-            LOG_ERR("FAILED TO SEND OVER HOG: %d", err);
-        }
-        return err;
-#else
-        LOG_ERR("PPT endpoint is not supported");
-        return -ENOTSUP;
-#endif /* IS_ENABLED(CONFIG_ZMK_PPT) */
-    }
+//     case ZMK_TRANSPORT_PPT: {
+// #if IS_ENABLED(CONFIG_ZMK_PPT)
+//         int err = zmk_ppt_send_keyboard_report();
+//         if (err) {
+//             LOG_ERR("FAILED TO SEND OVER PPT: %d", err);
+//         }
+//         return err;
+// #else
+//         LOG_ERR("PPT endpoint is not supported");
+//         return -ENOTSUP;
+// #endif /* IS_ENABLED(CONFIG_ZMK_PPT) */
+//     }
     }
 
     LOG_ERR("Unhandled endpoint transport %d", current_instance.transport);
     return -ENOTSUP;
 }
-
+#endif 
 static int send_consumer_report(void) {
     switch (current_instance.transport) {
     case ZMK_TRANSPORT_USB: {
@@ -196,7 +271,12 @@ static int send_consumer_report(void) {
         return -ENOTSUP;
 #endif /* IS_ENABLED(CONFIG_ZMK_USB) */
     }
-
+    case ZMK_TRANSPORT_PPT:
+    {
+        return zmk_ppt_send_consumer_report((uint8_t *) &zmk_hid_get_consumer_report()->body,2);
+    }
+        
+        break;
     case ZMK_TRANSPORT_BLE: {
 #if IS_ENABLED(CONFIG_ZMK_BLE)
         struct zmk_hid_consumer_report *consumer_report = zmk_hid_get_consumer_report();
@@ -211,18 +291,18 @@ static int send_consumer_report(void) {
 #endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
     }
 
-    case ZMK_TRANSPORT_PPT: {
-#if IS_ENABLED(CONFIG_ZMK_PPT)
-        int err = zmk_ppt_send_consumer_report();
-        if (err) {
-            LOG_ERR("FAILED TO SEND OVER HOG: %d", err);
-        }
-        return err;
-#else
-        LOG_ERR("PPT endpoint is not supported");
-        return -ENOTSUP;
-#endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
-    }
+//     case ZMK_TRANSPORT_PPT: {
+// #if IS_ENABLED(CONFIG_ZMK_PPT)
+//         int err = zmk_ppt_send_consumer_report();
+//         if (err) {
+//             LOG_ERR("FAILED TO SEND OVER ppt: %d", err);
+//         }
+//         return err;
+// #else
+//         LOG_ERR("PPT endpoint is not supported");
+//         return -ENOTSUP;
+// #endif /* IS_ENABLED(CONFIG_ZMK_PPT) */
+//     }
     }
     LOG_ERR("Unhandled endpoint transport %d", current_instance.transport);
     return -ENOTSUP;
@@ -272,6 +352,19 @@ int zmk_endpoints_send_mouse_report() {
         return -ENOTSUP;
 #endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
     }
+        case ZMK_TRANSPORT_PPT: {
+#if IS_ENABLED(CONFIG_ZMK_PPT)
+        struct zmk_hid_mouse_report *mouse_report = zmk_hid_get_mouse_report();
+        int err = zmk_ppt_send_mouse_report((uint8_t*)&mouse_report->body,sizeof(mouse_report->body));
+        if (err) {
+            LOG_ERR("FAILED TO SEND OVER HOG: %d", err);
+        }
+        return err;
+#else
+        LOG_ERR("BLE HOG endpoint is not supported");
+        return -ENOTSUP;
+#endif /* IS_ENABLED(CONFIG_ZMK_BLE) */
+    }
     }
 
     LOG_ERR("Unhandled endpoint transport %d", current_instance.transport);
@@ -305,7 +398,7 @@ static int endpoints_handle_set(const char *name, size_t len, settings_read_cb r
 
 struct settings_handler endpoints_handler = {.name = "endpoints", .h_set = endpoints_handle_set};
 #endif /* IS_ENABLED(CONFIG_SETTINGS) */
-
+#ifndef USE_HARDWARE_SELECT_TRANSPORT
 static bool is_usb_ready(void) {
 #if IS_ENABLED(CONFIG_ZMK_USB)
     return zmk_usb_is_hid_ready();
@@ -329,8 +422,10 @@ static bool is_ppt_ready(void) {
     return false;
 #endif
 }
+#endif 
 
 static enum zmk_transport get_selected_transport(void) {
+#ifndef USE_HARDWARE_SELECT_TRANSPORT    
     if (is_ble_ready()) {
         if (is_usb_ready()) {
             LOG_DBG("Both ble and usb endpoint transports are ready. Using %d", preferred_transport);
@@ -356,6 +451,9 @@ static enum zmk_transport get_selected_transport(void) {
 
     LOG_DBG("No endpoint transports are ready.");
     return DEFAULT_TRANSPORT;
+#else
+    return get_hardware_select_transport();
+#endif     
 }
 
 static struct zmk_endpoint_instance get_selected_instance(void) {
@@ -377,6 +475,8 @@ static struct zmk_endpoint_instance get_selected_instance(void) {
 }
 
 static int zmk_endpoints_init(void) {
+    int  zmk_settings_check(void);
+    zmk_settings_check();
 #if IS_ENABLED(CONFIG_SETTINGS)
     settings_subsys_init();
 
@@ -395,7 +495,41 @@ static int zmk_endpoints_init(void) {
 
     return 0;
 }
+static K_SEM_DEFINE(wait_disc, 0, 1);
 
+static void disc_worker(struct k_work *work)
+{
+    if(current_instance.transport== ZMK_TRANSPORT_PPT)
+    {
+        LOG_WRN("stop ppt sync");
+        // keyboard_ppt_stop_sync();
+        void zmk_ppt_disconnect(void);
+        zmk_ppt_disconnect();
+    }
+    else if(current_instance.transport == ZMK_TRANSPORT_BLE)
+    {
+        //disconnect ble;
+        zmk_ble_prof_disconnect(current_instance.ble.profile_index);
+    }
+    k_sem_give(&wait_disc);
+}
+static void disc_transport(void)
+{
+    LOG_WRN("disc_transport:%d",current_instance.transport);
+    if(current_instance.transport== ZMK_TRANSPORT_PPT)
+    {
+        LOG_WRN("stop ppt sync");
+        // keyboard_ppt_stop_sync();
+        void zmk_ppt_disconnect(void);
+        zmk_ppt_disconnect();
+    }
+    else if(current_instance.transport == ZMK_TRANSPORT_BLE)
+    {
+        //disconnect ble;
+        zmk_ble_prof_disconnect(current_instance.ble.profile_index);
+    }
+
+}
 static void disconnect_current_endpoint(void) {
     zmk_hid_keyboard_clear();
     zmk_hid_consumer_clear();
@@ -405,17 +539,55 @@ static void disconnect_current_endpoint(void) {
 
     zmk_endpoints_send_report(HID_USAGE_KEY);
     zmk_endpoints_send_report(HID_USAGE_CONSUMER);
+
+    // k_sem_reset(&wait_disc);
+    // k_work_schedule(&disc_work,K_MSEC(30));
+    disc_transport();
+    // k_msleep(30);
 }
 
 static void update_current_endpoint(void) {
     struct zmk_endpoint_instance new_instance = get_selected_instance();
-
+    LOG_WRN("update_current_endpoint,cur:%d,new:%d",current_instance.transport,new_instance.transport);
     if (!zmk_endpoint_instance_eq(new_instance, current_instance)) {
         // Cancel all current keypresses so keys don't stay held on the old endpoint.
         disconnect_current_endpoint();
-
+        // k_sem_take(&wait_disc,K_FOREVER);
+        // if(current_instance.transport == ZMK_TRANSPORT_USB)
+        // {
+        //     zmk_usb_deinit();
+        // }
         current_instance = new_instance;
+//add transport init here!
+        lowpower_settings();
+        switch(current_instance.transport)
+        {
+            case ZMK_TRANSPORT_BLE:
+                LOG_DBG("change to ble");
+#ifdef CONFIG_ENABLE_WIN_LOCK_INDICATOR                 
+                winlock_led_onoff(0);
+#endif 
+                zmk_ble_init();
+                current_instance.ble.profile_index =zmk_ble_active_profile_index();
+                break;
 
+#if CONFIG_ZMK_PPT                
+            case ZMK_TRANSPORT_PPT:
+                LOG_DBG("change to 24g");   
+#ifdef CONFIG_ENABLE_WIN_LOCK_INDICATOR                 
+                winlock_led_onoff(0);
+#endif              
+                zmk_ppt_init();
+                break;
+#endif                
+            case ZMK_TRANSPORT_USB:
+                LOG_ERR("change to usb");
+                zmk_usb_init();
+                break;
+            default:
+                break;
+        }
+//        
         char endpoint_str[ZMK_ENDPOINT_STR_LEN];
         zmk_endpoint_instance_to_str(current_instance, endpoint_str, sizeof(endpoint_str));
         LOG_INF("Endpoint changed: %s", endpoint_str);
@@ -428,7 +600,10 @@ static int endpoint_listener(const zmk_event_t *eh) {
     update_current_endpoint();
     return 0;
 }
-
+enum zmk_transport get_current_transport(void)
+{
+    return current_instance.transport;
+}
 ZMK_LISTENER(endpoint_listener, endpoint_listener);
 #if IS_ENABLED(CONFIG_ZMK_USB)
 ZMK_SUBSCRIPTION(endpoint_listener, zmk_usb_conn_state_changed);
@@ -436,8 +611,8 @@ ZMK_SUBSCRIPTION(endpoint_listener, zmk_usb_conn_state_changed);
 #if IS_ENABLED(CONFIG_ZMK_BLE)
 ZMK_SUBSCRIPTION(endpoint_listener, zmk_ble_active_profile_changed);
 #endif
-#if IS_ENABLED(CONFIG_ZMK_PPT)
-ZMK_SUBSCRIPTION(endpoint_listener, zmk_ppt_conn_state_changed);
-#endif
-
-SYS_INIT(zmk_endpoints_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+// #if IS_ENABLED(CONFIG_ZMK_PPT)
+// ZMK_SUBSCRIPTION(endpoint_listener, zmk_ppt_conn_state_changed);
+// #endif
+#define ENDPOINTS_INIT_PRIORITY 51  //make sure endpoints init early to check settings!
+SYS_INIT(zmk_endpoints_init, APPLICATION, ENDPOINTS_INIT_PRIORITY);//CONFIG_APPLICATION_INIT_PRIORITY);

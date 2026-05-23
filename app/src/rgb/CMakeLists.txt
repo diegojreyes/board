@@ -1,0 +1,5 @@
+target_sources(app PRIVATE rgb_effects.c)
+target_sources(app PRIVATE rgb_matrix.c)
+target_sources(app PRIVATE rgb_matrix_drivers.c)
+add_subdirectory(lib8tion)
+add_subdirectory(keychron)

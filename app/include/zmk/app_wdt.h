@@ -9,3 +9,5 @@
 #include <stdint.h>
 
 void app_system_reset(uint8_t flag);
+void app_wdt_start(void);
+void app_wdt_stop(void);

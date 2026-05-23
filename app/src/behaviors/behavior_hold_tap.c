@@ -579,12 +579,16 @@ static void update_hold_status_for_retro_tap(uint32_t ignore_position) {
         }
     }
 }
-
+uint8_t get_key_press_num(void);
 static int on_hold_tap_binding_pressed(struct zmk_behavior_binding *binding,
                                        struct zmk_behavior_binding_event event) {
     const struct device *dev = zmk_behavior_get_binding(binding->behavior_dev);
     const struct behavior_hold_tap_config *cfg = dev->config;
-
+    if(get_key_press_num()>4)
+    {
+        LOG_ERR("skip hold tap?");
+        return ZMK_BEHAVIOR_OPAQUE;
+    }
     if (undecided_hold_tap != NULL) {
         LOG_DBG("ERROR another hold-tap behavior is undecided.");
         // if this happens, make sure the behavior events occur AFTER other position events.

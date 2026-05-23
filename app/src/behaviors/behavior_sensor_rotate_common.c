@@ -68,10 +68,11 @@ int zmk_behavior_sensor_rotate_common_process(struct zmk_behavior_binding *bindi
         data->triggers[sensor_index][event.layer] = 0;
         return ZMK_BEHAVIOR_TRANSPARENT;
     }
-
+    
     int triggers = data->triggers[sensor_index][event.layer];
 
     struct zmk_behavior_binding triggered_binding;
+#if 0    
     if (triggers > 0) {
         triggered_binding = cfg->cw_binding;
         if (cfg->override_params) {
@@ -83,14 +84,38 @@ int zmk_behavior_sensor_rotate_common_process(struct zmk_behavior_binding *bindi
         if (cfg->override_params) {
             triggered_binding.param1 = binding->param2;
         }
-    } else {
+    } 
+#else
+    struct zmk_behavior_binding * get_zmk_encode_map(uint8_t layer );   
+    struct zmk_behavior_binding *cw_binding =get_zmk_encode_map(event.layer);
+#if (!defined(CONFIG_SHIELD_KEYCHRON_RS45_ANSI) && !defined(CONFIG_SHIELD_KEYCHRON_Q3ULTRA_ANSI)&& !defined(CONFIG_SHIELD_KEYCHRON_Q1ULTRA_ANSI))
+    if (triggers < 0) {
+        triggers = -triggers;
+        triggered_binding =*cw_binding;
+
+    } else if (triggers > 0) {
+        
+        cw_binding +=1;
+        triggered_binding = *cw_binding;
+    } 
+#else //change encoder direction!
+    if (triggers < 0) {
+        triggers = -triggers;
+        triggered_binding =cw_binding[1];
+
+    } else if (triggers > 0) {
+        triggered_binding = cw_binding[0];       
+    } 
+#endif 
+#endif     
+    else {
         return ZMK_BEHAVIOR_TRANSPARENT;
     }
 
     LOG_DBG("Sensor binding: %s", binding->behavior_dev);
 
     for (int i = 0; i < triggers; i++) {
-        zmk_behavior_queue_add(event.position, triggered_binding, true, cfg->tap_ms);
+        zmk_behavior_queue_add(event.position, triggered_binding, true, cfg->tap_ms*1000);
         zmk_behavior_queue_add(event.position, triggered_binding, false, 0);
     }
 

@@ -64,7 +64,7 @@ struct zmk_behavior_ref {
  * Registers @p node_id as a behavior.
  */
 #define BEHAVIOR_DEFINE(node_id)                                                                   \
-    static const STRUCT_SECTION_ITERABLE(zmk_behavior_ref,                                         \
+    static STRUCT_SECTION_ITERABLE(zmk_behavior_ref,                                         \
                                          _CONCAT(zmk_behavior_, DEVICE_DT_NAME_GET(node_id))) = {  \
         .device = DEVICE_DT_GET(node_id),                                                          \
     }

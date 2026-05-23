@@ -121,10 +121,10 @@ endif
 if !ZMK_SPLIT_BLE
 
 config BT_MAX_CONN
-    default 5
+    default 3
 
 config BT_MAX_PAIRED
-    default 5
+    default 3
 
 #!ZMK_SPLIT_BLE
 endif

@@ -47,8 +47,17 @@ typedef enum
     SYNC_OPCODE_KEYBOARD    = 0x10,
     SYNC_OPCODE_CONSUMER    = 0x11,
     SYNC_OPCODE_VENDOR      = 0x12,
+    SYNC_OPCODE_ALL_KEYBOARD = 0x13,
+    SYNC_OPCODE_STD_KEYBOARD_ENCRYPTION_DATA = 0x15,
+	SYNC_OPCODE_ALL_KEYBOARD_ENCRYPTION_DATA = 0x16,
     SYNC_OPCODE_DPI         = 0x20,
     SYNC_OPCODE_REPORT_RATE = 0x21,
+    SYNC_OPCODE_MOUSE       = 0x3b,
+#if 0
+    SYNC_OPCODE_DONGLE_STATE_INFO = 0x40,	//dongle state information to device
+	SYNC_OPCODE_DEV_STATE_INFO = 0x41,	//device information to dongle 
+	SYNC_OPCODE_RAW_HID_SET_RPT = 0x50, //from dongle to device
+#endif     
 } sync_app_opcode_t;
 
 typedef union

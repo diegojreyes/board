@@ -22,6 +22,9 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/hid_indicators.h>
 #endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
 
+enum zmk_transport get_hardware_select_transport(void);
+int zmk_ppt_send_keyboard_report(uint8_t *report ,uint8_t len) ;
+int zmk_ppt_send_consumer_report(uint8_t *report ,uint8_t len) ;
 enum {
     HIDS_REMOTE_WAKE = BIT(0),
     HIDS_NORMALLY_CONNECTABLE = BIT(1),
@@ -52,6 +55,11 @@ enum {
 
 static struct hids_report input = {
     .id = ZMK_HID_REPORT_ID_KEYBOARD,
+    .type = HIDS_INPUT,
+};
+
+static struct hids_report input_nkro = {
+    .id = ZMK_HID_REPORT_ID_KEYBOARD_NKRO,
     .type = HIDS_INPUT,
 };
 
@@ -107,6 +115,20 @@ static ssize_t read_hids_input_report(struct bt_conn *conn, const struct bt_gatt
                              sizeof(struct zmk_hid_keyboard_report_body));
 }
 
+static ssize_t read_hids_input_nkro_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                                      void *buf, uint16_t len, uint16_t offset) {
+    if(zmk_get_nkro_status())
+    {
+        struct zmk_hid_keyboard_report_body *report_body = &zmk_hid_get_keyboard_report()->body;
+        uint8_t buffer[(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8+1];
+        buffer[0]=report_body->modifiers;       
+        memcpy(buffer+1,report_body->keys,(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8);
+        return bt_gatt_attr_read(conn, attr, buf, len, offset, buffer,
+                                sizeof(struct zmk_hid_keyboard_report_body)-1);
+    }                                        
+    return 0;
+}
+
 #if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
 static ssize_t write_hids_leds_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
                                       const void *buf, uint16_t len, uint16_t offset,
@@ -119,7 +141,7 @@ static ssize_t write_hids_leds_report(struct bt_conn *conn, const struct bt_gatt
     }
 
     struct zmk_hid_led_report_body *report = (struct zmk_hid_led_report_body *)buf;
-    int profile = zmk_ble_profile_index(bt_conn_get_dst(conn));
+    int profile = zmk_ble_active_profile_index();//zmk_ble_profile_index(bt_conn_get_dst(conn));
     if (profile < 0) {
         return BT_GATT_ERR(BT_ATT_ERR_UNLIKELY);
     }
@@ -199,6 +221,12 @@ BT_GATT_SERVICE_DEFINE(
     BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
     BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
                        NULL, &consumer_input),
+    //add nkro report                       
+    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
+                           BT_GATT_PERM_READ_ENCRYPT, read_hids_input_nkro_report, NULL, NULL),
+    BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
+    BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
+                       NULL, &input_nkro),
 
 #if IS_ENABLED(CONFIG_ZMK_MOUSE)
     BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
@@ -227,8 +255,11 @@ struct bt_conn *destination_connection(void) {
     if (!bt_addr_le_cmp(addr, BT_ADDR_LE_ANY)) {
         LOG_WRN("Not sending, no active address for current profile");
         return NULL;
-    } else if ((conn = bt_conn_lookup_addr_le(BT_ID_DEFAULT, addr)) == NULL) {
-        LOG_WRN("Not sending, not connected to active profile");
+    } else if ((conn = bt_conn_lookup_addr_le(zmk_ble_active_profile_btid(), addr)) == NULL) {
+        LOG_WRN("Not sending, not connected to active profile:%d",zmk_ble_active_profile_index());
+        char addr_str[BT_ADDR_LE_STR_LEN];
+        bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
+        LOG_DBG("addr:%s",addr_str);
         return NULL;
     }
 
@@ -238,7 +269,7 @@ struct bt_conn *destination_connection(void) {
 K_THREAD_STACK_DEFINE(hog_q_stack, CONFIG_ZMK_BLE_THREAD_STACK_SIZE);
 
 struct k_work_q hog_work_q;
-
+#if 1
 K_MSGQ_DEFINE(zmk_hog_keyboard_msgq, sizeof(struct zmk_hid_keyboard_report_body),
               CONFIG_ZMK_BLE_KEYBOARD_REPORT_QUEUE_SIZE, 4);
 
@@ -246,25 +277,49 @@ void send_keyboard_report_callback(struct k_work *work) {
     struct zmk_hid_keyboard_report_body report;
 
     while (k_msgq_get(&zmk_hog_keyboard_msgq, &report, K_NO_WAIT) == 0) {
-        struct bt_conn *conn = destination_connection();
-        if (conn == NULL) {
-            return;
+        // if(get_hardware_select_transport()==ZMK_TRANSPORT_BLE)
+        {
+            struct bt_conn *conn = destination_connection();
+            if (conn == NULL) {
+                return;
+            }
+            
+            struct bt_gatt_notify_params notify_params = {
+                .attr = &hog_svc.attrs[5],
+                .data = &report,
+                .len = CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE+2,//sizeof(report),
+            };
+            if(report._reserved)
+            {
+                
+                uint8_t buffer[(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8+1];
+                buffer[0]=report.modifiers;       
+                memcpy(buffer+1,report.keys,(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8);
+
+                notify_params.attr = &hog_svc.attrs[13];
+                notify_params.data = buffer;
+                notify_params.len = sizeof(report)-1;
+            }
+            // toggle_debug_pin();
+            int err = bt_gatt_notify_cb(conn, &notify_params);
+            // toggle_debug_pin();
+            if (err == -EPERM) {
+                bt_conn_set_security(conn, BT_SECURITY_L2);
+            } else if (err) {
+                LOG_DBG("Error notifying %d", err);
+            }
+
+            bt_conn_unref(conn);
         }
-
-        struct bt_gatt_notify_params notify_params = {
-            .attr = &hog_svc.attrs[5],
-            .data = &report,
-            .len = sizeof(report),
-        };
-
-        int err = bt_gatt_notify_cb(conn, &notify_params);
-        if (err == -EPERM) {
-            bt_conn_set_security(conn, BT_SECURITY_L2);
-        } else if (err) {
-            LOG_DBG("Error notifying %d", err);
-        }
-
-        bt_conn_unref(conn);
+        // else
+        // {
+        //     LOG_ERR("msg:%d",k_msgq_num_used_get(&zmk_hog_keyboard_msgq));
+        //     int ret=zmk_ppt_send_keyboard_report((uint8_t *)&report,zmk_get_nkro_status()?sizeof(report):CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE+2);
+        //     if(ret !=0)
+        //     {
+        //         LOG_ERR("ppt send err:%d",ret);
+        //     }
+        // }
     }
 }
 
@@ -290,7 +345,7 @@ int zmk_hog_send_keyboard_report(struct zmk_hid_keyboard_report_body *report) {
 
     return 0;
 };
-
+#endif 
 K_MSGQ_DEFINE(zmk_hog_consumer_msgq, sizeof(struct zmk_hid_consumer_report_body),
               CONFIG_ZMK_BLE_CONSUMER_REPORT_QUEUE_SIZE, 4);
 
@@ -298,25 +353,37 @@ void send_consumer_report_callback(struct k_work *work) {
     struct zmk_hid_consumer_report_body report;
 
     while (k_msgq_get(&zmk_hog_consumer_msgq, &report, K_NO_WAIT) == 0) {
-        struct bt_conn *conn = destination_connection();
-        if (conn == NULL) {
-            return;
+        // if(get_hardware_select_transport()==ZMK_TRANSPORT_BLE)
+        {
+            struct bt_conn *conn = destination_connection();
+            if (conn == NULL) {
+                return;
+            }
+
+            struct bt_gatt_notify_params notify_params = {
+                .attr = &hog_svc.attrs[9],
+                .data = &report,
+                .len = sizeof(report),
+            };
+
+            int err = bt_gatt_notify_cb(conn, &notify_params);
+            if (err == -EPERM) {
+                bt_conn_set_security(conn, BT_SECURITY_L2);
+            } else if (err) {
+                LOG_DBG("Error notifying %d", err);
+            }
+
+            bt_conn_unref(conn);
         }
-
-        struct bt_gatt_notify_params notify_params = {
-            .attr = &hog_svc.attrs[9],
-            .data = &report,
-            .len = sizeof(report),
-        };
-
-        int err = bt_gatt_notify_cb(conn, &notify_params);
-        if (err == -EPERM) {
-            bt_conn_set_security(conn, BT_SECURITY_L2);
-        } else if (err) {
-            LOG_DBG("Error notifying %d", err);
-        }
-
-        bt_conn_unref(conn);
+        // else 
+        // {
+        //     int ret=zmk_ppt_send_consumer_report((uint8_t*)&report,2);
+        //     if(ret !=0)
+        //     {
+        //         LOG_ERR("ppt send err:%d",ret);
+        //     }
+        // }
+        
     }
 };
 
@@ -357,7 +424,7 @@ void send_mouse_report_callback(struct k_work *work) {
         }
 
         struct bt_gatt_notify_params notify_params = {
-            .attr = &hog_svc.attrs[13],
+            .attr = &hog_svc.attrs[13+4],//ccc
             .data = &report,
             .len = sizeof(report),
         };
@@ -407,3 +474,126 @@ static int zmk_hog_init(void) {
 }
 
 SYS_INIT(zmk_hog_init, APPLICATION, CONFIG_ZMK_BLE_INIT_PRIORITY);
+#if 1
+bool hog_almost_full(void)
+{
+    return k_msgq_num_used_get(&zmk_hog_keyboard_msgq)>20;
+}
+#else
+
+#include <zephyr/sys/ring_buffer.h>
+uint8_t zmk_ble_is_ready(void);
+RING_BUF_DECLARE(zmk_ble_msgs, sizeof(struct zmk_hid_keyboard_report)*64);
+static void poll_timer_expiry_function(struct k_timer *timer);
+static K_TIMER_DEFINE(poll_timer, poll_timer_expiry_function, NULL);
+#define POLL_PERIOD K_MSEC(8)
+static struct k_spinlock lock;
+void ringbuf_ble_reset(void)
+{
+	ring_buf_reset(&zmk_ble_msgs);
+}
+int ringbuf_ble_used_get(void)
+{
+	return ring_buf_size_get(&zmk_ble_msgs)/(sizeof(struct zmk_hid_keyboard_report));
+}
+bool hog_almost_full(void)
+{
+    return ringbuf_ble_used_get()>20;
+}
+int ringbuf_ble_msg_peek(struct zmk_hid_keyboard_report * rep)
+{
+	return ring_buf_peek(&zmk_ble_msgs,(uint8_t*)rep,sizeof(struct zmk_hid_keyboard_report));
+}
+int ringbuf_ble_msg_get(struct zmk_hid_keyboard_report * rep)
+{
+	return ring_buf_get(&zmk_ble_msgs,(uint8_t*)rep,sizeof(struct zmk_hid_keyboard_report));
+}
+int ringbuf_ble_msg_put(struct zmk_hid_keyboard_report * rep)
+{
+	int err =0;
+
+	if(ring_buf_space_get(&zmk_ble_msgs)>=sizeof(struct zmk_hid_keyboard_report))
+	{
+		k_spinlock_key_t key =k_spin_lock(&lock);
+		int wr=ring_buf_put(&zmk_ble_msgs,(uint8_t*)rep,sizeof(struct zmk_hid_keyboard_report));
+		if(wr<sizeof(struct zmk_hid_keyboard_report))
+		{
+			LOG_ERR("write err!");
+		}
+		k_spin_unlock(&lock,key);
+	}
+	else
+	{
+		LOG_ERR("no buf,discard old one!");
+		struct zmk_hid_keyboard_report rep;
+		ringbuf_ble_msg_get(&rep);
+		err =1;
+	}
+	return err;
+}
+
+int zmk_hog_send_keyboard_report(struct zmk_hid_keyboard_report *report) {
+
+    struct zmk_hid_keyboard_report rep;
+ 
+    memcpy(&rep ,report,sizeof(struct zmk_hid_keyboard_report));
+
+    if(!zmk_ble_is_ready()) return -1;
+
+    ringbuf_ble_msg_put(&rep);
+    LOG_DBG("msg:%d",ringbuf_ble_used_get());
+    if(k_timer_remaining_get(&poll_timer)==0)
+        poll_timer_expiry_function(NULL);
+    
+    return 0;
+
+}
+void poll_timer_expiry_function(struct k_timer *timer)
+{
+    uint8_t count=0;  
+    while(ringbuf_ble_used_get())
+    {
+        struct zmk_hid_keyboard_report rep;
+        ringbuf_ble_msg_get(&rep);
+        struct bt_conn *conn = destination_connection();
+        if (conn == NULL) {
+            break;
+        }
+        uint8_t attr_index=5;
+        uint8_t tx_len=8;
+        uint8_t buffer[(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8+1]={0};
+        if(rep.report_id ==ZMK_HID_REPORT_ID_KEYBOARD_NKRO )
+        {
+            tx_len = sizeof(struct zmk_hid_keyboard_report) -2;
+            buffer[0]=rep.body.modifiers;       
+            memcpy(buffer+1,rep.body.keys,(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8);
+            attr_index=13;
+        }
+        else
+        {
+            tx_len=8;
+            attr_index=5;
+            memcpy(buffer,&rep.body,tx_len);
+        }
+           
+
+        struct bt_gatt_notify_params notify_params = {
+            .attr = &hog_svc.attrs[attr_index],
+            .data = buffer,
+            .len = tx_len,
+        };
+        int err = bt_gatt_notify_cb(conn, &notify_params);
+        if (err == -EPERM) {
+            bt_conn_set_security(conn, BT_SECURITY_L2);
+        } else if (err) {
+            LOG_DBG("Error notifying %d", err);
+        }
+
+        bt_conn_unref(conn);
+        if(++count >=3) break;
+    }
+
+    if(ringbuf_ble_used_get())
+        k_timer_start(&poll_timer,POLL_PERIOD ,K_FOREVER);
+}
+#endif 

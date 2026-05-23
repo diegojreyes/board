@@ -17,8 +17,9 @@
 #include <zmk/hid_indicators.h>
 #endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
 #include <zmk/event_manager.h>
+#include <zmk/endpoints.h>
 
-LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+LOG_MODULE_DECLARE(zmk, 4);//CONFIG_ZMK_LOG_LEVEL);
 
 static const struct device *hid_dev;
 
@@ -35,13 +36,17 @@ static void in_ready_cb(const struct device *dev) { k_sem_give(&hid_sem); }
 
 #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
 static uint8_t hid_protocol = HID_PROTOCOL_REPORT;
+static uint8_t usb_out;
 
-static void set_proto_cb(const struct device *dev, uint8_t protocol) { hid_protocol = protocol; }
+static void set_proto_cb(const struct device *dev, uint8_t protocol) { 
+    hid_protocol = protocol; 
+    LOG_ERR("-->set protocol:%d",hid_protocol);
+}
 
 void zmk_usb_hid_set_protocol(uint8_t protocol) { hid_protocol = protocol; }
 #endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
 
-static uint8_t *get_keyboard_report(size_t *len) {
+uint8_t *get_keyboard_report(size_t *len) {
 #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
     if (hid_protocol != HID_PROTOCOL_REPORT) {
         zmk_hid_boot_report_t *boot_report = zmk_hid_get_boot_report();
@@ -50,7 +55,10 @@ static uint8_t *get_keyboard_report(size_t *len) {
     }
 #endif
     struct zmk_hid_keyboard_report *report = zmk_hid_get_keyboard_report();
-    *len = sizeof(*report);
+    if(zmk_get_nkro_status())
+        *len = sizeof(*report);
+    else
+        *len =CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE+3;
     return (uint8_t *)report;
 }
 
@@ -85,7 +93,41 @@ static int get_report_cb(const struct device *dev, struct usb_setup_packet *setu
 
     return 0;
 }
+static void out_ready_cb(const struct device *dev)
+{
+    uint8_t rev_buf[32]={0};
+    uint32_t rev_bytes =0;
+    hid_int_ep_read(dev,rev_buf,sizeof(rev_buf),&rev_bytes);
+    LOG_HEXDUMP_DBG(rev_buf,rev_bytes,"rx");
+    if(rev_buf[0]==ZMK_HID_REPORT_ID_LEDS)
+    {
+        usb_out=1;
+        if(zmk_endpoints_selected().transport==ZMK_TRANSPORT_USB)
+        {
+            // struct zmk_hid_led_report *report = (struct zmk_hid_led_report *)rev_buf;
+            struct zmk_hid_led_report report ;
+            report.body.leds = rev_buf[1];
+            struct zmk_endpoint_instance endpoint = {
+                .transport = ZMK_TRANSPORT_USB,
+            };
+            zmk_hid_indicators_process_report(&report.body, endpoint);
 
+        }
+    }
+    else if (hid_protocol != HID_PROTOCOL_REPORT)
+    {
+        if(zmk_endpoints_selected().transport==ZMK_TRANSPORT_USB && (rev_bytes ==1))
+        {
+            struct zmk_hid_led_report report ;
+            report.body.leds = rev_buf[0];
+            struct zmk_endpoint_instance endpoint = {
+                .transport = ZMK_TRANSPORT_USB,
+            };
+            zmk_hid_indicators_process_report(&report.body, endpoint);
+
+        }
+    }
+}
 static int set_report_cb(const struct device *dev, struct usb_setup_packet *setup, int32_t *len,
                          uint8_t **data) {
     if ((setup->wValue & HID_GET_REPORT_TYPE_MASK) != HID_REPORT_TYPE_OUTPUT) {
@@ -93,7 +135,7 @@ static int set_report_cb(const struct device *dev, struct usb_setup_packet *setu
                 (setup->wValue & HID_GET_REPORT_TYPE_MASK) >> 8);
         return -ENOTSUP;
     }
-
+    LOG_DBG("rpt id:%d",setup->wValue & HID_GET_REPORT_ID_MASK);
     switch (setup->wValue & HID_GET_REPORT_ID_MASK) {
 #if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
     case ZMK_HID_REPORT_ID_LEDS:
@@ -101,15 +143,33 @@ static int set_report_cb(const struct device *dev, struct usb_setup_packet *setu
             LOG_ERR("LED set report is malformed: length=%d", *len);
             return -EINVAL;
         } else {
-            struct zmk_hid_led_report *report = (struct zmk_hid_led_report *)*data;
+            // struct zmk_hid_led_report *report = (struct zmk_hid_led_report *)*data;
+            struct zmk_hid_led_report report ;
+            uint8_t *p_data= *data;
+            report.body.leds =p_data[1];
             struct zmk_endpoint_instance endpoint = {
                 .transport = ZMK_TRANSPORT_USB,
             };
-            zmk_hid_indicators_process_report(&report->body, endpoint);
+            zmk_hid_indicators_process_report(&report.body, endpoint);
         }
         break;
 #endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
     default:
+        // LOG_HEXDUMP_ERR(*data,*len,"set report");
+        if (hid_protocol != HID_PROTOCOL_REPORT)
+        {
+            if(zmk_endpoints_selected().transport==ZMK_TRANSPORT_USB && (*len ==1))
+            {
+                struct zmk_hid_led_report report ;
+                uint8_t *p_data= *data;
+                report.body.leds =p_data[0];
+                struct zmk_endpoint_instance endpoint = {
+                    .transport = ZMK_TRANSPORT_USB,
+                };
+                zmk_hid_indicators_process_report(&report.body, endpoint);
+
+            }
+        }
         LOG_ERR("Invalid report ID %d requested", setup->wValue & HID_GET_REPORT_ID_MASK);
         return -EINVAL;
     }
@@ -122,23 +182,59 @@ static const struct hid_ops ops = {
     .protocol_change = set_proto_cb,
 #endif
     .int_in_ready = in_ready_cb,
+    .int_out_ready = out_ready_cb,
     .get_report = get_report_cb,
     .set_report = set_report_cb,
 };
-
-static int zmk_usb_hid_send_report(const uint8_t *report, size_t len) {
+void toggle_debug_pin(void);
+int zmk_usb_hid_send_report(const uint8_t *report, size_t len) {
     switch (zmk_usb_get_status()) {
-    case USB_DC_SUSPEND:
-        return usb_wakeup_request();
+    
     case USB_DC_ERROR:
     case USB_DC_RESET:
     case USB_DC_DISCONNECTED:
     case USB_DC_UNKNOWN:
         return -ENODEV;
+    case USB_DC_SUSPEND:
+    {
+        extern uint8_t usb_configured;
+        if(!usb_configured) return -1;
+        int ret=usb_wakeup_request();
+        LOG_ERR("usb_wakeup_request:%d ",ret);
+        usb_out =0;
+        for(int i=0;i<30;i++)
+        {
+            k_msleep(100);
+            if(!usb_get_remote_wakeup_status()|| usb_out)
+            {
+                usb_out =0;
+                LOG_ERR("i:%d",i);
+                break;
+            }
+        }
+    }
     default:
+        // LOG_DBG("usb send");
+        toggle_debug_pin();
         k_sem_take(&hid_sem, K_MSEC(30));
-        int err = hid_int_ep_write(hid_dev, report, len, NULL);
+        int err =0;
+        // LOG_HEXDUMP_ERR(report,len,"usb");
+        //cut reserve byte in nkro report;
+        if(report[0]==ZMK_HID_REPORT_ID_KEYBOARD_NKRO)
+        {
+            uint8_t buffer[(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8+2];
+            buffer[0]=report[0];
+            buffer[1]=report[1];
+            memcpy(buffer+2,report+3,(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1) / 8);
+            // LOG_HEXDUMP_ERR(buffer,len-1,"nkro");
+            err =hid_int_ep_write(hid_dev, buffer, len-1, NULL);
+        }
+        else
+            err = hid_int_ep_write(hid_dev, report, len, NULL);
 
+        toggle_debug_pin();
+        LOG_DBG("sent");
+        // LOG_HEXDUMP_WRN(report,len,"data");
         if (err) {
             k_sem_give(&hid_sem);
         }

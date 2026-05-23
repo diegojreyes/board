@@ -5,7 +5,7 @@ description: GPIO keyboard matrix controller
 
 compatible: "zmk,kscan-gpio-matrix"
 
-include: kscan.yaml
+include: [kscan.yaml , pinctrl-device.yaml]
 
 properties:
   row-gpios:
@@ -41,3 +41,6 @@ properties:
     enum:
       - row2col
       - col2row
+
+  pinctrl-0:
+    required: true

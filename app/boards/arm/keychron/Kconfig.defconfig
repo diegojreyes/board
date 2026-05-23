@@ -1,0 +1,14 @@
+if BOARD_RTL8762GTU || BOARD_RTL8762GKU
+
+config BOARD
+	default "rtl8762gtu"
+
+config RTK_DFU
+	bool "enable rtk dfu"
+	default y
+
+config DEBUG_IO
+	bool "enable debug io"
+	default n
+	
+endif #BOARD_RTL8762GTU

@@ -9,6 +9,7 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/kscan.h>
 #include <zephyr/logging/log.h>
+
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define MATRIX_NODE_ID DT_DRV_INST(0)
@@ -40,7 +41,6 @@ struct kscan_composite_data {
 static int kscan_composite_enable_callback(const struct device *dev) {
     for (int i = 0; i < ARRAY_SIZE(kscan_composite_children); i++) {
         const struct kscan_composite_child_config *cfg = &kscan_composite_children[i];
-
         kscan_enable_callback(cfg->child);
     }
     return 0;

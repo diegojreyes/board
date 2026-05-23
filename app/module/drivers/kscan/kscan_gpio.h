@@ -8,13 +8,15 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <rtl_gpio.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/dt-bindings/gpio/gpio.h>
 #include <zephyr/sys/util.h>
-
+#include <rtl_pinmux.h>
 struct kscan_gpio {
     struct gpio_dt_spec spec;
+    GPIO_TypeDef *GPIOx;
     /** The index of the GPIO in the devicetree *-gpios array. */
     size_t index;
 };

@@ -38,11 +38,16 @@ const struct device *z_impl_behavior_get_binding(const char *name) {
 
     return NULL;
 }
-
-#if IS_ENABLED(CONFIG_LOG)
+extern char __zmk_behavior_ref_rom_start[];
+extern struct zmk_behavior_ref _zmk_behavior_ref_list_start[]; 
+extern struct zmk_behavior_ref _zmk_behavior_ref_list_end[];
+#if 1//IS_ENABLED(CONFIG_LOG)
 static int check_behavior_names(void) {
     // Behavior names must be unique, but we don't have a good way to enforce this
     // at compile time, so log an error at runtime if they aren't unique.
+    // LOG_ERR("__zmk_behavior_ref_rom_start:%p,start:%p,end:%p,size:%d",(uint8_t *)__zmk_behavior_ref_rom_start,_zmk_behavior_ref_list_start,_zmk_behavior_ref_list_end,(uint32_t)_zmk_behavior_ref_list_end - (uint32_t)_zmk_behavior_ref_list_start);
+
+    memcpy(_zmk_behavior_ref_list_start,__zmk_behavior_ref_rom_start,(uint32_t)_zmk_behavior_ref_list_end -(uint32_t) _zmk_behavior_ref_list_start);
     ptrdiff_t count;
     STRUCT_SECTION_COUNT(zmk_behavior_ref, &count);
 

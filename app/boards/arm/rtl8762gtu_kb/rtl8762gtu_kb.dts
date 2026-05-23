@@ -58,11 +58,11 @@
 		};
 		app_partition: partition@2d000 {
 			label = "app-image";
-			reg = <0x2D000 DT_SIZE_K(828)>;
+			reg = <0x2D000 DT_SIZE_K(800)>;
 		};
-		storage_partition: partition@fc000 {
+		storage_partition: partition@f5000 {
 			label = "storage";
-			reg = <0xFC000 DT_SIZE_K(16)>;
+			reg = <0xF5000 DT_SIZE_K(44)>;
 		};
 	};
 };

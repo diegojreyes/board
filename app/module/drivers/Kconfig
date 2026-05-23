@@ -5,3 +5,5 @@ rsource "gpio/Kconfig"
 rsource "kscan/Kconfig"
 rsource "sensor/Kconfig"
 rsource "display/Kconfig"
+rsource "led_strip/Kconfig"
+

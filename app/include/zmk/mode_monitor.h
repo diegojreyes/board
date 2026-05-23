@@ -33,9 +33,11 @@ extern T_APP_MODE app_mode;
 extern T_APP_GLOBAL_DATA app_global_data;
 
 enum app_mode_type {
-    BT_MODE = 0,
-    PPT_MODE,
+    WIN_MAC_MODE=0,
     USB_MODE,
+    BT_MODE,
+    PPT_MODE,
+    
 };
 
 void cap_led_on(void);

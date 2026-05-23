@@ -5,7 +5,7 @@ description: Direct GPIO keyboard KSCAN controller
 
 compatible: "zmk,kscan-gpio-direct"
 
-include: kscan.yaml
+include: [kscan.yaml, pinctrl-device.yaml]
 
 properties:
   input-gpios:
@@ -35,3 +35,5 @@ properties:
   toggle-mode:
     type: boolean
     description: Enable toggle-switch mode.
+  pinctrl-0:
+    required: true

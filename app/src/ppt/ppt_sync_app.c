@@ -11,7 +11,8 @@
 #include <rtl_enh_tim.h>
 #include "power_manager_unit_platform.h"
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
-
+#undef DBG_DIRECT
+#define DBG_DIRECT LOG_DBG
 /*============================================================================*
  *                              Variables
  *============================================================================*/
@@ -142,13 +143,16 @@ bool ppt_pair(void)
 bool ppt_reconnect(void)
 {
     DBG_DIRECT("ppt_reconnect");
-    sync_err_code_t ret = sync_nvm_get_bond_info(&ppt_sync_app.bond_info);
+    // block os waiting one' second!!!
+    // sync_err_code_t ret = sync_nvm_get_bond_info(&ppt_sync_app.bond_info);
 
-    if (ret != SYNC_ERR_CODE_SUCCESS)
-    {
-        DBG_DIRECT("ppt_reconnect: get bond info fail, error code %d", ret);
-        return false;
-    }
+    // if (ret != SYNC_ERR_CODE_SUCCESS)
+    // {
+    //     DBG_DIRECT("ppt_reconnect: get bond info fail, error code %d", ret);
+    //     return false;
+    // }
+    int ret=0;
+    if (ppt_sync_app.bond_info.acc.addr == 0) return false;
     ret = sync_connect(&ppt_sync_app.bond_info);
     if (ret != SYNC_ERR_CODE_SUCCESS)
     {

@@ -1,0 +1,5 @@
+target_sources( app PRIVATE tdfu_prv.c)
+target_sources( app PRIVATE tdfu.c)
+target_sources( app PRIVATE tdfu_usb.c)
+target_sources( app PRIVATE dfu_common.c)
+zephyr_include_directories(./)

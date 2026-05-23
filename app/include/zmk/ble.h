@@ -17,7 +17,7 @@
 #define ZMK_BLE_PROFILE_COUNT (CONFIG_BT_MAX_PAIRED - CONFIG_ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS)
 #define ZMK_SPLIT_BLE_PERIPHERAL_COUNT CONFIG_ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
 #else
-#define ZMK_BLE_PROFILE_COUNT CONFIG_BT_MAX_PAIRED
+#define ZMK_BLE_PROFILE_COUNT 3//CONFIG_BT_MAX_PAIRED
 #endif
 
 void zmk_ble_clear_bonds(void);
@@ -42,3 +42,11 @@ int zmk_ble_deinit(void);
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 int zmk_ble_put_peripheral_addr(const bt_addr_le_t *addr);
 #endif /* IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL) */
+
+
+
+int zmk_ble_active_profile_btid(void);
+int zmk_ble_prof_pair(uint8_t index);
+void zmk_ble_reconn(void);
+bool zmk_ble_profile_is_connected(uint8_t index);
+void set_force_sleep(bool enable);
