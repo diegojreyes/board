@@ -1,0 +1,7 @@
+config SHIELD_KEYCHRON_V2_ULTRA_ANSI
+    def_bool $(shields_list_contains,keychron_v2_ultra_ansi)
+    select SHIELD_KEYCHRON_V1MAX
+    select KEYCHRON_RGB_ENABLE
+    select SNAP_CLICK_ENABLE
+    select RETAIL_DEMO_ENABLE
+    select ADAPATIVE_NKRO

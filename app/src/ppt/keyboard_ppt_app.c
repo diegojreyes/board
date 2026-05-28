@@ -223,7 +223,7 @@ static void ppt_app_receive_msg_cb(uint8_t *p_data, uint16_t len, sync_receive_i
                 back_nkro =0;
             }
 #else
-                // zmk_usb_hid_set_protocol((ppt_usb_state &0x01)==0);
+            // zmk_usb_hid_set_protocol((ppt_usb_state &0x01)==0);
 #endif
         }
     } else if (p_data[0] == 0x50) // SYNC_OPCODE_RAW_HID_SET_RPT = 0x50

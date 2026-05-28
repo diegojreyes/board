@@ -440,10 +440,10 @@ static int kscan_matrix_read(const struct device *dev) {
     volatile uint32_t port;
     uint32_t key;
     key = irq_lock();
-#if CONFIG_SHIELD_KEYCHRON_V2ULTRA_ANSI
+#if CONFIG_SHIELD_KEYCHRON_V2_ULTRA_ANSI
     GPIOA->GPIO_DDR |= 0xa015;
     GPIOA->GPIO_DR &= ~0xa015;
-#elif CONFIG_SHIELD_KEYCHRON_V0ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_V0_ULTRA_ANSI
     GPIOB->GPIO_DDR |= 0x10001f;
     GPIOB->GPIO_DR &= ~0x10001f;
 #elif CONFIG_SHIELD_KEYCHRON_Z270_ANSI
@@ -464,26 +464,26 @@ static int kscan_matrix_read(const struct device *dev) {
         key = irq_lock();
 
         out_gpio->GPIOx->GPIO_DR |= BIT(out_gpio->spec.pin); // set 1
-                                                             // note: cols are in one gpio !
-#if CONFIG_SHIELD_KEYCHRON_RS87_ANSI || CONFIG_SHIELD_KEYCHRON_Q3ULTRA_ANSI
+        // note: cols are in one gpio !
+#if CONFIG_SHIELD_KEYCHRON_RS87_ANSI || CONFIG_SHIELD_KEYCHRON_Q3_ULTRA_ANSI
         port = (GPIOB->GPIO_PAD_STATE & 0x7fffffff) | (GPIOA->GPIO_PAD_STATE & (1 << 31));
 #elif CONFIG_SHIELD_KEYCHRON_RS45_ANSI
         port = (GPIOB->GPIO_PAD_STATE & 0x7ffcffff) |
                (GPIOA->GPIO_PAD_STATE & ((1 << 16) | (1 << 17) | (1 << 31)));
-#elif CONFIG_SHIELD_KEYCHRON_V5ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_V5_ULTRA_ANSI
         port = (GPIOB->GPIO_PAD_STATE & 0xfff3ff7f) |
                ((GPIOA->GPIO_PAD_STATE & ((1 << 16) | (1 << 27) | (1 << 28))) >> 9);
-#elif CONFIG_SHIELD_KEYCHRON_Q1ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_Q1_ULTRA_ANSI
         port = (GPIOB->GPIO_PAD_STATE & 0xfffdffff) | (GPIOA->GPIO_PAD_STATE & (1 << 17));
-#elif CONFIG_SHIELD_KEYCHRON_V2ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_V2_ULTRA_ANSI
         port = (GPIOB->GPIO_PAD_STATE & 0xfff3feff) |
                ((GPIOA->GPIO_PAD_STATE & ((1 << 17) | (1 << 27) | (1 << 28))) >> 9);
-#elif (CONFIG_SHIELD_KEYCHRON_QN104_ANSI || CONFIG_SHIELD_KEYCHRON_Q6ULTRA_ANSI ||                 \
-       CONFIG_SHIELD_KEYCHRON_V6ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_V3ULTRA_ANSI ||               \
-       CONFIG_SHIELD_KEYCHRON_V10ULTRA_ANSI)
+#elif (CONFIG_SHIELD_KEYCHRON_QN104_ANSI || CONFIG_SHIELD_KEYCHRON_Q6_ULTRA_ANSI ||                 \
+       CONFIG_SHIELD_KEYCHRON_V6_ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_V3_ULTRA_ANSI ||               \
+       CONFIG_SHIELD_KEYCHRON_V10_ULTRA_ANSI)
         port = (GPIOB->GPIO_PAD_STATE & 0xfff3fe7f) |
                ((GPIOA->GPIO_PAD_STATE & ((1 << 16) | (1 << 17) | (1 << 27) | (1 << 28))) >> 9);
-#elif CONFIG_SHIELD_KEYCHRON_V0ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_V0_ULTRA_ANSI
         port = GPIOA->GPIO_PAD_STATE;
 #elif CONFIG_SHIELD_KEYCHRON_Z270_ANSI
         port = (GPIOB->GPIO_PAD_STATE & 0x7fffffff) | (GPIOA->GPIO_PAD_STATE & (1 << 31));
@@ -492,25 +492,25 @@ static int kscan_matrix_read(const struct device *dev) {
 #endif
         // note:delay for about 2us;
         for (int i = 0; i < 50; i++) {
-#if CONFIG_SHIELD_KEYCHRON_RS87_ANSI || CONFIG_SHIELD_KEYCHRON_Q3ULTRA_ANSI
+#if CONFIG_SHIELD_KEYCHRON_RS87_ANSI || CONFIG_SHIELD_KEYCHRON_Q3_ULTRA_ANSI
             port = (GPIOB->GPIO_PAD_STATE & 0x7fffffff) | (GPIOA->GPIO_PAD_STATE & (1 << 31));
 #elif CONFIG_SHIELD_KEYCHRON_RS45_ANSI
             port = (GPIOB->GPIO_PAD_STATE & 0x7ffcffff) |
                    (GPIOA->GPIO_PAD_STATE & ((1 << 16) | (1 << 17) | (1 << 31)));
-#elif CONFIG_SHIELD_KEYCHRON_V5ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_V5_ULTRA_ANSI
             port = (GPIOB->GPIO_PAD_STATE & 0xfff3ff7f) |
                    ((GPIOA->GPIO_PAD_STATE & ((1 << 16) | (1 << 27) | (1 << 28))) >> 9);
-#elif CONFIG_SHIELD_KEYCHRON_Q1ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_Q1_ULTRA_ANSI
             port = (GPIOB->GPIO_PAD_STATE & 0xfffdffff) | (GPIOA->GPIO_PAD_STATE & (1 << 17));
-#elif CONFIG_SHIELD_KEYCHRON_V2ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_V2_ULTRA_ANSI
             port = (GPIOB->GPIO_PAD_STATE & 0xfff3feff) |
                    ((GPIOA->GPIO_PAD_STATE & ((1 << 17) | (1 << 27) | (1 << 28))) >> 9);
-#elif (CONFIG_SHIELD_KEYCHRON_QN104_ANSI || CONFIG_SHIELD_KEYCHRON_Q6ULTRA_ANSI ||                 \
-       CONFIG_SHIELD_KEYCHRON_V6ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_V3ULTRA_ANSI ||               \
-       CONFIG_SHIELD_KEYCHRON_V10ULTRA_ANSI)
+#elif (CONFIG_SHIELD_KEYCHRON_QN104_ANSI || CONFIG_SHIELD_KEYCHRON_Q6_ULTRA_ANSI ||                 \
+       CONFIG_SHIELD_KEYCHRON_V6_ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_V3_ULTRA_ANSI ||               \
+       CONFIG_SHIELD_KEYCHRON_V10_ULTRA_ANSI)
             port = (GPIOB->GPIO_PAD_STATE & 0xfff3fe7f) |
                    ((GPIOA->GPIO_PAD_STATE & ((1 << 16) | (1 << 17) | (1 << 27) | (1 << 28))) >> 9);
-#elif CONFIG_SHIELD_KEYCHRON_V0ULTRA_ANSI
+#elif CONFIG_SHIELD_KEYCHRON_V0_ULTRA_ANSI
             port = GPIOA->GPIO_PAD_STATE;
 #elif CONFIG_SHIELD_KEYCHRON_Z270_ANSI
             port = (GPIOB->GPIO_PAD_STATE & 0x7fffffff) | (GPIOA->GPIO_PAD_STATE & (1 << 31));
@@ -525,10 +525,10 @@ static int kscan_matrix_read(const struct device *dev) {
             const struct kscan_gpio *in_gpio = &data->inputs.gpios[j];
             const int index = state_index_io(config, in_gpio->index, col);
             int pos = in_gpio->spec.pin;
-#if (CONFIG_SHIELD_KEYCHRON_V5ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_QN104_ANSI ||                   \
-     CONFIG_SHIELD_KEYCHRON_V2ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_Q6ULTRA_ANSI ||                 \
-     CONFIG_SHIELD_KEYCHRON_V6ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_V3ULTRA_ANSI ||                 \
-     CONFIG_SHIELD_KEYCHRON_V10ULTRA_ANSI)
+#if (CONFIG_SHIELD_KEYCHRON_V5_ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_QN104_ANSI ||                   \
+     CONFIG_SHIELD_KEYCHRON_V2_ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_Q6_ULTRA_ANSI ||                 \
+     CONFIG_SHIELD_KEYCHRON_V6_ULTRA_ANSI || CONFIG_SHIELD_KEYCHRON_V3_ULTRA_ANSI ||                 \
+     CONFIG_SHIELD_KEYCHRON_V10_ULTRA_ANSI)
             // fix pin
             if (in_gpio->GPIOx == GPIOA) {
                 pos = in_gpio->spec.pin - 9;
@@ -1027,7 +1027,7 @@ static int kscan_matrix_pm_action(const struct device *dev, enum pm_device_actio
 #if !(defined(CONFIG_COL_595_OUTPUT))
             for (i = config->rows; i < state->pin_cnt; i++) // row output, col input
 #else
-            for (i = 0; i < config->rows; i++) // row input, col output
+            for (i = 0; i < config->rows; i++)              // row input, col output
 #endif
             {
                 uint8_t wakeup_flag = state->pins[i].wakeup_high || state->pins[i].wakeup_low;

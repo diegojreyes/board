@@ -110,7 +110,7 @@
     "keys.h": "c",
     "v2_ultra_rgb_index.h": "c",
     "v2_ultra_rgb.h": "c",
-    "v1_ultra_jp_rgb.h": "c",
+    "v1_ultra_jis_rgb.h": "c",
     "qn104_rgb_index.h": "c",
     "q6_ultra_rgb_index.h": "c",
     "v0_ultra_rgb_index.h": "c",

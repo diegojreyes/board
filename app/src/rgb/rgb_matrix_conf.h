@@ -132,34 +132,6 @@ enum rgb_effects {
 #define MATRIX_ROWS (ZMK_MATRIX_ROWS - 1)
 #define MATRIX_COLS ZMK_MATRIX_COLS
 
-#if CONFIG_SHIELD_KEYCHRON_V1_ULTRA_ANSI
-#include "v1_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V1_ULTRA_ISO
-#include "v1_ultra_iso_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V1_ULTRA_JP
-#include "v1_ultra_jp_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V2_ULTRA_ANSI
-#include "v2_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V3_ULTRA_ANSI
-#include "v3_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V5_ULTRA_ANSI
-#include "v5_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V6_ULTRA_ANSI
-#include "v6_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V10_ULTRA_ANSI
-#include "v10_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_Q1_ULTRA_ANSI
-#include "q1ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_Q3_ULTRA_ANSI
-#include "q3ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_Q6_ULTRA_ANSI
-#include "q6_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_V0_ULTRA_ANSI
-#include "v0_ultra_rgb_index.h"
-#elif CONFIG_SHIELD_KEYCHRON_Z270_ANSI
-#include "z270_ultra_rgb_index.h"
-#else
-#error "none"
-#endif
+#include "rgb_index.h"
 
 #endif

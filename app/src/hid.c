@@ -453,4 +453,8 @@ void zmk_hid_set_mouse_report(uint8_t *payload) {
     memcpy(&mouse_report.body, payload, sizeof(mouse_report.body));
 }
 
+void zmk_hid_set_mouse_report(uint8_t *payload) {
+    memcpy(&mouse_report.body, payload, sizeof(mouse_report.body));
+}
+
 #endif // IS_ENABLED(CONFIG_ZMK_MOUSE)

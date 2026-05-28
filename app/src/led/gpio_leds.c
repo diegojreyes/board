@@ -213,15 +213,9 @@ static void work_handler(struct k_work *work) {
 
                     LOG_ERR("poweron stop");
                     keyboad_led_set_onoff(keyboard_get_led_state().raw);
-#if (!defined(CONFIG_SHIELD_KEYCHRON_RS87_ANSI) &&                                                 \
-     !defined(CONFIG_SHIELD_KEYCHRON_Q1_ULTRA_ANSI) &&                                             \
-     !defined(CONFIG_SHIELD_KEYCHRON_Q3_ULTRA_ANSI) &&                                             \
-     !defined(CONFIG_SHIELD_KEYCHRON_Q6_ULTRA_ANSI) &&                                             \
-     !defined(CONFIG_SHIELD_KEYCHRON_V6_ULTRA_ANSI) &&                                             \
-     !defined(CONFIG_SHIELD_KEYCHRON_V3_ULTRA_ANSI) &&                                             \
-     !defined(CONFIG_SHIELD_KEYCHRON_V5_ULTRA_ANSI) &&                                             \
-     !defined(CONFIG_SHIELD_KEYCHRON_V1_ULTRA_ANSI) &&                                             \
-     !defined(CONFIG_SHIELD_KEYCHRON_V10_ULTRA_ANSI))
+#if (DT_NODE_HAS_STATUS(DT_NODELABEL(led_ble0), okay) ||                                           \
+     DT_NODE_HAS_STATUS(DT_NODELABEL(led_ble), okay) ||                                            \
+     DT_NODE_HAS_STATUS(DT_NODELABEL(led_ppt), okay))
                     if (zmk_endpoints_selected().transport == ZMK_TRANSPORT_BLE) {
                         if (zmk_ble_active_profile_is_connected()) {
                             LOG_ERR("restore led connected");

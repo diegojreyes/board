@@ -1,0 +1,9 @@
+config SHIELD_KEYCHRON_V1_ULTRA_ISO
+    def_bool $(shields_list_contains,keychron_v1_ultra_iso)
+    select SHIELD_KEYCHRON_V1MAX
+    select KEYCHRON_RGB_ENABLE
+    select SNAP_CLICK_ENABLE
+    select RETAIL_DEMO_ENABLE
+    select FAST_KSCAN
+    select ADD_PPT_REPORT_RATE
+    select ADAPATIVE_NKRO

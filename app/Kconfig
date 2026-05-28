@@ -26,16 +26,16 @@ config USB_DEVICE_MANUFACTURER
     default "ZMK Project"
 
 config BT_DIS_PNP_VID
-    default 0x1D50
+    default USB_DEVICE_VID
 
 config BT_DIS_PNP_PID
-    default 0x615E
+    default USB_DEVICE_PID
 
 config BT_DIS_MODEL
     default ZMK_KEYBOARD_NAME
 
 config BT_DIS_MANUF
-    default "ZMK Project"
+    default USB_DEVICE_MANUFACTURER
 
 # Hardware specific overrides
 

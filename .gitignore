@@ -9,3 +9,8 @@
 __pycache__
 .python-version
 .venv
+*Zone.Identifier
+/app/pixel_a
+/app/pixel_b
+*.tar.gz
+

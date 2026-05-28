@@ -143,7 +143,9 @@ int zmk_endpoints_toggle_transport(void) {
     return zmk_endpoints_select_transport(new_transport);
 }
 
-struct zmk_endpoint_instance zmk_endpoints_selected(void) { return current_instance; }
+struct zmk_endpoint_instance zmk_endpoints_selected(void) {
+    return current_instance;
+}
 #if CONFIG_ADAPATIVE_NKRO
 
 extern struct zmk_adapative_nkro adapative_nkro;

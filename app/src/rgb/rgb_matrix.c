@@ -3,41 +3,11 @@
 #include <zephyr/device.h>
 #include <zephyr/init.h>
 #include "rgb_matrix.h"
-
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
 #include <zephyr/logging/log.h>
-
-#ifdef CONFIG_SHIELD_KEYCHRON_V1_ULTRA_ANSI
-#include "v1_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V1_ULTRA_ISO
-#include "v1_ultra_iso_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V1_ULTRA_JP
-#include "v1_ultra_jp_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V5_ULTRA_ANSI
-#include "v5_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V6_ULTRA_ANSI
-#include "v6_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V2_ULTRA_ANSI
-#include "v2_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V3_ULTRA_ANSI
-#include "v3_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V10_ULTRA_ANSI
-#include "v10_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_Q1_ULTRA_ANSI
-#include "q1ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_Q3_ULTRA_ANSI
-#include "q3ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_Q6_ULTRA_ANSI
-#include "q6_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_V0_ULTRA_ANSI
-#include "v0_ultra_rgb.h"
-#elif CONFIG_SHIELD_KEYCHRON_Z270_ANSI
-#include "z270_ultra_rgb.h"
-#else
-#error "no rgb set"
-#endif
+#include "rgb_matrix_config.h"
 #ifdef CONFIG_ZMK_SSD1306
 #include <zmk/disp.h>
 #endif
@@ -162,14 +132,8 @@ void process_rgb_matrix(uint8_t row, uint8_t col, bool pressed) {
     uint8_t led_count = 0;
 
     if ((row >= MATRIX_ROWS)
-#if CONFIG_SHIELD_KEYCHRON_V1_ULTRA_ANSI
-        || (row == 0 && col == 15)
-#elif CONFIG_SHIELD_KEYCHRON_V3_ULTRA_ANSI
-        || (row == 0 && col == 13)
-#elif CONFIG_SHIELD_KEYCHRON_V5_ULTRA_ANSI
-        || (row == 0 && col == 18)
-#elif CONFIG_SHIELD_KEYCHRON_V6_ULTRA_ANSI
-        || (row == 0 && col == 13)
+#ifdef ENCODER_SKIP_MASK
+        || (encoder_skip_mask[row] & (1u << col))
 #endif // skip encoder key press
     )
         return;

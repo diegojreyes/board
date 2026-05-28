@@ -99,8 +99,13 @@ static int zmk_battery_update(const struct device *battery) {
                 state_of_charge.val1 = 99;
         }
     } else {
+#if defined(RGB_MATRIX_ENABLE)
         if ((state_of_charge.val1 < 90) && (voltage > BAT_VOLTAGE_LOW) &&
-            zmk_rgb_matrix_is_enabled()) {
+            zmk_rgb_matrix_is_enabled())
+#else
+        if ((state_of_charge.val1 < 90) && (voltage > BAT_VOLTAGE_LOW))
+#endif
+        {
             if (state_of_charge.val1 > 80)
                 state_of_charge.val1 = lithium_ion_mv_to_pct_rtk(voltage * 18 / 100 + 10);
             else

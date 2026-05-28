@@ -326,7 +326,10 @@ void poll_timer_expiry_function(struct k_timer *timer) {
         k_timer_start(&poll_timer, POLL_PERIOD, K_FOREVER);
 }
 uint8_t get_report_rate(void);
-// static bool nkro_backup;
+#if !(CONFIG_ADAPATIVE_NKRO)
+static bool nkro_backup;
+#endif
+
 void ppt_macro_start(void) {
     if (zmk_endpoints_selected().transport == ZMK_TRANSPORT_PPT) {
 

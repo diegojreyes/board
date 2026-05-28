@@ -1789,8 +1789,8 @@ enum {
     FACTORY_TEST_CMD_GET_HALL_WAKE_STATE,
     FACTORY_TEST_CMD_IO_TEST_START, // 0x0b no param,return :result ,port0 ... port10 skip
                                     // pins(bit=1 skip)
-    FACTORY_TEST_CMD_IO_TEST_SET,   // 0X0c ,byte1=port(0-10),byte2=value(bit0-bit7=0/1)
-    FACTORY_TEST_CMD_IO_TEST_READ,  // 0X0d ,result ,port(0-10),value(bit0-bit7=0/1)
+    FACTORY_TEST_CMD_IO_TEST_SET,  // 0X0c ,byte1=port(0-10),byte2=value(bit0-bit7=0/1)
+    FACTORY_TEST_CMD_IO_TEST_READ, // 0X0d ,result ,port(0-10),value(bit0-bit7=0/1)
 };
 enum {
     OS_SWITCH = 0x01,
@@ -1815,7 +1815,9 @@ void io_test_start(void) {
     void swd_pin_disable(void);
     void stop_battery_timer(void);
     swd_pin_disable();
+#if defined(RGB_MATRIX_ENABLE)
     zmk_rgb_matrix_off();
+#endif
     stop_battery_timer();
     // AON_QDEC_Cmd(AON_QDEC, AON_QDEC_AXIS_X, DISABLE);
     LOG_ERR("io_test_start");
