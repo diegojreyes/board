@@ -22,14 +22,14 @@ config ZMK_BLE
 config ZMK_USB
     default y
 
-config ZMK_LEDS_GPIO 
+config ZMK_LEDS_GPIO
     bool "enable gpio leds"
     default y
     select LED
 
 config ZMK_LEDS_PWM
     bool "enable pwm leds"
-    default n 
+    default n
     select PWM
     select LED_PWM
 

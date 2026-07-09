@@ -60,12 +60,10 @@ enum zmk_activity_state zmk_activity_get_state() { return activity_state; }
 int activity_event_listener(const zmk_event_t *eh) {
     activity_last_uptime = k_uptime_get();
     struct zmk_position_state_changed *pos_state;
-    
+
     pos_state = as_zmk_position_state_changed(eh);
-    if(pos_state)
-    {
-        if(pos_state->state)
-        {
+    if (pos_state) {
+        if (pos_state->state) {
             void bat_low_check(void);
             bat_low_check();
         }
@@ -77,7 +75,8 @@ void activity_work_handler(struct k_work *work) {
     int32_t current = k_uptime_get();
     int32_t inactive_time = current - activity_last_uptime;
 #if IS_ENABLED(CONFIG_ZMK_SLEEP)
-    if ((inactive_time > MAX_SLEEP_MS || activity_state == ZMK_ACTIVITY_SLEEP) && !is_usb_power_present() && all_keys_up()) {
+    if ((inactive_time > MAX_SLEEP_MS || activity_state == ZMK_ACTIVITY_SLEEP) &&
+        !is_usb_power_present() && all_keys_up()) {
         // Put devices in suspend power mode before sleeping
         void leds_turnoff(void);
         leds_turnoff();

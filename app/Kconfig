@@ -575,7 +575,7 @@ endchoice
 config ZMK_LED_INIT_PRIORITY
     int "LED Init Priority"
     default 40
-    
+
 config ZMK_NRF_24G_ECB
     bool "enabel nordic 24g ecb"
     select NRFX_TIMER2
@@ -583,7 +583,7 @@ config ZMK_NRF_24G_ECB
 
 if ZMK_NRF_24G_ECB
 config ESB_PTX_APP_LOG_LEVEL
-    int 
+    int
     default 4
 config ESB_DYNAMIC_INTERRUPTS
     bool "enable dynamic interrupt"
@@ -591,21 +591,21 @@ config ESB_DYNAMIC_INTERRUPTS
 config ESB_MAX_PAYLOAD_LENGTH
     int "max payload length"
     default 40
-endif 
+endif
 
 
 
 if ZMK_NRF_24G_ECB
  config ZMK_NRF_24G
-    bool 
+    bool
     default y
-endif 
+endif
 
 config ZMK_LAUNCHER
     bool "enable via dynamic setting"
     default y
 
-    
+
 module = ZMK
 module-str = zmk
 source "subsys/logging/Kconfig.template.log_config"

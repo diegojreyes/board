@@ -109,12 +109,11 @@ static inline int press_tap_dance_behavior(struct active_tap_dance *tap_dance, i
         .position = tap_dance->position,
         .timestamp = timestamp,
     };
-    LOG_DBG("binding:%s,p1:%d",binding.behavior_dev,binding.param1);
-    if((tap_dance->param1 &0x520000) ==0x520000) 
-    {
-        uint8_t layer=tap_dance->param1 &0x1f;
-        LOG_DBG("to layer:%d",layer);
-        binding.param1= layer;
+    LOG_DBG("binding:%s,p1:%d", binding.behavior_dev, binding.param1);
+    if ((tap_dance->param1 & 0x520000) == 0x520000) {
+        uint8_t layer = tap_dance->param1 & 0x1f;
+        LOG_DBG("to layer:%d", layer);
+        binding.param1 = layer;
     }
     return behavior_keymap_binding_pressed(&binding, event);
 }
@@ -126,11 +125,10 @@ static inline int release_tap_dance_behavior(struct active_tap_dance *tap_dance,
         .position = tap_dance->position,
         .timestamp = timestamp,
     };
-    if((tap_dance->param1 &0x520000) ==0x520000) 
-    {
-        uint8_t layer=tap_dance->param1 &0x1f;
-        LOG_DBG("to layer:%d",layer);
-        binding.param1= layer;
+    if ((tap_dance->param1 & 0x520000) == 0x520000) {
+        uint8_t layer = tap_dance->param1 & 0x1f;
+        LOG_DBG("to layer:%d", layer);
+        binding.param1 = layer;
     }
     clear_tap_dance(tap_dance);
     return behavior_keymap_binding_released(&binding, event);
@@ -150,9 +148,10 @@ static int on_tap_dance_binding_pressed(struct zmk_behavior_binding *binding,
         LOG_DBG("%d created new tap dance", event.position);
     }
     tap_dance->is_pressed = true;
-    LOG_DBG("binding:%s,p1:%d,counter:%d",binding->behavior_dev,binding->param1, tap_dance->counter);
-    if(memcmp(binding->behavior_dev,"TAPD_LAYER",10)==0 )
-        tap_dance->param1 = binding->param1|0x520000;
+    LOG_DBG("binding:%s,p1:%d,counter:%d", binding->behavior_dev, binding->param1,
+            tap_dance->counter);
+    if (memcmp(binding->behavior_dev, "TAPD_LAYER", 10) == 0)
+        tap_dance->param1 = binding->param1 | 0x520000;
 
     LOG_DBG("%d tap dance pressed", event.position);
     stop_timer(tap_dance);
@@ -257,7 +256,7 @@ static int behavior_tap_dance_init(const struct device *dev) {
 #define _TRANSFORM_ENTRY(idx, node) ZMK_KEYMAP_EXTRACT_BINDING(idx, node)
 
 #define TRANSFORMED_BINDINGS(node)                                                                 \
-    { LISTIFY(DT_INST_PROP_LEN(node, bindings), _TRANSFORM_ENTRY, (, ), DT_DRV_INST(node)) }
+    {LISTIFY(DT_INST_PROP_LEN(node, bindings), _TRANSFORM_ENTRY, (, ), DT_DRV_INST(node))}
 
 #define KP_INST(n)                                                                                 \
     static struct zmk_behavior_binding                                                             \

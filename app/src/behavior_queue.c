@@ -29,7 +29,7 @@ static void behavior_queue_process_next(struct k_work *work) {
 
     while (k_msgq_get(&zmk_behavior_queue_msgq, &item, K_NO_WAIT) == 0) {
         LOG_DBG("Invoking %s: 0x%02x 0x%02x,%d", item.binding.behavior_dev, item.binding.param1,
-                item.binding.param2,item.press);
+                item.binding.param2, item.press);
 
         struct zmk_behavior_binding_event event = {.position = item.position,
                                                    .timestamp = k_uptime_get()};
@@ -47,13 +47,10 @@ static void behavior_queue_process_next(struct k_work *work) {
             break;
         }
     }
-    if(k_msgq_num_used_get(&zmk_behavior_queue_msgq)>0)
-    {
-        macro_running =1;
-    }
-    else 
-    {
-        macro_running =0;
+    if (k_msgq_num_used_get(&zmk_behavior_queue_msgq) > 0) {
+        macro_running = 1;
+    } else {
+        macro_running = 0;
     }
 }
 
@@ -73,7 +70,8 @@ int zmk_behavior_queue_add(uint32_t position, const struct zmk_behavior_binding 
 
     return 0;
 }
-uint8_t behavior_queue_is_full(void)
-{
-    return (k_msgq_num_used_get(&zmk_behavior_queue_msgq)>(CONFIG_ZMK_BEHAVIORS_QUEUE_SIZE-32))?1:0;
+uint8_t behavior_queue_is_full(void) {
+    return (k_msgq_num_used_get(&zmk_behavior_queue_msgq) > (CONFIG_ZMK_BEHAVIORS_QUEUE_SIZE - 32))
+               ? 1
+               : 0;
 }

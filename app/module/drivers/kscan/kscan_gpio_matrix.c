@@ -19,7 +19,7 @@
 #include <zephyr/sys/reboot.h>
 #include <hal/nrf_power.h>
 
-LOG_MODULE_DECLARE(zmk, 4);//CONFIG_ZMK_LOG_LEVEL);
+LOG_MODULE_DECLARE(zmk, 4); // CONFIG_ZMK_LOG_LEVEL);
 
 #define DT_DRV_COMPAT zmk_kscan_gpio_matrix
 
@@ -96,7 +96,7 @@ struct kscan_matrix_config {
     int32_t poll_period_ms;
     enum kscan_diode_direction diode_direction;
 };
-//add ----
+// add ----
 static uint8_t slow_poll;
 struct user_debounce_config {
     struct zmk_debounce_config debounce_config;
@@ -105,29 +105,29 @@ struct user_debounce_config {
 
 static struct user_debounce_config user_debounce;
 static struct user_debounce_config defualt_debouce;
-void user_set_debounce(uint32_t scan_period_ms,uint32_t debounce_press_ms,uint32_t debounce_release_ms)
-{
-    if(scan_period_ms ==0 || debounce_press_ms==0 || debounce_release_ms==0)
-    {
-        user_debounce.debounce_scan_period_ms =defualt_debouce.debounce_scan_period_ms;
-        user_debounce.debounce_config.debounce_press_ms = defualt_debouce.debounce_config.debounce_press_ms;
-        user_debounce.debounce_config.debounce_release_ms =defualt_debouce.debounce_config.debounce_release_ms;
-    }
-    else
-    {
-        user_debounce.debounce_scan_period_ms =scan_period_ms;
+void user_set_debounce(uint32_t scan_period_ms, uint32_t debounce_press_ms,
+                       uint32_t debounce_release_ms) {
+    if (scan_period_ms == 0 || debounce_press_ms == 0 || debounce_release_ms == 0) {
+        user_debounce.debounce_scan_period_ms = defualt_debouce.debounce_scan_period_ms;
+        user_debounce.debounce_config.debounce_press_ms =
+            defualt_debouce.debounce_config.debounce_press_ms;
+        user_debounce.debounce_config.debounce_release_ms =
+            defualt_debouce.debounce_config.debounce_release_ms;
+    } else {
+        user_debounce.debounce_scan_period_ms = scan_period_ms;
         user_debounce.debounce_config.debounce_press_ms = debounce_press_ms;
         user_debounce.debounce_config.debounce_release_ms = debounce_release_ms;
-        LOG_DBG("set debounce,scan:%d,press:%d,release:%d",scan_period_ms,debounce_press_ms,debounce_release_ms);
+        LOG_DBG("set debounce,scan:%d,press:%d,release:%d", scan_period_ms, debounce_press_ms,
+                debounce_release_ms);
     }
 }
 
-
-//esc key =row3,col1
-struct gpio_dt_spec esc_gpio = { //row3,input
+// esc key =row3,col1
+struct gpio_dt_spec esc_gpio = {
+    // row3,input
     .pin = 4,
     .port = DEVICE_DT_GET(DT_NODELABEL(gpio1)),
-    .dt_flags = GPIO_ACTIVE_HIGH| GPIO_PULL_DOWN,
+    .dt_flags = GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN,
 };
 
 //---
@@ -173,7 +173,7 @@ static int kscan_matrix_set_esc_check_outputs(const struct device *dev) {
     for (int i = 0; i < config->outputs.len; i++) {
         const struct gpio_dt_spec *gpio = &config->outputs.gpios[i].spec;
         gpio_pin_configure_dt(gpio, GPIO_OUTPUT);
-        int err = gpio_pin_set_dt(gpio, (gpio->pin == 1) ? 1 : 0); //col1,ouput=1
+        int err = gpio_pin_set_dt(gpio, (gpio->pin == 1) ? 1 : 0); // col1,ouput=1
         if (err) {
             LOG_ERR("Failed to set output %i to %i: %i", i, gpio->pin, err);
             return err;
@@ -245,16 +245,14 @@ static void kscan_matrix_irq_callback_handler(const struct device *port, struct 
 static void kscan_matrix_read_continue(const struct device *dev) {
     // const struct kscan_matrix_config *config = dev->config;
     struct kscan_matrix_data *data = dev->data;
-    if(slow_poll)
-    {
-        if(user_debounce.debounce_scan_period_ms<5)
+    if (slow_poll) {
+        if (user_debounce.debounce_scan_period_ms < 5)
             data->scan_time += 10;
         else
-            data->scan_time += user_debounce.debounce_scan_period_ms*2;
-    }
-    else
-        data->scan_time += user_debounce.debounce_scan_period_ms; //config->debounce_scan_period_ms;
-
+            data->scan_time += user_debounce.debounce_scan_period_ms * 2;
+    } else
+        data->scan_time +=
+            user_debounce.debounce_scan_period_ms; // config->debounce_scan_period_ms;
 
     k_work_reschedule(&data->work, K_TIMEOUT_ABS_MS(data->scan_time));
 }
@@ -262,17 +260,17 @@ static inline bool check_more_than_one(uint32_t rowdata) {
     rowdata &= rowdata - 1;
     return rowdata;
 }
-static inline bool has_ghost_in_row(const struct device *dev,uint8_t row, uint32_t rowdata) {
+static inline bool has_ghost_in_row(const struct device *dev, uint8_t row, uint32_t rowdata) {
     struct kscan_matrix_data *data = dev->data;
     const struct kscan_matrix_config *config = dev->config;
     if ((check_more_than_one(rowdata)) == 0) {
         return false;
     }
     for (uint8_t i = 0; i < config->cols; i++) {
-        if(data->rows[i])
-            LOG_DBG("col:%d,data:%04x",i,data->rows[i]);
+        if (data->rows[i])
+            LOG_DBG("col:%d,data:%04x", i, data->rows[i]);
         if (i != row && check_more_than_one(data->rows[i] & rowdata)) {
-            LOG_DBG("ghost ,col:%d,row:%d,data:%04x",i,row,rowdata);
+            LOG_DBG("ghost ,col:%d,row:%d,data:%04x", i, row, rowdata);
             return true;
         }
     }
@@ -302,7 +300,7 @@ static int kscan_matrix_read(const struct device *dev) {
     for (int i = 0; i < config->outputs.len; i++) {
         const struct kscan_gpio *out_gpio = &config->outputs.gpios[i];
         gpio_pin_configure_dt(&out_gpio->spec, GPIO_OUTPUT);
-        int err = gpio_pin_set_dt(&out_gpio->spec,1);
+        int err = gpio_pin_set_dt(&out_gpio->spec, 1);
         if (err) {
             LOG_ERR("Failed to set output %i active: %i", out_gpio->index, err);
             return err;
@@ -312,20 +310,20 @@ static int kscan_matrix_read(const struct device *dev) {
         k_busy_wait(CONFIG_ZMK_KSCAN_MATRIX_WAIT_BEFORE_INPUTS);
 #endif
         struct kscan_gpio_port_state state = {0};
-        uint32_t row =0;
+        uint32_t row = 0;
         for (int j = 0; j < data->inputs.len; j++) {
             const struct kscan_gpio *in_gpio = &data->inputs.gpios[j];
-            
+
             const int index = state_index_io(config, in_gpio->index, out_gpio->index);
- 
-          
+
             const int active = kscan_gpio_pin_get(in_gpio, &state);
             if (active < 0) {
                 LOG_ERR("Failed to read port %s: %i", in_gpio->spec.port->name, active);
                 return active;
             }
-            row |= (active<<j);
-            zmk_debounce_update(&data->matrix_state[index], active, user_debounce.debounce_scan_period_ms,
+            row |= (active << j);
+            zmk_debounce_update(&data->matrix_state[index], active,
+                                user_debounce.debounce_scan_period_ms,
                                 &user_debounce.debounce_config);
         }
         data->rows[i] = row;
@@ -347,7 +345,7 @@ static int kscan_matrix_read(const struct device *dev) {
 
     // Process the new state.
     bool continue_scan = false;
-    bool changed=false;
+    bool changed = false;
     for (int r = 0; r < config->rows; r++) {
         for (int c = 0; c < config->cols; c++) {
             const int index = state_index_rc(config, r, c);
@@ -356,7 +354,7 @@ static int kscan_matrix_read(const struct device *dev) {
             if (zmk_debounce_get_changed(state)) {
 
                 const bool pressed = zmk_debounce_is_pressed(state);
-                if(has_ghost_in_row(dev,c,data->rows[c]) && pressed)
+                if (has_ghost_in_row(dev, c, data->rows[c]) && pressed)
                     continue;
 
                 LOG_DBG("Sending event at %i,%i state %s", r, c, pressed ? "on" : "off");
@@ -364,7 +362,8 @@ static int kscan_matrix_read(const struct device *dev) {
             }
 
             continue_scan = continue_scan || zmk_debounce_is_active(state);
-            if(state->counter) changed =true;
+            if (state->counter)
+                changed = true;
         }
     }
     slow_poll = !changed;
@@ -501,13 +500,14 @@ static int kscan_matrix_init(const struct device *dev) {
     struct kscan_matrix_data *data = dev->data;
     const struct kscan_matrix_config *config = dev->config;
 
-    defualt_debouce.debounce_scan_period_ms =config->debounce_scan_period_ms;
-    defualt_debouce.debounce_config.debounce_press_ms =config->debounce_config.debounce_press_ms;
-    defualt_debouce.debounce_config.debounce_release_ms =config->debounce_config.debounce_release_ms;
+    defualt_debouce.debounce_scan_period_ms = config->debounce_scan_period_ms;
+    defualt_debouce.debounce_config.debounce_press_ms = config->debounce_config.debounce_press_ms;
+    defualt_debouce.debounce_config.debounce_release_ms =
+        config->debounce_config.debounce_release_ms;
 
-    user_debounce.debounce_scan_period_ms =config->debounce_scan_period_ms;
-    user_debounce.debounce_config.debounce_press_ms =config->debounce_config.debounce_press_ms;
-    user_debounce.debounce_config.debounce_release_ms =config->debounce_config.debounce_release_ms;
+    user_debounce.debounce_scan_period_ms = config->debounce_scan_period_ms;
+    user_debounce.debounce_config.debounce_press_ms = config->debounce_config.debounce_press_ms;
+    user_debounce.debounce_config.debounce_release_ms = config->debounce_config.debounce_release_ms;
 
     data->dev = dev;
 
@@ -519,14 +519,13 @@ static int kscan_matrix_init(const struct device *dev) {
     // add esc key check
     kscan_matrix_set_esc_check_outputs(dev);
     k_msleep(2);
-    
+
     if (gpio_pin_get_dt(&esc_gpio) == 1) {
         LOG_ERR("esc_press_when_poweron");
         uint8_t type = nrf_power_gpregret_get(NRF_POWER);
         LOG_ERR("reboot type:%02x", type);
-        if(type == 0)
-        {
-            sys_reboot(0x4e);//only serial!
+        if (type == 0) {
+            sys_reboot(0x4e); // only serial!
         }
     }
 
@@ -589,27 +588,22 @@ static const struct kscan_driver_api kscan_matrix_api = {
 
 DT_INST_FOREACH_STATUS_OKAY(KSCAN_MATRIX_INIT);
 #define MATRIX_ROWS DT_PROP_LEN(DT_NODELABEL(kscan0), row_gpios)
-uint32_t matrix_get_row(uint8_t row)
-{
-    uint32_t col_values=0;
-    uint32_t cols = sizeof(matrix_rows)/4;
-    uint8_t read_row = (row -1 +MATRIX_ROWS) % MATRIX_ROWS;
-    for(int i=0;i<cols;i++)
-    {
-        col_values |= ((matrix_rows[i] & (1<<read_row))?1:0)<<i;
+uint32_t matrix_get_row(uint8_t row) {
+    uint32_t col_values = 0;
+    uint32_t cols = sizeof(matrix_rows) / 4;
+    uint8_t read_row = (row - 1 + MATRIX_ROWS) % MATRIX_ROWS;
+    for (int i = 0; i < cols; i++) {
+        col_values |= ((matrix_rows[i] & (1 << read_row)) ? 1 : 0) << i;
     }
     return col_values;
 }
 
-bool all_keys_up(void)
-{
-    bool all_up =true;
-    int32_t cols = sizeof(matrix_rows)/4;
-    for(int i=0;i<cols;i++)
-    {
-        if(matrix_rows[i]) 
-        {
-            all_up =false;
+bool all_keys_up(void) {
+    bool all_up = true;
+    int32_t cols = sizeof(matrix_rows) / 4;
+    for (int i = 0; i < cols; i++) {
+        if (matrix_rows[i]) {
+            all_up = false;
             break;
         }
     }

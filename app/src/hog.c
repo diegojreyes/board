@@ -79,7 +79,7 @@ static ssize_t read_hids_info(struct bt_conn *conn, const struct bt_gatt_attr *a
 static ssize_t read_hids_report_ref(struct bt_conn *conn, const struct bt_gatt_attr *attr,
                                     void *buf, uint16_t len, uint16_t offset) {
     uint8_t *p_data = attr->user_data;
-    LOG_DBG("report ref,id:%d,type:%d",p_data[0],p_data[1]);
+    LOG_DBG("report ref,id:%d,type:%d", p_data[0], p_data[1]);
     return bt_gatt_attr_read(conn, attr, buf, len, offset, attr->user_data,
                              sizeof(struct hids_report));
 }
@@ -104,12 +104,11 @@ static ssize_t read_hids_consumer_input_report(struct bt_conn *conn,
     return bt_gatt_attr_read(conn, attr, buf, len, offset, report_body,
                              sizeof(struct zmk_hid_consumer_report_body));
 }
-static ssize_t read_hids_mouse_input_report(struct bt_conn *conn,
-                                               const struct bt_gatt_attr *attr, void *buf,
-                                               uint16_t len, uint16_t offset) {
-    report_mouse_t report =mousekey_get_report();
+static ssize_t read_hids_mouse_input_report(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                                            void *buf, uint16_t len, uint16_t offset) {
+    report_mouse_t report = mousekey_get_report();
     return bt_gatt_attr_read(conn, attr, buf, len, offset, &report.buttons,
-                             sizeof(report_mouse_t)-1);
+                             sizeof(report_mouse_t) - 1);
 }
 // static ssize_t write_proto_mode(struct bt_conn *conn,
 //                                 const struct bt_gatt_attr *attr,
@@ -127,7 +126,7 @@ static void input_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value) {
 void keyboad_led_set_onoff(uint8_t led_state);
 
 static ssize_t hids_outp_rep_write(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-                                const void *buf, uint16_t len, uint16_t offset, uint8_t flags) {
+                                   const void *buf, uint16_t len, uint16_t offset, uint8_t flags) {
     uint8_t *value = attr->user_data;
     LOG_DBG("hids_outp_rep_write");
     if (offset + len > sizeof(hids_outp_rep)) {
@@ -136,14 +135,13 @@ static ssize_t hids_outp_rep_write(struct bt_conn *conn, const struct bt_gatt_at
 
     memcpy(value + offset, buf, len);
     LOG_HEXDUMP_INF(buf, len, "ble  report");
-    const uint8_t *report =buf;
+    const uint8_t *report = buf;
     // if(report[0]==ZMK_HID_REPORT_ID_KEYBOARD)
     {
         keyboad_led_set_onoff(report[0]);
     }
 
     return len;
-
 }
 static ssize_t write_ctrl_point(struct bt_conn *conn, const struct bt_gatt_attr *attr,
                                 const void *buf, uint16_t len, uint16_t offset, uint8_t flags) {
@@ -178,25 +176,23 @@ BT_GATT_SERVICE_DEFINE(
     BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
     BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
                        NULL, &consumer_input),
-    //mouse reprot
+    // mouse reprot
     BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT, BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
                            BT_GATT_PERM_READ_ENCRYPT, read_hids_mouse_input_report, NULL, NULL),
     BT_GATT_CCC(input_ccc_changed, BT_GATT_PERM_READ_ENCRYPT | BT_GATT_PERM_WRITE_ENCRYPT),
     BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
                        NULL, &mouse_input),
-    //led out
-    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT,BT_GATT_CHRC_READ|BT_GATT_CHRC_WRITE |BT_GATT_CHRC_WRITE_WITHOUT_RESP, 
-                        BT_GATT_PERM_WRITE, NULL, hids_outp_rep_write,hids_outp_rep),
+    // led out
+    BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_REPORT,
+                           BT_GATT_CHRC_READ | BT_GATT_CHRC_WRITE | BT_GATT_CHRC_WRITE_WITHOUT_RESP,
+                           BT_GATT_PERM_WRITE, NULL, hids_outp_rep_write, hids_outp_rep),
     BT_GATT_DESCRIPTOR(BT_UUID_HIDS_REPORT_REF, BT_GATT_PERM_READ_ENCRYPT, read_hids_report_ref,
                        NULL, &output),
-    
+
     BT_GATT_CHARACTERISTIC(BT_UUID_HIDS_CTRL_POINT, BT_GATT_CHRC_WRITE_WITHOUT_RESP,
                            BT_GATT_PERM_WRITE, NULL, write_ctrl_point, &ctrl_point),
 
-    
-
-    
-    );
+);
 
 struct bt_conn *destination_connection() {
     struct bt_conn *conn;
@@ -322,7 +318,7 @@ int zmk_hog_send_consumer_report(struct zmk_hid_consumer_report_body *report) {
     return 0;
 };
 
-K_MSGQ_DEFINE(zmk_hog_mouse_msgq, sizeof(report_mouse_t),10, 4);
+K_MSGQ_DEFINE(zmk_hog_mouse_msgq, sizeof(report_mouse_t), 10, 4);
 
 void send_mouse_report_callback(struct k_work *work) {
     report_mouse_t report;
@@ -336,7 +332,7 @@ void send_mouse_report_callback(struct k_work *work) {
         struct bt_gatt_notify_params notify_params = {
             .attr = &hog_svc.attrs[13],
             .data = &report.buttons,
-            .len = sizeof(report)-1,
+            .len = sizeof(report) - 1,
         };
 
         int err = bt_gatt_notify_cb(conn, &notify_params);
@@ -370,7 +366,6 @@ int zmk_hog_send_mouse_report(report_mouse_t *report) {
 
     return 0;
 };
-
 
 int zmk_hog_init(const struct device *_arg) {
     static const struct k_work_queue_config queue_config = {.name = "HID Over GATT Send Work"};

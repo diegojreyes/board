@@ -179,7 +179,8 @@ int zmk_keymap_apply_position_state(uint8_t source, int layer, uint32_t position
         .timestamp = timestamp,
     };
 
-    LOG_DBG("layer: %d position: %d, binding name: %s,p1:%x,p2:%x", layer, position, binding.behavior_dev,binding.param1,binding.param2);
+    LOG_DBG("layer: %d position: %d, binding name: %s,p1:%x,p2:%x", layer, position,
+            binding.behavior_dev, binding.param1, binding.param2);
 
     behavior = device_get_binding(binding.behavior_dev);
 
@@ -331,7 +332,6 @@ ZMK_SUBSCRIPTION(keymap, zmk_position_state_changed);
 ZMK_SUBSCRIPTION(keymap, zmk_sensor_event);
 #endif /* ZMK_KEYMAP_HAS_SENSORS */
 
-
 void led_recover(void);
 
 static uint8_t fn_exchange_flag_mac;
@@ -341,19 +341,14 @@ static uint8_t fn_exchange;
 #define WIN_LAYER 2
 #define MAC_LAYER 0
 
-static inline uint8_t get_fn_exchange_state(void)
-{
-    return fn_exchange;
-}
-static void save_fn_exchange_state(uint8_t state)
-{
-    fn_exchange =state;
+static inline uint8_t get_fn_exchange_state(void) { return fn_exchange; }
+static void save_fn_exchange_state(uint8_t state) {
+    fn_exchange = state;
 
     settings_save_one("fn_exchange", &fn_exchange, sizeof(fn_exchange));
 }
 int load_immediate_value(const char *name, void *dest, size_t len);
-void fn_exchange_setting_init(void)
-{
+void fn_exchange_setting_init(void) {
 
     LOG_INF("settings init");
     settings_subsys_init();
@@ -368,99 +363,87 @@ void fn_exchange_setting_init(void)
     rc = load_immediate_value("fn_exchange", &fn_exchange, sizeof(fn_exchange));
     if (rc == -ENOENT) {
         fn_exchange = 0;
-        LOG_DBG("fn_exchange:%d,default",fn_exchange);
+        LOG_DBG("fn_exchange:%d,default", fn_exchange);
+    } else if (rc == 0) {
+        LOG_DBG("fn_exchange:%d", fn_exchange);
     }
-    else if(rc ==0)
-    {
-        LOG_DBG("fn_exchange:%d",fn_exchange);
-    }
-
 }
-bool keyboard_os_is_mac(void)
-{
-    return ((_zmk_keymap_layer_state & BIT(MAC_LAYER))  || (_zmk_keymap_layer_state &BIT(MAC_LAYER+1)) || _zmk_keymap_layer_state==MAC_LAYER);
+bool keyboard_os_is_mac(void) {
+    return ((_zmk_keymap_layer_state & BIT(MAC_LAYER)) ||
+            (_zmk_keymap_layer_state & BIT(MAC_LAYER + 1)) || _zmk_keymap_layer_state == MAC_LAYER);
 }
-void f1_f13_fn_exchange_mac(void)
-{
-#if CONFIG_SHIELD_KEYCHRON_B1    
-    struct zmk_behavior_binding  backup_bindings[12];
-#else    
-    struct zmk_behavior_binding  backup_bindings[13];
-#endif     
-    LOG_DBG("cur lay_state:%x",_zmk_keymap_layer_state);
+void f1_f13_fn_exchange_mac(void) {
+#if CONFIG_SHIELD_KEYCHRON_B1
+    struct zmk_behavior_binding backup_bindings[12];
+#else
+    struct zmk_behavior_binding backup_bindings[13];
+#endif
+    LOG_DBG("cur lay_state:%x", _zmk_keymap_layer_state);
 
     {
         LOG_DBG("layer:mac");
-        memcpy(backup_bindings,&zmk_keymap[MAC_LAYER][1],sizeof(backup_bindings));
-        memcpy(&zmk_keymap[MAC_LAYER][1],&zmk_keymap[MAC_LAYER+1][1],sizeof(backup_bindings));
-        memcpy(&zmk_keymap[MAC_LAYER+1][1],backup_bindings,sizeof(backup_bindings));
+        memcpy(backup_bindings, &zmk_keymap[MAC_LAYER][1], sizeof(backup_bindings));
+        memcpy(&zmk_keymap[MAC_LAYER][1], &zmk_keymap[MAC_LAYER + 1][1], sizeof(backup_bindings));
+        memcpy(&zmk_keymap[MAC_LAYER + 1][1], backup_bindings, sizeof(backup_bindings));
     }
-  
 }
-void f1_f13_fn_exchange_win(void)
-{
+void f1_f13_fn_exchange_win(void) {
 #if CONFIG_SHIELD_KEYCHRON_B1
-    struct zmk_behavior_binding  backup_bindings[12];
-#else   
-    struct zmk_behavior_binding  backup_bindings[13];
-#endif     
-    LOG_DBG("cur lay_state:%x",_zmk_keymap_layer_state);
+    struct zmk_behavior_binding backup_bindings[12];
+#else
+    struct zmk_behavior_binding backup_bindings[13];
+#endif
+    LOG_DBG("cur lay_state:%x", _zmk_keymap_layer_state);
 
     {
         LOG_DBG("layer:win");
-        memcpy(backup_bindings,&zmk_keymap[WIN_LAYER][1],sizeof(backup_bindings));
-        memcpy(&zmk_keymap[WIN_LAYER][1],&zmk_keymap[WIN_LAYER+1][1],sizeof(backup_bindings));
-        memcpy(&zmk_keymap[WIN_LAYER+1][1],backup_bindings,sizeof(backup_bindings));
+        memcpy(backup_bindings, &zmk_keymap[WIN_LAYER][1], sizeof(backup_bindings));
+        memcpy(&zmk_keymap[WIN_LAYER][1], &zmk_keymap[WIN_LAYER + 1][1], sizeof(backup_bindings));
+        memcpy(&zmk_keymap[WIN_LAYER + 1][1], backup_bindings, sizeof(backup_bindings));
     }
 }
-void f1_f13_fn_exchange_start_check(void)
-{
+void f1_f13_fn_exchange_start_check(void) {
     fn_exchange_setting_init();
-    uint8_t fn_exchange_flag=get_fn_exchange_state();
+    uint8_t fn_exchange_flag = get_fn_exchange_state();
 
-    fn_exchange_flag_mac=(fn_exchange_flag &0x02) ?0xff:0;
-    fn_exchange_flag_win=(fn_exchange_flag &0x01) ?0xff:0;
+    fn_exchange_flag_mac = (fn_exchange_flag & 0x02) ? 0xff : 0;
+    fn_exchange_flag_win = (fn_exchange_flag & 0x01) ? 0xff : 0;
 
-    LOG_DBG("mac:%d,win:%d",fn_exchange_flag_mac,fn_exchange_flag_win);
-    if(fn_exchange_flag_mac ) f1_f13_fn_exchange_mac();
-    if(fn_exchange_flag_win ) f1_f13_fn_exchange_win();
+    LOG_DBG("mac:%d,win:%d", fn_exchange_flag_mac, fn_exchange_flag_win);
+    if (fn_exchange_flag_mac)
+        f1_f13_fn_exchange_mac();
+    if (fn_exchange_flag_win)
+        f1_f13_fn_exchange_win();
 }
 
 uint8_t keyboard_get_led_state(void);
 void keyboad_led_set_onoff(uint8_t led_state);
 static struct k_work_delayable reset_led_work;
-static void reset_led_work_cb(struct k_work *work)
-{
+static void reset_led_work_cb(struct k_work *work) {
     keyboad_led_set_onoff(keyboard_get_led_state());
 }
 
-void do_f1_f13_fn_exchange(void)
-{
-    
-    if(keyboard_os_is_mac())
-    {
+void do_f1_f13_fn_exchange(void) {
+
+    if (keyboard_os_is_mac()) {
         f1_f13_fn_exchange_mac();
         fn_exchange_flag_mac = ~fn_exchange_flag_mac;
-    }
-    else
-    {
+    } else {
         f1_f13_fn_exchange_win();
         fn_exchange_flag_win = ~fn_exchange_flag_win;
     }
     led_recover();
-    LOG_DBG("mac:%d,win:%d",fn_exchange_flag_mac,fn_exchange_flag_win);
-    save_fn_exchange_state((fn_exchange_flag_win?0x01:0) | (fn_exchange_flag_mac?0x02:0));
+    LOG_DBG("mac:%d,win:%d", fn_exchange_flag_mac, fn_exchange_flag_win);
+    save_fn_exchange_state((fn_exchange_flag_win ? 0x01 : 0) | (fn_exchange_flag_mac ? 0x02 : 0));
     k_work_init_delayable(&reset_led_work, reset_led_work_cb);
     k_work_reschedule(&reset_led_work, K_MSEC(2800));
 }
 
-void update_zmk_keymap(uint8_t layer,uint8_t pos,struct zmk_behavior_binding* binding)
-{
-    zmk_keymap[layer][pos].behavior_dev =binding->behavior_dev;
-    zmk_keymap[layer][pos].param1 =binding->param1;
-    zmk_keymap[layer][pos].param2 =binding->param2;
+void update_zmk_keymap(uint8_t layer, uint8_t pos, struct zmk_behavior_binding *binding) {
+    zmk_keymap[layer][pos].behavior_dev = binding->behavior_dev;
+    zmk_keymap[layer][pos].param1 = binding->param1;
+    zmk_keymap[layer][pos].param2 = binding->param2;
 }
-struct zmk_behavior_binding * get_zmk_keymap(uint8_t layer ,uint8_t pos)
-{
+struct zmk_behavior_binding *get_zmk_keymap(uint8_t layer, uint8_t pos) {
     return &zmk_keymap[layer][pos];
 }

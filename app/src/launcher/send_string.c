@@ -25,10 +25,9 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <drivers/behavior.h>
-LOG_MODULE_DECLARE(zmk,CONFIG_ZMK_LOG_LEVEL);
+LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define PROGMEM
-
 
 // clang-format off
 
@@ -145,14 +144,13 @@ __attribute__((weak)) const uint8_t ascii_to_keycode_lut[128] PROGMEM = {
 #define PGM_LOADBIT(mem, pos) ((mem[(pos) / 8] >> ((pos) % 8)) & 0x01)
 
 #ifndef TAP_CODE_DELAY
-#    define TAP_CODE_DELAY 10
+#define TAP_CODE_DELAY 10
 #endif
 #ifndef TAP_HOLD_CAPS_DELAY
-#    define TAP_HOLD_CAPS_DELAY 80
+#define TAP_HOLD_CAPS_DELAY 80
 #endif
-void via_keycode_to_binding(uint8_t keycode,struct zmk_behavior_binding * binding);
-int zmk_macro_queue_add(uint8_t code,uint8_t type ,uint16_t delay);
-
+void via_keycode_to_binding(uint8_t keycode, struct zmk_behavior_binding *binding);
+int zmk_macro_queue_add(uint8_t code, uint8_t type, uint16_t delay);
 
 struct q_item {
     uint8_t code;
@@ -164,121 +162,111 @@ void send_string_with_delay(const char *string, uint8_t interval) {
 
     while (1) {
         char ascii_code = *string;
-        if (!ascii_code) break;
+        if (!ascii_code)
+            break;
         if (ascii_code == SS_QMK_PREFIX) {
             ascii_code = *(++string);
             if (ascii_code == SS_TAP_CODE) {
                 // tap
                 uint8_t keycode = *(++string);
-                zmk_macro_queue_add(keycode,SS_TAP_CODE,0);
-                
+                zmk_macro_queue_add(keycode, SS_TAP_CODE, 0);
+
             } else if (ascii_code == SS_DOWN_CODE) {
                 // down
                 uint8_t keycode = *(++string);
                 // register_code(keycode);
-                zmk_macro_queue_add(keycode,SS_DOWN_CODE,0);
-                LOG_DBG("press,code:%x",keycode);
+                zmk_macro_queue_add(keycode, SS_DOWN_CODE, 0);
+                LOG_DBG("press,code:%x", keycode);
 
             } else if (ascii_code == SS_UP_CODE) {
                 // up
                 uint8_t keycode = *(++string);
                 // unregister_code(keycode);
-                zmk_macro_queue_add(keycode,SS_UP_CODE,0);
-                LOG_DBG("release,code:%x",keycode);
+                zmk_macro_queue_add(keycode, SS_UP_CODE, 0);
+                LOG_DBG("release,code:%x", keycode);
 
             } else if (ascii_code == SS_DELAY_CODE) {
                 // delay
-                int     ms      = 0;
+                int ms = 0;
                 uint8_t keycode = *(++string);
                 while (isdigit(keycode)) {
                     ms *= 10;
                     ms += keycode - '0';
                     keycode = *(++string);
                 }
-                LOG_DBG("delay:%d",ms);
-                zmk_macro_queue_add(0,SS_DELAY_CODE,ms);
+                LOG_DBG("delay:%d", ms);
+                zmk_macro_queue_add(0, SS_DELAY_CODE, ms);
             }
         } else {
             send_char(ascii_code);
-           
         }
         ++string;
-
     }
 }
-void send_string_end(void)
-{
+void send_string_end(void) {
     struct q_item item;
-    
+
     uint16_t num = k_msgq_num_used_get(&zmk_macro_queue_msgq);
-    LOG_DBG("queue num:%d",num);
+    LOG_DBG("queue num:%d", num);
     const int ret = k_msgq_get(&zmk_macro_queue_msgq, &item, K_NO_WAIT);
     if (ret < 0) {
-        return ;
+        return;
     }
-    LOG_DBG("item type:%d,code:%x,delay:%d",item.type,item.code,item.delay);
+    LOG_DBG("item type:%d,code:%x,delay:%d", item.type, item.code, item.delay);
     struct zmk_behavior_binding keycode_binding;
-    via_keycode_to_binding(item.code,&keycode_binding);
+    via_keycode_to_binding(item.code, &keycode_binding);
 
-    switch(item.type)
-    {
+    switch (item.type) {
 
-        case SS_TAP_CODE:
-        {
-            uint16_t delay = (item.code == KC_CAPS_LOCK) ? TAP_HOLD_CAPS_DELAY : TAP_CODE_DELAY;
-            
-            zmk_behavior_queue_add(0,keycode_binding,true,delay);
-            zmk_behavior_queue_add(0,keycode_binding,false,TAP_CODE_DELAY);
-        }
-            break;
-        case SS_DOWN_CODE:                
-                zmk_behavior_queue_add(0,keycode_binding,true,TAP_CODE_DELAY);
-            break;
+    case SS_TAP_CODE: {
+        uint16_t delay = (item.code == KC_CAPS_LOCK) ? TAP_HOLD_CAPS_DELAY : TAP_CODE_DELAY;
 
-        case SS_UP_CODE:
-            zmk_behavior_queue_add(0,keycode_binding,false,TAP_CODE_DELAY);
-            break;
+        zmk_behavior_queue_add(0, keycode_binding, true, delay);
+        zmk_behavior_queue_add(0, keycode_binding, false, TAP_CODE_DELAY);
+    } break;
+    case SS_DOWN_CODE:
+        zmk_behavior_queue_add(0, keycode_binding, true, TAP_CODE_DELAY);
+        break;
+
+    case SS_UP_CODE:
+        zmk_behavior_queue_add(0, keycode_binding, false, TAP_CODE_DELAY);
+        break;
     }
 }
 void send_char(char ascii_code) {
 
-
-    uint8_t keycode    = ascii_to_keycode_lut[(uint8_t)ascii_code];
-    bool    is_shifted = PGM_LOADBIT(ascii_to_shift_lut, (uint8_t)ascii_code);
-    bool    is_altgred = PGM_LOADBIT(ascii_to_altgr_lut, (uint8_t)ascii_code);
-    bool    is_dead    = PGM_LOADBIT(ascii_to_dead_lut, (uint8_t)ascii_code);
+    uint8_t keycode = ascii_to_keycode_lut[(uint8_t)ascii_code];
+    bool is_shifted = PGM_LOADBIT(ascii_to_shift_lut, (uint8_t)ascii_code);
+    bool is_altgred = PGM_LOADBIT(ascii_to_altgr_lut, (uint8_t)ascii_code);
+    bool is_dead = PGM_LOADBIT(ascii_to_dead_lut, (uint8_t)ascii_code);
 
     if (is_shifted) {
         // register_code(KC_LEFT_SHIFT);
-        zmk_macro_queue_add(KC_LEFT_SHIFT,SS_DOWN_CODE,0);
+        zmk_macro_queue_add(KC_LEFT_SHIFT, SS_DOWN_CODE, 0);
     }
     if (is_altgred) {
         // register_code(KC_RIGHT_ALT);
 
-        zmk_macro_queue_add(KC_RIGHT_ALT,SS_DOWN_CODE,0);
+        zmk_macro_queue_add(KC_RIGHT_ALT, SS_DOWN_CODE, 0);
     }
     // tap_code(keycode);
-     zmk_macro_queue_add(keycode,SS_TAP_CODE,0);
-
+    zmk_macro_queue_add(keycode, SS_TAP_CODE, 0);
 
     if (is_altgred) {
         // unregister_code(KC_RIGHT_ALT);
-        zmk_macro_queue_add(KC_RIGHT_ALT,SS_UP_CODE,0);
+        zmk_macro_queue_add(KC_RIGHT_ALT, SS_UP_CODE, 0);
     }
     if (is_shifted) {
         // unregister_code(KC_LEFT_SHIFT);
-        zmk_macro_queue_add(KC_LEFT_SHIFT,SS_UP_CODE,0);
+        zmk_macro_queue_add(KC_LEFT_SHIFT, SS_UP_CODE, 0);
     }
     if (is_dead) {
         // tap_code(KC_SPACE);
-        zmk_macro_queue_add(KC_SPACE,SS_TAP_CODE,0);
-
+        zmk_macro_queue_add(KC_SPACE, SS_TAP_CODE, 0);
     }
 }
 
-
-
-int zmk_macro_queue_add(uint8_t code,uint8_t type ,uint16_t delay) {
+int zmk_macro_queue_add(uint8_t code, uint8_t type, uint16_t delay) {
 
     struct q_item item = {.code = code, .type = type, .delay = delay};
 
@@ -287,55 +275,46 @@ int zmk_macro_queue_add(uint8_t code,uint8_t type ,uint16_t delay) {
         LOG_ERR("macro queue full");
         return ret;
     }
-    LOG_DBG("macro queue num:%d",k_msgq_num_used_get(&zmk_macro_queue_msgq));
-    if(k_msgq_num_used_get(&zmk_macro_queue_msgq)>=2)
-    {
-        struct q_item item1={.delay =0};
-        struct q_item item2={.delay =0};
-        ret =k_msgq_get(&zmk_macro_queue_msgq,&item1,K_NO_WAIT);
-        if(ret <0)
-        {
+    LOG_DBG("macro queue num:%d", k_msgq_num_used_get(&zmk_macro_queue_msgq));
+    if (k_msgq_num_used_get(&zmk_macro_queue_msgq) >= 2) {
+        struct q_item item1 = {.delay = 0};
+        struct q_item item2 = {.delay = 0};
+        ret = k_msgq_get(&zmk_macro_queue_msgq, &item1, K_NO_WAIT);
+        if (ret < 0) {
             return ret;
         }
-        LOG_DBG("item1 type:%d,char:%c,delay:%d",item1.type,item1.code,item1.delay);
-        ret =k_msgq_peek(&zmk_macro_queue_msgq,&item2);
-        if(ret <0 )
-        {
+        LOG_DBG("item1 type:%d,char:%c,delay:%d", item1.type, item1.code, item1.delay);
+        ret = k_msgq_peek(&zmk_macro_queue_msgq, &item2);
+        if (ret < 0) {
             return ret;
         }
-        LOG_DBG("item2 type:%d,char:%c,delay:%d",item2.type,item2.code,item2.delay);
-        if(item2.type ==SS_DELAY_CODE)
-        {
-            k_msgq_get(&zmk_macro_queue_msgq,&item2,K_NO_WAIT);
+        LOG_DBG("item2 type:%d,char:%c,delay:%d", item2.type, item2.code, item2.delay);
+        if (item2.type == SS_DELAY_CODE) {
+            k_msgq_get(&zmk_macro_queue_msgq, &item2, K_NO_WAIT);
         }
-        
+
         struct zmk_behavior_binding keycode_binding;
-        via_keycode_to_binding(item1.code,&keycode_binding);
-        switch(item1.type)
-        {
-            case SS_TAP_CODE:
-            {
-                uint16_t delay = (item1.code == KC_CAPS_LOCK) ? TAP_HOLD_CAPS_DELAY : TAP_CODE_DELAY;
-                
-                zmk_behavior_queue_add(0,keycode_binding,true,delay);
-                zmk_behavior_queue_add(0,keycode_binding,false,item2.delay ? item2.delay: TAP_CODE_DELAY);
+        via_keycode_to_binding(item1.code, &keycode_binding);
+        switch (item1.type) {
+        case SS_TAP_CODE: {
+            uint16_t delay = (item1.code == KC_CAPS_LOCK) ? TAP_HOLD_CAPS_DELAY : TAP_CODE_DELAY;
 
-            }
-                break;
+            zmk_behavior_queue_add(0, keycode_binding, true, delay);
+            zmk_behavior_queue_add(0, keycode_binding, false,
+                                   item2.delay ? item2.delay : TAP_CODE_DELAY);
 
-            case SS_DOWN_CODE:                
-                zmk_behavior_queue_add(0,keycode_binding,true,item2.delay ? item2.delay: TAP_CODE_DELAY);
+        } break;
 
-                break;
-            case SS_UP_CODE:
-                zmk_behavior_queue_add(0,keycode_binding,false,item2.delay ? item2.delay: TAP_CODE_DELAY);
-                break;
-            
+        case SS_DOWN_CODE:
+            zmk_behavior_queue_add(0, keycode_binding, true,
+                                   item2.delay ? item2.delay : TAP_CODE_DELAY);
+
+            break;
+        case SS_UP_CODE:
+            zmk_behavior_queue_add(0, keycode_binding, false,
+                                   item2.delay ? item2.delay : TAP_CODE_DELAY);
+            break;
         }
-
-        
     }
     return 0;
 }
-
-

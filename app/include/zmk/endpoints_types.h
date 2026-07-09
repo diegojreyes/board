@@ -9,12 +9,7 @@
 /**
  * The method by which data is sent.
  */
-enum zmk_transport {
-    ZMK_TRANSPORT_USB,
-    ZMK_TRANSPORT_BLE,
-    ZMK_TRANSPORT_24G,
-    ZMK_TRANSPORT_NONE
-};
+enum zmk_transport { ZMK_TRANSPORT_USB, ZMK_TRANSPORT_BLE, ZMK_TRANSPORT_24G, ZMK_TRANSPORT_NONE };
 
 /**
  * Configuration to select an endpoint on ZMK_TRANSPORT_USB.

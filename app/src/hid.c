@@ -38,13 +38,12 @@ bool get_fn_win_lock(void);
 zmk_mod_flags_t zmk_hid_get_explicit_mods() { return explicit_modifiers; }
 
 int zmk_hid_register_mod(zmk_mod_t modifier) {
-    if(get_fn_win_lock() && (modifier == 7 || modifier ==3)) 
-    {
-        explicit_modifier_counts[modifier]=0;
-        LOG_ERR("not send modifier:%d",modifier);
+    if (get_fn_win_lock() && (modifier == 7 || modifier == 3)) {
+        explicit_modifier_counts[modifier] = 0;
+        LOG_ERR("not send modifier:%d", modifier);
         return 0;
     }
-    
+
     explicit_modifier_counts[modifier]++;
     LOG_DBG("Modifier %d count %d", modifier, explicit_modifier_counts[modifier]);
     WRITE_BIT(explicit_modifiers, modifier, true);
@@ -60,9 +59,8 @@ int zmk_hid_unregister_mod(zmk_mod_t modifier) {
     }
     explicit_modifier_counts[modifier]--;
 
-    if(macro_running)
-    {
-        explicit_modifier_counts[modifier]=0;
+    if (macro_running) {
+        explicit_modifier_counts[modifier] = 0;
     }
 
     LOG_DBG("Modifier %d count: %d", modifier, explicit_modifier_counts[modifier]);
@@ -132,7 +130,7 @@ static inline bool check_keyboard_usage(zmk_key_t usage) {
 
 #define TOGGLE_KEYBOARD(match, val)                                                                \
     for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) {                          \
-        if (keyboard_report.body.keys[idx] != match  && keyboard_report.body.keys[idx] != val ) {                                             \
+        if (keyboard_report.body.keys[idx] != match && keyboard_report.body.keys[idx] != val) {    \
             continue;                                                                              \
         }                                                                                          \
         keyboard_report.body.keys[idx] = val;                                                      \
@@ -281,10 +279,6 @@ bool zmk_hid_is_pressed(uint32_t usage) {
     return false;
 }
 
-struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report() {
-    return &keyboard_report;
-}
+struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report() { return &keyboard_report; }
 
-struct zmk_hid_consumer_report *zmk_hid_get_consumer_report() {
-    return &consumer_report;
-}
+struct zmk_hid_consumer_report *zmk_hid_get_consumer_report() { return &consumer_report; }

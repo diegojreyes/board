@@ -26,10 +26,7 @@
 #define ZMK_ENDPOINT_BLE_COUNT 0
 #endif
 
-enum {
-	REBOOT_ENDPOINT_BLE=0xc0,
-	REBOOT_ENDPOINT_24G
-};
+enum { REBOOT_ENDPOINT_BLE = 0xc0, REBOOT_ENDPOINT_24G };
 /**
  * The total number of different (struct zmk_endpoint_instance) values that can
  * be selected.

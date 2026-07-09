@@ -51,7 +51,8 @@ extern const uint8_t ascii_to_keycode_lut[128];
  *
  * This function simply calls `send_string_with_delay(string, 0)`.
  *
- * Most keycodes from the basic keycode range are also supported by way of a special sequence - see `send_string_keycodes.h`.
+ * Most keycodes from the basic keycode range are also supported by way of a special sequence - see
+ * `send_string_keycodes.h`.
  *
  * \param string The string to type out.
  */
@@ -135,8 +136,8 @@ void send_string_P(const char *string);
  */
 void send_string_with_delay_P(const char *string, uint8_t interval);
 #else
-#    define send_string_P(string) send_string_with_delay(string, 0)
-#    define send_string_with_delay_P(string, interval) send_string_with_delay(string, interval)
+#define send_string_P(string) send_string_with_delay(string, 0)
+#define send_string_with_delay_P(string, interval) send_string_with_delay(string, interval)
 #endif
 
 /**

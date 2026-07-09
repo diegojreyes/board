@@ -13,19 +13,16 @@
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
-
 #include "../launcher/keycodes.h"
 #include "../launcher/send_string.h"
 
-char  keychron_web_win[]=
-{
+char keychron_web_win[] = {
     "\1\2\xe3r\1\3\xe3\1\004100|msedge.exe https://keychron.com\n"
     // SS_LWIN(R)SS_DELAY(100)"msedge.exe https://keychron.com\r"
 };
-char  keychron_web_mac[]=
-{
+char keychron_web_mac[] = {
     "\1\2\xe3 \1\3\xe3\1\004100|safari\n\1\004100|\1\2\xe3t\1\3\xe3\1\004100|https://keychron.com\n"
-    //SS_LCMD( )SS_DELAY(100)"safari\r"SS_DELAY(100)SS_LCMD(T)SS_DELAY(100)"https://keychron.com\r"
+    // SS_LCMD( )SS_DELAY(100)"safari\r"SS_DELAY(100)SS_LCMD(T)SS_DELAY(100)"https://keychron.com\r"
 };
 
 enum behavior_macro_mode {
@@ -173,13 +170,14 @@ static void queue_macro(uint32_t position, const struct zmk_behavior_binding bin
                         struct behavior_macro_trigger_state state,
                         const struct zmk_behavior_binding *macro_binding) {
     LOG_DBG("Iterating macro bindings - starting: %d, count: %d", state.start_index, state.count);
-    LOG_DBG("state.mode:%d,macro binding:%s",state.mode,macro_binding->behavior_dev);
+    LOG_DBG("state.mode:%d,macro binding:%s", state.mode, macro_binding->behavior_dev);
     for (int i = state.start_index; i < state.start_index + state.count; i++) {
-        LOG_DBG("bindings:%d,dev:%s,p1:%d,p2:%d",i,bindings[i].behavior_dev,bindings[i].param1,bindings[i].param2);
+        LOG_DBG("bindings:%d,dev:%s,p1:%d,p2:%d", i, bindings[i].behavior_dev, bindings[i].param1,
+                bindings[i].param2);
         if (!handle_control_binding(&state, &bindings[i])) {
             struct zmk_behavior_binding binding = bindings[i];
             replace_params(&state, &binding, macro_binding);
-            LOG_DBG("state.mode:%d",state.mode);
+            LOG_DBG("state.mode:%d", state.mode);
             switch (state.mode) {
             case MACRO_MODE_TAP:
                 zmk_behavior_queue_add(position, binding, true, state.tap_ms);
@@ -209,23 +207,20 @@ static int on_macro_binding_pressed(struct zmk_behavior_binding *binding,
                                                          .wait_ms = cfg->default_wait_ms,
                                                          .start_index = 0,
                                                          .count = state->press_bindings_count};
-    if(memcmp(binding->behavior_dev,"ZM_MA",5)==0) 
-    {
-        LOG_DBG("via macro,p1:%x,p2:%d",binding->param1,binding->param2);
-        if(binding->param1 !=0x770100)
-            dynamic_keymap_macro_send(binding->param1 &0xff);
-        else
-        {
-            char * p =  zmk_keymap_highest_layer_active()>=2? keychron_web_win:keychron_web_mac;
+    if (memcmp(binding->behavior_dev, "ZM_MA", 5) == 0) {
+        LOG_DBG("via macro,p1:%x,p2:%d", binding->param1, binding->param2);
+        if (binding->param1 != 0x770100)
+            dynamic_keymap_macro_send(binding->param1 & 0xff);
+        else {
+            char *p = zmk_keymap_highest_layer_active() >= 2 ? keychron_web_win : keychron_web_mac;
             // uint8_t len = strlen(p);
             // LOG_HEXDUMP_ERR(p,len,"macro");
-            send_string_with_delay(p,0);
+            send_string_with_delay(p, 0);
             send_string_end();
         }
-    }   
-    
-    else
-    {
+    }
+
+    else {
         queue_macro(event.position, cfg->bindings, trigger_state, binding);
     }
 

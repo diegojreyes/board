@@ -4,7 +4,7 @@
 
 
 config SHIELD_KEYCHRON_B2
-    bool    
+    bool
 
 config SHIELD_KEYCHRON_B2_UK
     def_bool $(shields_list_contains,keychron_b2_uk)

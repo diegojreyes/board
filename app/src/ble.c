@@ -52,21 +52,21 @@ RING_BUF_DECLARE(passkey_entries, PASSKEY_DIGITS);
 
 #endif /* IS_ENABLED(CONFIG_ZMK_BLE_PASSKEY_ENTRY) */
 
-#define ADV_RECONN_TIME_OUT (3000)//(3*60*1000)
-#define ADV_PAIR_TIME_OUT (3*60*1000)
-#if EN_UPATE_PARAM_DYNAMIC  //disable for sometime send data fail!
+#define ADV_RECONN_TIME_OUT (3000) //(3*60*1000)
+#define ADV_PAIR_TIME_OUT (3 * 60 * 1000)
+#if EN_UPATE_PARAM_DYNAMIC // disable for sometime send data fail!
 void ble_param_update_work_callback(struct k_work *work);
 void ble_active_work_callback(struct k_work *work);
 K_WORK_DELAYABLE_DEFINE(ble_active_work, ble_active_work_callback);
 K_WORK_DELAYABLE_DEFINE(ble_param_update_work, ble_param_update_work_callback);
 static uint8_t ble_active;
-static uint8_t ble_param_update_try_count =0;
-#endif 
+static uint8_t ble_param_update_try_count = 0;
+#endif
 
 void update_conn_param_worker(struct k_work *work);
 K_WORK_DELAYABLE_DEFINE(update_conn_param_work, update_conn_param_worker);
 
-bt_addr_le_t * inc_bt_addr(uint8_t index);
+bt_addr_le_t *inc_bt_addr(uint8_t index);
 void print_device_addr(uint8_t id);
 void zmk_24g_pair(void);
 void zmk_24g_reconn(void);
@@ -90,7 +90,6 @@ enum advertising_type {
 static uint8_t adv_state;
 void sleep_worker(struct k_work *work);
 K_WORK_DELAYABLE_DEFINE(sleep_work, sleep_worker);
-
 
 static void load_identities(void) {
 
@@ -147,15 +146,16 @@ static const struct bt_data zmk_ble_ad[] = {
                   0x0f, 0x18                       /* Battery Service */
                   ),
 };
-//add swift pair
+// add swift pair
 static const struct bt_data zmk_ble_ad_win[] = {
     BT_DATA_BYTES(BT_DATA_GAP_APPEARANCE, 0xC1, 0x03),
     BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
     BT_DATA_BYTES(BT_DATA_UUID16_SOME, 0x12, 0x18, /* HID Service */
                   0x0f, 0x18                       /* Battery Service */
                   ),
-    //swift pair
-    BT_DATA_BYTES(BT_DATA_MANUFACTURER_DATA,0x06,0x00, 0x03,0x00,0x80, 'K','e','y','c','h','r','o','n',' ','K','B')
+    // swift pair
+    BT_DATA_BYTES(BT_DATA_MANUFACTURER_DATA, 0x06, 0x00, 0x03, 0x00, 0x80, 'K', 'e', 'y', 'c', 'h',
+                  'r', 'o', 'n', ' ', 'K', 'B')
 
 };
 static const struct bt_data zmk_ble_ad_sr[] = {
@@ -170,17 +170,18 @@ static const struct bt_data zmk_ble_reconn_ad[] = {
 void adv_timeout_work_callback(struct k_work *work) {
     int err = bt_le_adv_stop();
     advertising_status = ZMK_ADV_NONE;
-    blue_led_set_state( LED_PEER_STATE_DISCONNECTED);
+    blue_led_set_state(LED_PEER_STATE_DISCONNECTED);
 
     LOG_INF("adv timeout ,stop");
     if (err) {
         LOG_ERR("Failed to stop advertising (err %d)", err);
     }
-    k_work_reschedule(&sleep_work, (adv_state ==ZMK_ADV_RECONN)?K_MSEC(40*1000-ADV_RECONN_TIME_OUT):K_NO_WAIT);
-    adv_state = ZMK_ADV_NONE;  
+    k_work_reschedule(&sleep_work, (adv_state == ZMK_ADV_RECONN)
+                                       ? K_MSEC(40 * 1000 - ADV_RECONN_TIME_OUT)
+                                       : K_NO_WAIT);
+    adv_state = ZMK_ADV_NONE;
 }
-void sleep_worker(struct k_work *work)
-{
+void sleep_worker(struct k_work *work) {
     LOG_INF("sleep");
     set_state(ZMK_ACTIVITY_SLEEP);
 }
@@ -210,9 +211,9 @@ struct switch_to_adv switch_state;
 // static uint8_t switch_to_pair;
 /* Bonded address queue. */
 // K_MSGQ_DEFINE(bonds_queue,
-// 	      sizeof(bt_addr_le_t),
-// 	      CONFIG_BT_MAX_PAIRED,
-// 	      4);
+//        sizeof(bt_addr_le_t),
+//        CONFIG_BT_MAX_PAIRED,
+//        4);
 
 static void bond_cnt_cb(const struct bt_bond_info *info, void *user_data) {
     size_t *cnt = user_data;
@@ -278,7 +279,7 @@ static void advertising_start(void) {
 
     // LOG_INF("advertising_start,desired_adv:%d\n",desired_adv);
     // k_work_submit(&update_advertising_work);
-    if(adv_state!=ZMK_ADV_PAIR)
+    if (adv_state != ZMK_ADV_PAIR)
         zmk_ble_prof_select(active_profile);
 }
 
@@ -319,7 +320,7 @@ void copy_profile_to_same_peer(const bt_addr_le_t *peer) {
     for (int i = 0; i < ZMK_BLE_PROFILE_COUNT; i++) {
         if (!bt_addr_le_cmp(&profiles[i].peer, peer) &&
             (profiles[i].bt_id != profiles[active_profile].bt_id)) {
-            bt_id_reset(profiles[i].bt_id,inc_bt_addr(profiles[i].bt_id), NULL);
+            bt_id_reset(profiles[i].bt_id, inc_bt_addr(profiles[i].bt_id), NULL);
             profiles[i].bt_id = profiles[active_profile].bt_id;
             // profiles[i].is_rpa = profiles[active_profile].is_rpa;
             profiles[i].bonded = profiles[active_profile].bonded;
@@ -485,17 +486,14 @@ void checked_open_adv(void) {
         LOG_INF("adv opt: FILTER");
     }
     int err;
-    if(adv_state == ZMK_ADV_RECONN)
-    {
-        err = bt_le_adv_start(&adv_param, zmk_ble_reconn_ad, ARRAY_SIZE(zmk_ble_reconn_ad), NULL, 0);
-    }
-    else
-    {
-        if(zmk_keymap_highest_layer_active()>=2)
-        {
-            err=bt_le_adv_start(&adv_param, zmk_ble_ad_win, ARRAY_SIZE(zmk_ble_ad_win), zmk_ble_ad_sr, ARRAY_SIZE(zmk_ble_ad_sr));
-        }
-        else
+    if (adv_state == ZMK_ADV_RECONN) {
+        err =
+            bt_le_adv_start(&adv_param, zmk_ble_reconn_ad, ARRAY_SIZE(zmk_ble_reconn_ad), NULL, 0);
+    } else {
+        if (zmk_keymap_highest_layer_active() >= 2) {
+            err = bt_le_adv_start(&adv_param, zmk_ble_ad_win, ARRAY_SIZE(zmk_ble_ad_win),
+                                  zmk_ble_ad_sr, ARRAY_SIZE(zmk_ble_ad_sr));
+        } else
             err = bt_le_adv_start(&adv_param, zmk_ble_ad, ARRAY_SIZE(zmk_ble_ad), NULL, 0);
     }
     if (err) {
@@ -514,14 +512,14 @@ int update_advertising() {
         if (bond_check(profiles[active_profile].bt_id)) {
             desired_adv = ZMK_ADV_DIR;
             enable_filter = setup_accept_list();
-            blue_led_set_state( LED_PEER_STATE_RECONN);
+            blue_led_set_state(LED_PEER_STATE_RECONN);
         } else {
             desired_adv = ZMK_ADV_CONN;
-            blue_led_set_state( LED_PEER_STATE_RECONN);
+            blue_led_set_state(LED_PEER_STATE_RECONN);
         }
     } else if (desired_adv == ZMK_ADV_PAIR) {
         desired_adv = ZMK_ADV_CONN;
-        blue_led_set_state( LED_PEER_STATE_PAIR);
+        blue_led_set_state(LED_PEER_STATE_PAIR);
         k_work_cancel_delayable(&sleep_work);
     }
 
@@ -541,89 +539,73 @@ int update_advertising() {
         checked_dir_adv();
         break;
     case ZMK_ADV_CONN + CURR_ADV(ZMK_ADV_CONN):
-    case ZMK_ADV_CONN + CURR_ADV(ZMK_ADV_DIR):
-        {
-            checked_adv_stop();
-            checked_open_adv();
-            k_timeout_t timeout = (adv_state== ZMK_ADV_PAIR) ? K_MSEC(ADV_PAIR_TIME_OUT):K_MSEC(ADV_RECONN_TIME_OUT);
-            k_work_reschedule(&adv_timeout_work, timeout);
-        }
-        break;
-    case ZMK_ADV_CONN + CURR_ADV(ZMK_ADV_NONE):
-        {
-            checked_open_adv();
-            k_timeout_t timeout = (adv_state== ZMK_ADV_PAIR) ? K_MSEC(ADV_PAIR_TIME_OUT):K_MSEC(ADV_RECONN_TIME_OUT);
-            k_work_reschedule(&adv_timeout_work, timeout);
-        }
-        break;
+    case ZMK_ADV_CONN + CURR_ADV(ZMK_ADV_DIR): {
+        checked_adv_stop();
+        checked_open_adv();
+        k_timeout_t timeout =
+            (adv_state == ZMK_ADV_PAIR) ? K_MSEC(ADV_PAIR_TIME_OUT) : K_MSEC(ADV_RECONN_TIME_OUT);
+        k_work_reschedule(&adv_timeout_work, timeout);
+    } break;
+    case ZMK_ADV_CONN + CURR_ADV(ZMK_ADV_NONE): {
+        checked_open_adv();
+        k_timeout_t timeout =
+            (adv_state == ZMK_ADV_PAIR) ? K_MSEC(ADV_PAIR_TIME_OUT) : K_MSEC(ADV_RECONN_TIME_OUT);
+        k_work_reschedule(&adv_timeout_work, timeout);
+    } break;
     }
 
     return 0;
 };
 
 static struct k_work_delayable factory_recover_work;
-static void factory_recover_work_cb(struct k_work *work)
-{
-    static uint8_t state =0;
-    if(state==0)
-    {
+static void factory_recover_work_cb(struct k_work *work) {
+    static uint8_t state = 0;
+    if (state == 0) {
         led_recover();
         k_work_reschedule(&factory_recover_work, K_MSEC(2800));
         state++;
-    }
-    else
-    {
+    } else {
         k_msleep(200);
         sys_reboot(0);
     }
 }
-void zmk_factory_recover(void)
-{
-    if(get_current_transport()==ZMK_TRANSPORT_BLE)
-    {
-        zmk_ble_disconn_active_profile();    
+void zmk_factory_recover(void) {
+    if (get_current_transport() == ZMK_TRANSPORT_BLE) {
+        zmk_ble_disconn_active_profile();
         k_msleep(100);
         bt_le_adv_stop();
         zmk_ble_clear_bonds();
-    }
-    else
-    {
+    } else {
         zmk_24g_endpoint_disconnect();
         set_delay_clear_bonds(1);
     }
 #if CONFIG_ZMK_LAUNCHER
     void via_ee_delete(void);
     via_ee_delete();
-#endif    
+#endif
     settings_delete("fn_exchange");
 
-    
     k_work_init_delayable(&factory_recover_work, factory_recover_work_cb);
     k_work_reschedule(&factory_recover_work, K_MSEC(200));
 }
-int zmk_ble_clear_bonds(void) 
-{
+int zmk_ble_clear_bonds(void) {
     char setting_name[20];
     LOG_DBG("");
-    
+
     int i;
-    for(i=1;i<CONFIG_BT_ID_MAX;i++)
-    {
-       int ret= bt_id_reset(i, inc_bt_addr(i), NULL); 
-       LOG_DBG("bt id reset:%d",ret);
+    for (i = 1; i < CONFIG_BT_ID_MAX; i++) {
+        int ret = bt_id_reset(i, inc_bt_addr(i), NULL);
+        LOG_DBG("bt id reset:%d", ret);
     }
 
-    for(i=0;i<ZMK_BLE_PROFILE_COUNT;i++)
-    {
+    for (i = 0; i < ZMK_BLE_PROFILE_COUNT; i++) {
         sprintf(setting_name, "ble/profiles/%d", i);
         settings_delete(setting_name);
     }
     settings_delete("ble/active_profile");
 
-
     return 0;
 };
-
 
 int zmk_ble_active_profile_index() { return active_profile; }
 
@@ -646,7 +628,7 @@ static int ble_save_profile() {
 int get_empty_bt_id(void) {
     uint8_t ret = -1;
     uint8_t id;
-    for (id = 1; id < CONFIG_BT_ID_MAX; id++) { //not use id=0;
+    for (id = 1; id < CONFIG_BT_ID_MAX; id++) { // not use id=0;
         uint8_t used = 0;
         for (int i = 0; i < ZMK_BLE_PROFILE_COUNT; i++) {
             if ((id == profiles[i].bt_id) && (profiles[i].bt_id != 0x0f)) {
@@ -666,14 +648,12 @@ int zmk_ble_prof_pair_start(uint8_t index) {
     if (index >= ZMK_BLE_PROFILE_COUNT) {
         return -ERANGE;
     }
-    if(get_current_transport()==ZMK_TRANSPORT_24G)
-    {
-        if(index ==3)
+    if (get_current_transport() == ZMK_TRANSPORT_24G) {
+        if (index == 3)
             zmk_24g_pair();
         return 0;
     }
-    if(get_current_transport()!=ZMK_TRANSPORT_BLE || (index>=3))
-    {
+    if (get_current_transport() != ZMK_TRANSPORT_BLE || (index >= 3)) {
         return -ENOTSUP;
     }
     if (zmk_ble_active_profile_is_connected()) // wait for disconnect!
@@ -714,7 +694,7 @@ int zmk_ble_prof_pair_start(uint8_t index) {
     print_device_addr(adv_bt_id);
 
     desired_adv = ZMK_ADV_PAIR;
-    adv_state =ZMK_ADV_PAIR;
+    adv_state = ZMK_ADV_PAIR;
     k_work_submit(&update_advertising_work);
 
     return 0;
@@ -723,16 +703,13 @@ int zmk_ble_prof_select(uint8_t index) {
     if (index >= ZMK_BLE_PROFILE_COUNT) {
         return -ERANGE;
     }
-    if(get_current_transport() == ZMK_TRANSPORT_24G)
-    {
-        if(index ==3)
-        {
-          zmk_24g_reconn();
+    if (get_current_transport() == ZMK_TRANSPORT_24G) {
+        if (index == 3) {
+            zmk_24g_reconn();
         }
         return 0;
     }
-    if(get_current_transport()!=ZMK_TRANSPORT_BLE || (index>=3))
-    {
+    if (get_current_transport() != ZMK_TRANSPORT_BLE || (index >= 3)) {
         return -ENOTSUP;
     }
     LOG_DBG("active profile %d need to :%d", active_profile, index);
@@ -755,8 +732,7 @@ int zmk_ble_prof_select(uint8_t index) {
         switch_state.index = index;
         return -ERANGE;
     }
-    if(active_profile !=index)
-    {
+    if (active_profile != index) {
         active_profile = index;
         ble_save_profile();
     }
@@ -944,9 +920,9 @@ static void connected(struct bt_conn *conn, uint8_t err) {
     advertising_status = ZMK_ADV_NONE;
     adv_state = advertising_status;
     k_work_cancel_delayable(&adv_timeout_work);
-    blue_led_set_state( LED_PEER_STATE_CONNECTED);
+    blue_led_set_state(LED_PEER_STATE_CONNECTED);
 
-    profiles[active_profile].connected=1;
+    profiles[active_profile].connected = 1;
 
     LOG_DBG("Connected %s", addr);
     int ret = bt_conn_set_security(conn, BT_SECURITY_L2);
@@ -958,16 +934,16 @@ static void connected(struct bt_conn *conn, uint8_t err) {
         LOG_DBG("Active profile connected");
         k_work_submit(&raise_profile_changed_event_work);
     }
-#if EN_UPATE_PARAM_DYNAMIC    
-    k_work_reschedule(&ble_active_work,K_MSEC(15000));
-#endif   
-    k_work_reschedule(&update_conn_param_work,K_MSEC(5000));  
+#if EN_UPATE_PARAM_DYNAMIC
+    k_work_reschedule(&ble_active_work, K_MSEC(15000));
+#endif
+    k_work_reschedule(&update_conn_param_work, K_MSEC(5000));
 }
 
 static void disconnected(struct bt_conn *conn, uint8_t reason) {
     char addr[BT_ADDR_LE_STR_LEN];
     struct bt_conn_info info;
-    if(!zmk_usb_is_powered())
+    if (!zmk_usb_is_powered())
         keyboad_led_set_onoff(0);
     bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
@@ -979,17 +955,15 @@ static void disconnected(struct bt_conn *conn, uint8_t reason) {
         LOG_DBG("SKIPPING FOR ROLE %d", info.role);
         return;
     }
-    profiles[active_profile].connected=0;
+    profiles[active_profile].connected = 0;
     // We need to do this in a work callback, otherwise the advertising update will still see the
     // connection for a profile as active, and not start advertising yet.
     // k_work_submit(&update_advertising_work);
     if ((reason != BT_HCI_ERR_REMOTE_USER_TERM_CONN) &&
         (reason != BT_HCI_ERR_LOCALHOST_TERM_CONN) && (reason != BT_HCI_ERR_REMOTE_POWER_OFF)) {
         advertising_start();
-    }
-    else
-    {
-        if(switch_state.adv_type==0)
+    } else {
+        if (switch_state.adv_type == 0)
             set_state(ZMK_ACTIVITY_SLEEP);
     }
 
@@ -1008,29 +982,27 @@ static void security_changed(struct bt_conn *conn, bt_security_t level, enum bt_
     if (!err) {
         LOG_DBG("Security changed: %s level %u", addr, level);
         if (level >= BT_SECURITY_L2) {
-            
+
             if (bt_addr_le_is_rpa(bt_conn_get_dst(conn))) {
                 profiles[active_profile].is_rpa = 1;
                 LOG_INF("host:%s is rpa", addr);
             }
-            if(!profiles[active_profile].bonded)
-            {
-                profiles[active_profile].bonded =1;
+            if (!profiles[active_profile].bonded) {
+                profiles[active_profile].bonded = 1;
                 set_profile_address(active_profile, bt_conn_get_dst(conn));
                 LOG_DBG("NOT BOND,SAVE AGAIN");
             }
         }
     } else {
         LOG_ERR("Security failed: %s level %u err %d", addr, level, err);
-        if(err ==BT_SECURITY_ERR_PIN_OR_KEY_MISSING) 
-        {
+        if (err == BT_SECURITY_ERR_PIN_OR_KEY_MISSING) {
             // bt_unpair(conn->id, bt_conn_get_dst(conn));
-            bt_id_reset(conn->id,inc_bt_addr(conn->id),NULL);
+            bt_id_reset(conn->id, inc_bt_addr(conn->id), NULL);
             profiles[active_profile].is_rpa = 0;
             profiles[active_profile].bonded = 0;
             set_profile_address(active_profile, BT_ADDR_LE_ANY);
             LOG_INF("clear pair info");
-            blue_led_set_state( LED_PEER_STATE_FAILE);
+            blue_led_set_state(LED_PEER_STATE_FAILE);
         }
     }
 }
@@ -1044,8 +1016,8 @@ static void le_param_updated(struct bt_conn *conn, uint16_t interval, uint16_t l
     LOG_DBG("%s: interval %d latency %d timeout %d", addr, interval, latency, timeout);
 #if EN_UPATE_PARAM_DYNAMIC
     k_work_cancel_delayable(&ble_param_update_work);
-    ble_param_update_try_count=0;
-#endif     
+    ble_param_update_try_count = 0;
+#endif
 }
 
 static struct bt_conn_cb conn_callbacks = {
@@ -1055,7 +1027,6 @@ static struct bt_conn_cb conn_callbacks = {
     .le_param_updated = le_param_updated,
 };
 
-
 static void auth_passkey_display(struct bt_conn *conn, unsigned int passkey) {
     char addr[BT_ADDR_LE_STR_LEN];
 
@@ -1063,7 +1034,6 @@ static void auth_passkey_display(struct bt_conn *conn, unsigned int passkey) {
 
     LOG_DBG("Passkey for %s: %06u", addr, passkey);
 }
-
 
 #if IS_ENABLED(CONFIG_ZMK_BLE_PASSKEY_ENTRY)
 
@@ -1128,9 +1098,8 @@ static void auth_pairing_complete(struct bt_conn *conn, bool bonded) {
     //     bt_unpair(BT_ID_DEFAULT, dst);
     //     return;
     // }
-    if (profiles[active_profile].bt_id != conn->id) 
-    {
-        // if (profiles[active_profile].bt_id != 0x0f) 
+    if (profiles[active_profile].bt_id != conn->id) {
+        // if (profiles[active_profile].bt_id != 0x0f)
         // {
         //     if(conn->id==0)
         //     {
@@ -1139,14 +1108,15 @@ static void auth_pairing_complete(struct bt_conn *conn, bool bonded) {
         //     }
         //     else
         //     {
-        //         bt_id_reset(profiles[active_profile].bt_id, inc_bt_addr(profiles[active_profile].bt_id), NULL);
+        //         bt_id_reset(profiles[active_profile].bt_id,
+        //         inc_bt_addr(profiles[active_profile].bt_id), NULL);
         //     }
         //     LOG_INF("reset bt id:%d,new:%d", profiles[active_profile].bt_id, conn->id);
         // }
         profiles[active_profile].bt_id = conn->id;
     }
 
-    profiles[active_profile].bonded=1;
+    profiles[active_profile].bonded = 1;
     set_profile_address(active_profile, dst);
     // due to CONFIG_BT_ID_UNPAIR_MATCHING_BONDS
     copy_profile_to_same_peer(dst);
@@ -1162,7 +1132,6 @@ static struct bt_conn_auth_cb zmk_ble_auth_cb_display = {
     .cancel = auth_cancel,
 };
 
-
 static struct bt_conn_auth_info_cb zmk_ble_auth_info_cb_display = {
     .pairing_complete = auth_pairing_complete,
 };
@@ -1176,7 +1145,7 @@ static void zmk_ble_ready(int err) {
 
     // update_advertising();
     // advertising_start();
-    profiles[active_profile].connected=0;
+    profiles[active_profile].connected = 0;
     // settings_subsys_init();
 
     // err = settings_register(&profiles_handler);
@@ -1195,14 +1164,14 @@ int zmk_ble_init(const struct device *_arg) {
     // uint8_t addr[]={0x31,0x10,0x23,0x26,0x2c,0xdc};
     // int ret=bt_ctlr_set_public_addr(addr);
     // LOG_INF("bt_ctlr_set_public_addr,ret:%d\n",ret);
-    static bool inited =false;
-    if(bat_is_shutdown()) return 0;
-    if(inited) 
-    {
+    static bool inited = false;
+    if (bat_is_shutdown())
+        return 0;
+    if (inited) {
         advertising_start();
         return 0;
     }
-    inited =true;
+    inited = true;
 
     for (int i = 0; i < ZMK_BLE_PROFILE_COUNT; i++)
         profiles[i].bt_id = 0x0f;
@@ -1212,12 +1181,11 @@ int zmk_ble_init(const struct device *_arg) {
         LOG_ERR("BLUETOOTH FAILED (%d)", err);
         return err;
     }
-     // leds_init(NULL);
+    // leds_init(NULL);
 
 #if IS_ENABLED(CONFIG_SETTINGS)
     LOG_INF("settings init");
     settings_subsys_init();
-    
 
     err = settings_register(&profiles_handler);
     if (err) {
@@ -1230,12 +1198,11 @@ int zmk_ble_init(const struct device *_arg) {
     settings_load_subtree("ble");
     settings_load_subtree("bt");
     load_identities();
-    
+
     set_dis_value();
     // advertising_start();
 
-    if(delay_clear_bonds())
-    {
+    if (delay_clear_bonds()) {
         zmk_ble_clear_bonds();
         set_delay_clear_bonds(0);
     }
@@ -1353,27 +1320,24 @@ static int zmk_ble_handle_key_user(struct zmk_keycode_state_changed *event) {
 
 static int zmk_ble_listener(const zmk_event_t *eh) {
     struct zmk_keycode_state_changed *kc_state;
-    
+
     kc_state = as_zmk_keycode_state_changed(eh);
 
     if ((kc_state != NULL) && !bat_is_shutdown()) {
-        if(kc_state->state) {
+        if (kc_state->state) {
             LOG_DBG(".");
-            if(get_current_transport()==ZMK_TRANSPORT_BLE){
-                LOG_DBG("profiles:%d,bonded:%d,connected:%d",active_profile,profiles[active_profile].bonded,profiles[active_profile].connected);
-                if(!profiles[active_profile].connected  )
-                {
+            if (get_current_transport() == ZMK_TRANSPORT_BLE) {
+                LOG_DBG("profiles:%d,bonded:%d,connected:%d", active_profile,
+                        profiles[active_profile].bonded, profiles[active_profile].connected);
+                if (!profiles[active_profile].connected) {
                     advertising_start();
                 }
-#if EN_UPATE_PARAM_DYNAMIC                
-                else
-                {
+#if EN_UPATE_PARAM_DYNAMIC
+                else {
                     ble_active_handler();
                 }
-#endif                 
-            }
-            else if(get_current_transport()==ZMK_TRANSPORT_24G)
-            {
+#endif
+            } else if (get_current_transport() == ZMK_TRANSPORT_24G) {
                 zmk_24g_reconn();
             }
         }
@@ -1385,14 +1349,13 @@ static int zmk_ble_listener(const zmk_event_t *eh) {
 ZMK_LISTENER(zmk_ble, zmk_ble_listener);
 ZMK_SUBSCRIPTION(zmk_ble, zmk_keycode_state_changed);
 
-
 // SYS_INIT(zmk_ble_init, APPLICATION, CONFIG_ZMK_BLE_INIT_PRIORITY);
 
 uint8_t zmk_ble_get_active_profile(void) { return active_profile; }
 
 uint8_t zmk_ble_get_active_profile_bt_id(void) { return profiles[active_profile].bt_id; }
 
-uint8_t zmk_ble_is_connected(void) {return profiles[active_profile].connected;}
+uint8_t zmk_ble_is_connected(void) { return profiles[active_profile].connected; }
 
 void zmk_ble_disconn_active_profile(void) {
     if (zmk_ble_active_profile_is_connected()) // wait for disconnect!
@@ -1407,10 +1370,8 @@ void zmk_ble_disconn_active_profile(void) {
         }
     }
 }
-void zmk_ble_endpoint_disconnect(void)
-{
-    if(get_current_transport()==ZMK_TRANSPORT_BLE)
-    {
+void zmk_ble_endpoint_disconnect(void) {
+    if (get_current_transport() == ZMK_TRANSPORT_BLE) {
         struct bt_conn *conn = NULL;
         bt_addr_le_t *addr = zmk_ble_active_profile_addr();
 
@@ -1419,178 +1380,151 @@ void zmk_ble_endpoint_disconnect(void)
             bt_conn_disconnect(conn, BT_HCI_ERR_REMOTE_USER_TERM_CONN);
             bt_conn_unref(conn);
         }
-        k_work_reschedule(&adv_timeout_work,K_MSEC(20));
+        k_work_reschedule(&adv_timeout_work, K_MSEC(20));
     }
 }
 
-
 static bt_addr_le_t inced_bt_addr;
-bt_addr_le_t * inc_bt_addr(uint8_t index)
-{
+bt_addr_le_t *inc_bt_addr(uint8_t index) {
     bt_addr_le_t addrs[CONFIG_BT_ID_MAX];
     size_t count = ARRAY_SIZE(addrs);
     bt_id_get(addrs, &count);
-    LOG_DBG("index:%d,count:%d",index,count);
-    if(index <count)
-    {
+    LOG_DBG("index:%d,count:%d", index, count);
+    if (index < count) {
         char addr_str[30] = {0};
         bt_addr_le_to_str(&addrs[index], addr_str, sizeof(addr_str));
         LOG_INF("old Device addr:%s\n", addr_str);
-        addrs[index].a.val[0] +=1;
+        addrs[index].a.val[0] += 1;
         bt_addr_le_to_str(&addrs[index], addr_str, sizeof(addr_str));
         LOG_INF("Device addr:%s\n", addr_str);
-        memcpy(&inced_bt_addr,&addrs[index],sizeof(bt_addr_le_t));
+        memcpy(&inced_bt_addr, &addrs[index], sizeof(bt_addr_le_t));
         return &inced_bt_addr;
-    }
-    else
-    {
+    } else {
         return NULL;
     }
 }
 
-void print_device_addr(uint8_t id)
-{
+void print_device_addr(uint8_t id) {
     bt_addr_le_t addrs[CONFIG_BT_ID_MAX];
     size_t count = ARRAY_SIZE(addrs);
     bt_id_get(addrs, &count);
-    if(id <count)
-    {
+    if (id < count) {
         char addr_str[64] = {0};
 
         bt_addr_le_to_str(&addrs[id], addr_str, sizeof(addr_str));
         LOG_INF("Device addr:%s\n", addr_str);
 
-    }
-    else
-    {
+    } else {
         LOG_INF("Device addr NULL");
     }
 }
 
-void set_dis_value(void)
-{
+void set_dis_value(void) {
     int rc;
-    char sn[20]="SN2024013114230078";
+    char sn[20] = "SN2024013114230078";
     rc = load_immediate_value("bt/dis/serial", sn, strlen(sn));
     if (rc == -ENOENT) {
-        uint8_t deviceid[4]={0};
-        for (uint8_t i=0; i< sizeof(deviceid); i++)
-        {
-             deviceid[i] = (uint8_t) (NRF_FICR->DEVICEID[0]>>(i*8));
-        }   
-        sprintf(&sn[10],"%02x%02x%02x%02x",deviceid[0],deviceid[1],deviceid[2],deviceid[3]);
-        settings_save_one("bt/dis/serial",sn,strlen(sn));
-        LOG_DBG("set sn:%s",sn);
-    } 
-    else
-    {
-        LOG_DBG("sn is:%s",sn);
+        uint8_t deviceid[4] = {0};
+        for (uint8_t i = 0; i < sizeof(deviceid); i++) {
+            deviceid[i] = (uint8_t)(NRF_FICR->DEVICEID[0] >> (i * 8));
+        }
+        sprintf(&sn[10], "%02x%02x%02x%02x", deviceid[0], deviceid[1], deviceid[2], deviceid[3]);
+        settings_save_one("bt/dis/serial", sn, strlen(sn));
+        LOG_DBG("set sn:%s", sn);
+    } else {
+        LOG_DBG("sn is:%s", sn);
     }
 }
 #if EN_UPATE_PARAM_DYNAMIC
-int update_ble_conn_param(void)
-{
-    int rc=0;
-    struct bt_le_conn_param *slow_param =BT_LE_CONN_PARAM(40, 40,30,400);
-    struct bt_le_conn_param *active_param =BT_LE_CONN_PARAM(6, 12,30,400);
+int update_ble_conn_param(void) {
+    int rc = 0;
+    struct bt_le_conn_param *slow_param = BT_LE_CONN_PARAM(40, 40, 30, 400);
+    struct bt_le_conn_param *active_param = BT_LE_CONN_PARAM(6, 12, 30, 400);
     struct bt_conn *conn;
     bt_addr_le_t *addr = zmk_ble_active_profile_addr();
-    
+
     conn = bt_conn_lookup_addr_le(profiles[active_profile].bt_id, addr);
-    LOG_DBG("conn:%p,active:%d",conn,ble_active);
+    LOG_DBG("conn:%p,active:%d", conn, ble_active);
     if (conn != NULL) {
-        rc= bt_conn_le_param_update(conn,ble_active?active_param:slow_param);
-        LOG_DBG("rc:%d",rc);
+        rc = bt_conn_le_param_update(conn, ble_active ? active_param : slow_param);
+        LOG_DBG("rc:%d", rc);
         bt_conn_unref(conn);
     }
     return rc;
 }
 
-void ble_active_work_callback(struct k_work *work)
-{
-    ble_active=0;
+void ble_active_work_callback(struct k_work *work) {
+    ble_active = 0;
     LOG_DBG(".");
-    k_work_reschedule(&ble_param_update_work,K_NO_WAIT);
+    k_work_reschedule(&ble_param_update_work, K_NO_WAIT);
 }
-void ble_param_update_work_callback(struct k_work *work)
-{
-    LOG_DBG("try_count:%d",ble_param_update_try_count);
-    int rc =update_ble_conn_param();
-    if(rc!=0 && rc !=-EALREADY)
-    {
-        if(++ble_param_update_try_count <=3)
-        {
-            k_work_reschedule(&ble_param_update_work,K_MSEC(1000));
+void ble_param_update_work_callback(struct k_work *work) {
+    LOG_DBG("try_count:%d", ble_param_update_try_count);
+    int rc = update_ble_conn_param();
+    if (rc != 0 && rc != -EALREADY) {
+        if (++ble_param_update_try_count <= 3) {
+            k_work_reschedule(&ble_param_update_work, K_MSEC(1000));
         }
-    }
-    else
-        ble_param_update_try_count =0;
+    } else
+        ble_param_update_try_count = 0;
 }
-void ble_active_handler(void)
-{
-    ble_active =1;
+void ble_active_handler(void) {
+    ble_active = 1;
     struct bt_conn *conn;
     bt_addr_le_t *addr = zmk_ble_active_profile_addr();
-    
+
     conn = bt_conn_lookup_addr_le(profiles[active_profile].bt_id, addr);
-    if(conn !=NULL)
-    {
-        struct bt_conn_info info ;
-        bt_conn_get_info(conn,&info);
-        LOG_DBG("conn interval:%d,latency:%d,timeout:%d,count:%d",info.le.interval,info.le.latency,info.le.timeout,ble_param_update_try_count);
-        if(info.le.interval>24)
-        {
-            if(ble_param_update_try_count==0)
-            {
-                //int rc=update_ble_conn_param();
-                ble_param_update_try_count=1;
-                //if(rc !=0 && rc != -EALREADY)
+    if (conn != NULL) {
+        struct bt_conn_info info;
+        bt_conn_get_info(conn, &info);
+        LOG_DBG("conn interval:%d,latency:%d,timeout:%d,count:%d", info.le.interval,
+                info.le.latency, info.le.timeout, ble_param_update_try_count);
+        if (info.le.interval > 24) {
+            if (ble_param_update_try_count == 0) {
+                // int rc=update_ble_conn_param();
+                ble_param_update_try_count = 1;
+                // if(rc !=0 && rc != -EALREADY)
                 {
                     // k_work_cancel_delayable(&ble_param_update_work);
-                    k_work_reschedule(&ble_param_update_work,K_MSEC(500));
+                    k_work_reschedule(&ble_param_update_work, K_MSEC(500));
                 }
             }
         }
         bt_conn_unref(conn);
-        k_work_reschedule(&ble_active_work,K_MSEC(15000));
+        k_work_reschedule(&ble_active_work, K_MSEC(15000));
     }
 }
-#endif 
+#endif
 
-void update_conn_param_worker(struct k_work *work)
-{
-    int rc=0;
-    struct bt_le_conn_param *active_param =BT_LE_CONN_PARAM(6, 12,30,400);
+void update_conn_param_worker(struct k_work *work) {
+    int rc = 0;
+    struct bt_le_conn_param *active_param = BT_LE_CONN_PARAM(6, 12, 30, 400);
     struct bt_conn *conn;
     bt_addr_le_t *addr = zmk_ble_active_profile_addr();
-    
+
     conn = bt_conn_lookup_addr_le(profiles[active_profile].bt_id, addr);
-    LOG_DBG("conn:%p",conn);
+    LOG_DBG("conn:%p", conn);
     if (conn != NULL) {
-        LOG_ERR("ch inteval:%d",active_param->interval_max);
-        rc= bt_conn_le_param_update(conn,active_param);
-        LOG_ERR("rc:%d",rc);
+        LOG_ERR("ch inteval:%d", active_param->interval_max);
+        rc = bt_conn_le_param_update(conn, active_param);
+        LOG_ERR("rc:%d", rc);
         bt_conn_unref(conn);
     }
 }
 
-uint8_t delay_clear_bonds(void)
-{
-    uint8_t delay_clear_bond=0;
-    int rc =load_immediate_value("delay_clear_bond", &delay_clear_bond, sizeof(delay_clear_bond));
+uint8_t delay_clear_bonds(void) {
+    uint8_t delay_clear_bond = 0;
+    int rc = load_immediate_value("delay_clear_bond", &delay_clear_bond, sizeof(delay_clear_bond));
     if (rc == -ENOENT) {
         delay_clear_bond = 0;
-        LOG_DBG("delay_clear_bond:%d,default",delay_clear_bond);
-    }
-    else if(rc ==0)
-    {
-        LOG_DBG("delay_clear_bond:%d",delay_clear_bond);
+        LOG_DBG("delay_clear_bond:%d,default", delay_clear_bond);
+    } else if (rc == 0) {
+        LOG_DBG("delay_clear_bond:%d", delay_clear_bond);
     }
     return delay_clear_bond;
 }
-void set_delay_clear_bonds(uint8_t set)
-{
-    uint8_t delay_clear_bond=set;
-    LOG_ERR("set_delay_clear_bonds:%d",set);
+void set_delay_clear_bonds(uint8_t set) {
+    uint8_t delay_clear_bond = set;
+    LOG_ERR("set_delay_clear_bonds:%d", set);
     settings_save_one("delay_clear_bond", &delay_clear_bond, sizeof(delay_clear_bond));
 }

@@ -17,20 +17,25 @@ To review features, check out the [feature overview](https://zmk.dev/docs/). ZMK
 To build the firmware ,for example: keychorn b1 pro
 
 prepare:
-```    
+
+```
     mkdir keychron
     cd keychron
-    git clone -b keychron_bpro https://github.com/keychron/zmk.git 
+    git clone -b keychron_bpro https://github.com/keychron/zmk.git
     cd zmk
     west init -l app/
     west update
 ```
+
 patch zephyr:
+
 ```
     cd zephyr
     git am ../001-esb-nrf-fix.patch
 ```
+
 build firmware:
+
 ```
     cd app
     west build -b keychron -p -- -DSHIELD=keychron_b1_us

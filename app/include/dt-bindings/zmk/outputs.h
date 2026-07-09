@@ -11,7 +11,6 @@
 #define OUT_CHG 4
 #define OUT_CHGD 5
 #define OUT_BAT 6
-#define OUT_FN  7
+#define OUT_FN 7
 #define OUT_RECOVER 8
 #define OUT_FN_WIN 9
-
