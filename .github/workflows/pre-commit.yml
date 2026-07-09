@@ -9,7 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
-      - uses: pre-commit/action@v3.0.1
+      - if: github.event_name == 'pull_request'
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.sha }}
+      - if: github.event_name == 'push'
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --from-ref ${{ github.event.before }} --to-ref ${{ github.sha }}
