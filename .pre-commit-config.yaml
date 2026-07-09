@@ -4,13 +4,14 @@ repos:
     rev: v1.5.1
     hooks:
       - id: remove-tabs
-        exclude: "vendor-prefixes\\.txt$"
+        exclude: "vendor-prefixes\\.txt$|\\.keymap$"
   - repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
       - id: clang-format
         args:
           - -i
+        exclude: "\\.keymap$"
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1
     hooks:
